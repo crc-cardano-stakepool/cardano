@@ -74,7 +74,11 @@
 
 * The standard library can be easily imported in the scope with the "use" keyword
 
-## Notes on ownership
+* Will detect when borrowing happens, if it is mutable or immutable
+
+* Renders very helpful error messages
+
+## Notes on ownership, references and borrowing
 
 * Rust has three ownership rules that spread through the entire design of Rust
     1. Each value in Rust is owned by a variable
@@ -93,7 +97,7 @@
 
 * Referencing values is indicated with "&" in front of the datatype of the function paramter and the argument of the function call
 
-* In Rust, passing references as parameters is called "borrowing" 
+* In Rust, passing references as parameters is called "borrowing"
 
 * References are immutable by default
 
