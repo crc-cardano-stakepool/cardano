@@ -1,7 +1,7 @@
 use structopt::StructOpt;
 mod cardano;
-use crate::cardano::Cli;
+use crate::cardano::cardano::*;
 
 fn main() {
-    Cli::start(Cli::from_args().cmd);
+    Cardano::start(Cardano::from_args().cmd);
 }
