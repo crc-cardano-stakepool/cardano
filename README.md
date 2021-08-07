@@ -28,12 +28,7 @@
 
 * Central crates registry -> <https://crates.io>
 
-* Install packages by appending the crate to the Cargo.toml or by typing cargo install {package-name}
-
-## Notes on datatypes
-
-* Basic datatypes are usinged integers and signed integers, from 8 to 128 bits in size incrementing in a power of 2
-
+* Install packagesclemenshorn/learn-rust
 * More basic datatypes are floats, either 32 bits or 64 bits in size
 
 * A bool is also stored in a byte
