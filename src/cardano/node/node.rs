@@ -9,14 +9,14 @@ pub enum NodeCommand {
 }
 
 impl NodeCommand {
-    pub fn exec(cmd: NodeCommand) {
+    pub async fn exec(cmd: NodeCommand) {
         match cmd {
-            NodeCommand::Run(cmd) => RunCommand::exec(cmd),
+            NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
         }
     }
 
-    pub fn check_node_version() {
+    pub async fn check_node_version() {
         println!("Checking for existing cardano-node binary");
-        command("cardano-node --version");
+        command("cardano-node --version").await;
     }
 }

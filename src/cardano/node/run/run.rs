@@ -10,20 +10,20 @@ pub enum RunCommand {
 }
 
 impl RunCommand {
-    pub fn exec(cmd: RunCommand) {
+    pub async fn exec(cmd: RunCommand) {
         match cmd {
-            RunCommand::Mainnet(config) => RunCommand::mainnet(config),
-            RunCommand::Testnet(config) => RunCommand::testnet(config),
+            RunCommand::Mainnet(config) => RunCommand::mainnet(config).await,
+            RunCommand::Testnet(config) => RunCommand::testnet(config).await,
         }
     }
 
-    fn mainnet(config: RunConfig) {
+    async fn mainnet(config: RunConfig) {
         println!("The config to run node in mainnet: {:#?}", config);
-        NodeCommand::check_node_version();
+        NodeCommand::check_node_version().await;
     }
 
-    fn testnet(config: RunConfig) {
+    async fn testnet(config: RunConfig) {
         println!("The config to run node in testnet: {:#?}", config);
-        NodeCommand::check_node_version();
+        NodeCommand::check_node_version().await;
     }
 }

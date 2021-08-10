@@ -1,9 +1,10 @@
-use cli::*;
 use structopt::StructOpt;
+use cli::*;
 mod cardano;
 mod cli;
 mod utils;
 
-fn main() {
-    Cli::start(Cli::from_args().cmd)
+#[tokio::main]
+async fn main() {
+    Cli::start(Cli::from_args().cmd).await
 }

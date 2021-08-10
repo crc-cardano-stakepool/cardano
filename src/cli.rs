@@ -9,10 +9,10 @@ pub struct Cli {
 }
 
 impl Cli {
-    pub fn start(cmd: CardanoCommand) {
+    pub async fn start(cmd: CardanoCommand) {
         match cmd {
-            CardanoCommand::Node(cmd) => NodeCommand::exec(cmd),
-            CardanoCommand::Install(cmd) => InstallCommand::exec(cmd),
+            CardanoCommand::Node(cmd) => NodeCommand::exec(cmd).await,
+            CardanoCommand::Install(cmd) => InstallCommand::exec(cmd).await,
             // CardanoCommand::Cli(cmd) => println!("cli command: {:#?}", cmd),
             // CardanoCommand::Wallet(cmd) => println!("wallet command: {:#?}", cmd),
             // CardanoCommand::Tx(cmd) => println!("tx command: {:#?}", cmd),

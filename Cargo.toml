@@ -7,5 +7,6 @@ edition = "2018"
 
 [dependencies]
 structopt = "0.3.22"
+tokio = { version = "1.9.0", features = ["full"] }
 # regex = "1.5.4"
 # cardano-serialization-lib = "8.0.0"
