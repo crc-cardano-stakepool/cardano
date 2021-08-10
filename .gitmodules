@@ -28,7 +28,6 @@
 [submodule "contrib/cardano-ledger-specs"]
 	path = contrib/cardano-ledger-specs
 	url = https://github.com/input-output-hk/cardano-ledger-specs
-
 [submodule "contrib/smash"]
 	path = contrib/smash
 	url = https://github.com/input-output-hk/smash
