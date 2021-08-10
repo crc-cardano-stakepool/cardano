@@ -1,5 +1,7 @@
-use crate::cardano::component::CardanoComponent;
 use structopt::StructOpt;
+use crate::cardano::component::CardanoComponent;
+use crate::utils::command;
+use super::super::node::NodeCommand;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Install cardano components")]
@@ -25,18 +27,26 @@ impl InstallCommand {
     }
 
     fn install_cli() {
-        println!("Installing cardano-cli")
+        println!("Checking cardano-cli installation");
+        command("cardano-cli --version");
+        println!("Installing cardano-node");
     }
 
     fn install_node() {
-        println!("Installing cardano-node")
+        println!("Checking cardano-node installation");
+        NodeCommand::check_node_version();
+        println!("Installing cardano-node");
     }
 
     fn install_wallet() {
-        println!("Installing cardano-wallet")
+        println!("Checking cardano-wallet installation");
+        command("cardano-wallet --version");
+        println!("Installing cardano-wallet");
     }
 
     fn install_db() {
-        println!("Installing cardano-db-sync")
+        println!("Checking cardano-db-sync installation");
+        command("cardano-db-sync --version");
+        println!("Installing cardano-db-sync");
     }
 }
