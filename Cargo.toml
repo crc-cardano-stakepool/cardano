@@ -7,4 +7,5 @@ edition = "2018"
 
 [dependencies]
 structopt = "0.3.22"
+# regex = "1.5.4"
 # cardano-serialization-lib = "8.0.0"

@@ -12,6 +12,7 @@ impl Cli {
     pub fn start(cmd: CardanoCommand) {
         match cmd {
             CardanoCommand::Node(cmd) => NodeCommand::exec(cmd),
+            // CardanoCommand::Install(cmd) => println!("install command: {:#?}", cmd),
             // CardanoCommand::Cli(cmd) => println!("cli command: {:#?}", cmd),
             // CardanoCommand::Wallet(cmd) => println!("wallet command: {:#?}", cmd),
             // CardanoCommand::Tx(cmd) => println!("tx command: {:#?}", cmd),
@@ -25,7 +26,6 @@ impl Cli {
             // CardanoCommand::Marlowe(cmd) => println!("marlowe command: {:#?}", cmd),
             // CardanoCommand::Explorer(cmd) => println!("explorer command: {:#?}", cmd),
             // CardanoCommand::Smash(cmd) => println!("smash command: {:#?}", cmd),
-            // CardanoCommand::Install(cmd) => println!("install command: {:#?}", cmd),
             // CardanoCommand::Update(cmd) => println!("update command: {:#?}", cmd),
             // CardanoCommand::Config(cmd) => println!("config command: {:#?}", cmd),
             // CardanoCommand::Uninstall(cmd) => println!("uninstall command: {:#?}", cmd),
