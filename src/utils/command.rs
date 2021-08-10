@@ -1,5 +1,5 @@
-use tokio::process::Command;
 use std::process::Stdio;
+use tokio::process::Command;
 
 pub async fn command(cmd: &str) {
     let output = Command::new("sh")
