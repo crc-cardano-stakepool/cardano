@@ -1,7 +1,7 @@
-use structopt::StructOpt;
+use super::super::node::NodeCommand;
 use crate::cardano::component::CardanoComponent;
 use crate::utils::command;
-use super::super::node::NodeCommand;
+use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Install cardano components")]
