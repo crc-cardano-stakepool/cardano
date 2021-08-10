@@ -1,11 +1,16 @@
-use structopt::StructOpt;
 use super::run::*;
+use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Manage cardano nodes")]
 pub enum NodeCommand {
-    Run {
-        #[structopt(subcommand, help = "The run configuration for mainnet")]
-        run: RunCommand,
+    Run(RunCommand),
+}
+
+impl NodeCommand {
+    pub fn exec(cmd: NodeCommand) {
+        match cmd {
+            NodeCommand::Run(cmd) => RunCommand::exec(cmd),
+        }
     }
 }
