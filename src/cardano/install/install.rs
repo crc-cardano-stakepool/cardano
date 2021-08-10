@@ -29,7 +29,7 @@ impl InstallCommand {
     fn install_node() {
         println!("Checking cardano-node installation");
         NodeCommand::check_node_version();
-        println!("Installing cardano-node");
+        println!("Installing cardano-node")
     }
 
     fn install_cli() {
