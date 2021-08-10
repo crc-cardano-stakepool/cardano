@@ -26,15 +26,15 @@ impl InstallCommand {
         };
     }
 
-    fn install_cli() {
-        println!("Checking cardano-cli installation");
-        command("cardano-cli --version");
-        println!("Installing cardano-node");
-    }
-
     fn install_node() {
         println!("Checking cardano-node installation");
         NodeCommand::check_node_version();
+        println!("Installing cardano-node");
+    }
+
+    fn install_cli() {
+        println!("Checking cardano-cli installation");
+        command("cardano-cli --version");
         println!("Installing cardano-node");
     }
 
