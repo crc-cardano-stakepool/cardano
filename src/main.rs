@@ -1,7 +1,7 @@
-use structopt::StructOpt;
 use cli::*;
-mod cli;
+use structopt::StructOpt;
 mod cardano;
+mod cli;
 mod utils;
 
 fn main() {
