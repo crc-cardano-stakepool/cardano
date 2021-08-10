@@ -4,6 +4,7 @@ use structopt::StructOpt;
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Install cardano components")]
 pub enum InstallCommand {
+    #[structopt(about = "Installs a cardano component")]
     Component(CardanoComponent),
 }
 
