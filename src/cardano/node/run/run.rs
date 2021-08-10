@@ -1,5 +1,5 @@
-use super::RunConfig;
 use structopt::StructOpt;
+use super::RunConfig;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Run cardano node in mainnet or testnet")]
@@ -11,8 +11,16 @@ pub enum RunCommand {
 impl RunCommand {
     pub fn exec(cmd: RunCommand) {
         match cmd {
-            RunCommand::Mainnet(config) => RunConfig::mainnet(config),
-            RunCommand::Testnet(config) => RunConfig::testnet(config),
+            RunCommand::Mainnet(config) => RunCommand::mainnet(config),
+            RunCommand::Testnet(config) => RunCommand::testnet(config),
         }
     }
+    pub fn mainnet(config: RunConfig) {
+        println!("The config to run node in mainnet: {:#?}", config)
+    }
+
+    pub fn testnet(config: RunConfig) {
+        println!("The config to run node in testnet: {:#?}", config)
+    }
+
 }

@@ -1,5 +1,5 @@
-use super::run::*;
 use structopt::StructOpt;
+use super::run::RunCommand;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Manage cardano nodes")]

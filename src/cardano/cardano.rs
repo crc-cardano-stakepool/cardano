@@ -1,6 +1,5 @@
-pub use crate::cardano::*;
-use cardano::node::NodeCommand;
 use structopt::StructOpt;
+use crate::cardano::*;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "cardano", about = "Manage cardano components")]
