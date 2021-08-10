@@ -11,42 +11,42 @@ pub enum InstallCommand {
 }
 
 impl InstallCommand {
-    pub fn exec(cmd: InstallCommand) {
+    pub async fn exec(cmd: InstallCommand) {
         match cmd {
-            InstallCommand::Component(comp) => InstallCommand::install_component(comp),
+            InstallCommand::Component(comp) => InstallCommand::install_component(comp).await,
         }
     }
 
-    pub fn install_component(comp: CardanoComponent) {
+    pub async fn install_component(comp: CardanoComponent) {
         match comp {
-            CardanoComponent::Node => InstallCommand::install_node(),
-            CardanoComponent::Cli => InstallCommand::install_cli(),
-            CardanoComponent::Wallet => InstallCommand::install_wallet(),
-            CardanoComponent::Db => InstallCommand::install_db(),
+            CardanoComponent::Node => InstallCommand::install_node().await,
+            CardanoComponent::Cli => InstallCommand::install_cli().await,
+            CardanoComponent::Wallet => InstallCommand::install_wallet().await,
+            CardanoComponent::Db => InstallCommand::install_db().await,
         };
     }
 
-    fn install_node() {
+    async fn install_node() {
         println!("Checking cardano-node installation");
-        NodeCommand::check_node_version();
+        NodeCommand::check_node_version().await;
         println!("Installing cardano-node")
     }
 
-    fn install_cli() {
+    async fn install_cli() {
         println!("Checking cardano-cli installation");
-        command("cardano-cli --version");
+        command("cardano-cli --version").await;
         println!("Installing cardano-node");
     }
 
-    fn install_wallet() {
+    async fn install_wallet() {
         println!("Checking cardano-wallet installation");
-        command("cardano-wallet --version");
+        command("cardano-wallet --version").await;
         println!("Installing cardano-wallet");
     }
 
-    fn install_db() {
+    async fn install_db() {
         println!("Checking cardano-db-sync installation");
-        command("cardano-db-sync --version");
+        command("cardano-db-sync --version").await;
         println!("Installing cardano-db-sync");
     }
 }
