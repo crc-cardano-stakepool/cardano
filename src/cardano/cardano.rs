@@ -2,7 +2,7 @@ use structopt::StructOpt;
 pub use crate::cardano::*;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "cardano", about = "A Cardano CLI built with Rust")]
+#[structopt(name = "cardano", about = "Manage cardano components")]
 pub struct Cardano {
     #[structopt(subcommand)]
     pub cmd: CardanoCommand,
