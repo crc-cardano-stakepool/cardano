@@ -1,10 +1,11 @@
-use structopt::StructOpt;
 use crate::cardano::*;
+use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "cardano", about = "Manage cardano components")]
 pub enum CardanoCommand {
     Node(NodeCommand),
+    Install(InstallCommand),
     // Cli(CliCommand),
     // Wallet(WalletCommand),
     // Tx(TxCommand),
@@ -18,7 +19,6 @@ pub enum CardanoCommand {
     // Marlowe(MarloweCommand),
     // Explorer(ExplorerCommand),
     // Smash(SmashCommand),
-    // Install(InstallCommand),
     // Update(UpdateCommand),
     // Config(ConfigCommand),
     // Uninstall(UninstallCommand),

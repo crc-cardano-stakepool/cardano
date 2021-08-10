@@ -1,5 +1,5 @@
-use super::RunConfig;
 use super::super::NodeCommand;
+use super::RunConfig;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]

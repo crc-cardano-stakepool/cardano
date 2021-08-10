@@ -1,6 +1,6 @@
-use structopt::StructOpt;
 use std::net::IpAddr;
 use std::path::PathBuf;
+use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "mainnet", about = "Run cardano node in mainnet")]

@@ -36,3 +36,5 @@ pub mod config;
 pub use config::*;
 pub mod uninstall;
 pub use uninstall::*;
+pub mod component;
+pub use component::*;

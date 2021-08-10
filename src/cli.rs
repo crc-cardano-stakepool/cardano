@@ -1,5 +1,5 @@
-use structopt::StructOpt;
 use crate::cardano::*;
+use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "cardano", about = "Manage cardano components")]
@@ -12,7 +12,7 @@ impl Cli {
     pub fn start(cmd: CardanoCommand) {
         match cmd {
             CardanoCommand::Node(cmd) => NodeCommand::exec(cmd),
-            // CardanoCommand::Install(cmd) => println!("install command: {:#?}", cmd),
+            CardanoCommand::Install(cmd) => InstallCommand::exec(cmd),
             // CardanoCommand::Cli(cmd) => println!("cli command: {:#?}", cmd),
             // CardanoCommand::Wallet(cmd) => println!("wallet command: {:#?}", cmd),
             // CardanoCommand::Tx(cmd) => println!("tx command: {:#?}", cmd),
