@@ -1,4 +1,4 @@
-name: Rust Test 
+name: Cardano CLI
 
 on:
   push:
@@ -39,5 +39,5 @@ jobs:
         with:
           command: check
 
-      - name: test
+      - name: Run tests
         run: cargo test --verbose
