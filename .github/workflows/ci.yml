@@ -42,7 +42,9 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v2
+      - name: Cache cargo build
+        uses: actions-rs/toolchain@v1
         with:
             toolchain: stable
             components: rustfmt
@@ -58,7 +60,9 @@ jobs:
       - format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions-rs/cargo@v1.0.1
+      - uses: actions/checkout@v2
+      - name: Check formatting
+        uses: actions-rs/cargo@v1.0.1
         with:
           command: check
 
@@ -70,8 +74,9 @@ jobs:
       - check
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Run tests
-      - uses: actions-rs/cargo@v1.0.1
+        uses: actions-rs/cargo@v1.0.1
         with: 
           command: test
           args: --verbose --all-features
