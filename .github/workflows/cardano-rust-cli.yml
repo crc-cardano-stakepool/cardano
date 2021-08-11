@@ -1,4 +1,4 @@
-name: Cardano CLI
+name: cardano-rust-cli
 
 on:
   push:
