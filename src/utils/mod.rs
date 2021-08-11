@@ -1,4 +1,2 @@
-pub mod command;
-pub use command::*;
-pub mod colors;
-pub use colors::*;
+pub mod terminal;
+pub use terminal::*;
