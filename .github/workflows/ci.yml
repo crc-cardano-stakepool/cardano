@@ -8,23 +8,6 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  cache:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache cargo build
-        uses: actions/cache@v1
-        with:
-          path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-
   build:
     needs: cache
     runs-on: ubuntu-latest
@@ -38,7 +21,6 @@ jobs:
   
   format:
     needs: 
-      - cache
       - build
     runs-on: ubuntu-latest
     steps:
@@ -55,9 +37,7 @@ jobs:
 
   check:
     needs:
-      - cache
       - build
-      - format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -68,9 +48,6 @@ jobs:
 
   test:
     needs:
-      - cache
-      - build
-      - format
       - check
     runs-on: ubuntu-latest
     steps:
