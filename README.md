@@ -23,11 +23,3 @@
 ## Documentation
 
     cargo doc --open
-
-<img style="float: left;" src="https://img.shields.io/github/languages/top/clemenshorn/cardano-rust-cli?style=for-the-badge">
-
-<img style="float: left;" src="https://img.shields.io/github/last-commit/clemenshorn/cardano-rust-cli?style=for-the-badge">
-
-<img style="float: left;" src="https://img.shields.io/github/issues-raw/clemenshorn/cardano-rust-cli?style=for-the-badge">
-
-<img style="float: left;" src="https://img.shields.io/github/repo-size/clemenshorn/cardano-rust-cli?style=for-the-badge">
