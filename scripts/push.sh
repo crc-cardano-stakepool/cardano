@@ -9,7 +9,7 @@ git add -A &&
 git commit -a -s -m "$commit_msg" &&
 git push origin develop &&
 gh pr create -f &&
-sleep 3 &&
+sleep 2 &&
 gh pr merge --auto -b main -m &&
 git checkout main &&
 git pull origin main && 
