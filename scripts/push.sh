@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Use only after merging feature into develop
+
 scripts/build.sh
 
 printf "%s" "commit: "
