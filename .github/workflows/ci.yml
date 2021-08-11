@@ -36,7 +36,7 @@ jobs:
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
   
   format:
-    needs: build
+    needs: cache
     runs-on: ubuntu-latest
     steps:
       - uses: actions-rs/toolchain@v1
@@ -49,7 +49,7 @@ jobs:
           token: ${{ secrets.TOKEN}}
 
   check:
-    needs: format
+    needs: cache
     runs-on: ubuntu-latest
     steps:
       - uses: actions-rs/cargo@v1.0.1
@@ -57,7 +57,7 @@ jobs:
           command: check
 
   test:
-    needs: check 
+    needs: cache
     runs-on: ubuntu-latest
     steps:
       - name: Run tests
