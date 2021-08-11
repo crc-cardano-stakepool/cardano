@@ -1,6 +1,5 @@
 use super::super::node::NodeCommand;
 use crate::cardano::component::CardanoComponent;
-use crate::utils::colors::color;
 use crate::utils::*;
 use structopt::StructOpt;
 
