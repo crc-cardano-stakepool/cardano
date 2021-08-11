@@ -17,51 +17,51 @@ impl Terminal {
             .output()
             .await;
         if let Ok(output) = output {
-            let stdout = &String::from_utf8_lossy(&output.stdout);
-            Terminal::print(color, stdout, emoji);
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            Terminal::print(color, &stdout, emoji).await;
         } else {
-            panic!("Error executing command");
+            panic!("Error executing command: {}", command);
         }
     }
 
-    pub fn print(color: &str, output: &str, emoji: Emoji) {
+    pub async fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) {
         let color: Color = Terminal::to_color(&color);
         match color {
             Color::Cyan => {
                 let cyan = format!("{} {}", Style::new().cyan().apply_to(output), emoji);
-                Terminal::write(&cyan)
+                Terminal::write(&cyan).await
             }
             Color::Blue => {
                 let blue = format!("{} {}", Style::new().blue().apply_to(output), emoji);
-                Terminal::write(&blue)
+                Terminal::write(&blue).await
             }
             Color::Black => {
                 let black = format!("{} {}", Style::new().black().apply_to(output), emoji);
-                Terminal::write(&black)
+                Terminal::write(&black).await
             }
             Color::Red => {
                 let red = format!("{} {}", Style::new().red().apply_to(output), emoji);
-                Terminal::write(&red)
+                Terminal::write(&red).await
             }
             Color::Green => {
                 let green = format!("{} {}", Style::new().green().apply_to(output), emoji);
-                Terminal::write(&green)
+                Terminal::write(&green).await
             }
             Color::Yellow => {
                 let yellow = format!("{} {}", Style::new().yellow().apply_to(output), emoji);
-                Terminal::write(&yellow)
+                Terminal::write(&yellow).await
             }
             Color::Magenta => {
                 let magenta = format!("{} {}", Style::new().magenta().apply_to(output), emoji);
-                Terminal::write(&magenta)
+                Terminal::write(&magenta).await
             }
             Color::White => {
                 let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
-                Terminal::write(&white)
+                Terminal::write(&white).await
             }
             _ => {
                 let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
-                Terminal::write(&white)
+                Terminal::write(&white).await
             }
         };
     }
@@ -80,7 +80,7 @@ impl Terminal {
         }
     }
 
-    fn write(output: &str) {
+    async fn write(output: &str) {
         Term::stdout().write_line(output).expect("Failed printing to console")
     }
 }

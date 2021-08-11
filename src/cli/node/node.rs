@@ -17,7 +17,7 @@ impl NodeCommand {
     }
 
     pub async fn check_node_version() {
-        Terminal::print("white", "Checking cardano-node installation", Emoji("❕", ""));
+        Terminal::print("white", "Checking cardano-node installation", Emoji("❕", "")).await;
         Terminal::async_command("green", "cardano-node --version", Emoji("🤌", "")).await;
     }
 }
