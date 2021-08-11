@@ -8,7 +8,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  cache:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -37,32 +37,6 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-
-  build:
-    needs: cache
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Use cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/ 
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
- 
-      - name: Build Cardano CLI 
-        uses: actions-rs/cargo@v1.0.1
-        with:
-          command: build
-          args: --release --all-features
- 
   format:
     needs: build
     runs-on: ubuntu-latest
@@ -94,7 +68,7 @@ jobs:
           token: ${{ secrets.TOKEN}}
 
   check:
-    needs: [cache, build]
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -118,7 +92,7 @@ jobs:
           command: check
 
   test:
-    needs: [cache, build, check, format]
+    needs: [build, check, format]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
