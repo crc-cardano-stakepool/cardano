@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./scripts/build.sh
+scripts/build.sh
 
 printf "%s" "commit: "
 read -r commit_msg 
