@@ -1,9 +1,10 @@
 name: cardano-rust-cli
 
 on:
-  pull_request:
+  push:
     branches:
       - main
+  pull_request:
     types: [opened, synchronize]
 
 jobs:
