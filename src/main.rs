@@ -1,6 +1,5 @@
-use cli::*;
+use cli::Cli;
 use structopt::StructOpt;
-mod cardano;
 mod cli;
 mod utils;
 
