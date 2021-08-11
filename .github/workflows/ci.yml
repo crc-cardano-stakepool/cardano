@@ -12,17 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Cache cargo registry
         uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-key: ${{ runner.os }}-cargo-registry-
 
       - name: Cache cargo build
         uses: actions/cache@v2
         with:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-key: ${{ runner.os }}-cargo-build-target-
 
       - uses: actions-rs/toolchain@v1
         with:
@@ -34,6 +37,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Use cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            - ~/.cargo/registry
+            - target
+          key: |
+            ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-key: |
+            ${{ runner.os }}-cargo-registry-
+            ${{ runner.os }}-cargo-build-target-
+
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
@@ -45,21 +62,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Use cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            - ~/.cargo/registry
+            - target
+          key: |
+            ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-key: |
+            ${{ runner.os }}-cargo-registry-
+            ${{ runner.os }}-cargo-build-target-
+
       - name: Format build
         uses: actions-rs/toolchain@v1
         with:
             toolchain: stable
             components: rustfmt
             override: true
+
       - uses: mbrobbel/rustfmt-check@master
         with:
           token: ${{ secrets.TOKEN}}
 
   check:
-    needs: build
+    needs: [cache, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Use cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            - ~/.cargo/registry
+            - target
+          key: |
+            ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-key: |
+            ${{ runner.os }}-cargo-registry-
+            ${{ runner.os }}-cargo-build-target-
+
       - name: Check formatting
         uses: actions-rs/cargo@v1.0.1
         with:
@@ -70,6 +116,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Use cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            - ~/.cargo/registry
+            - target
+          key: |
+            ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-key: |
+            ${{ runner.os }}-cargo-registry-
+            ${{ runner.os }}-cargo-build-target-
+
       - name: Run tests
         uses: actions-rs/cargo@v1.0.1
         with: 
