@@ -67,7 +67,7 @@ impl Terminal {
                     Terminal::write(&white).await.expect("Failed printing to terminal");
                 }
             };
-        } 
+        }
         Ok(())
     }
 
