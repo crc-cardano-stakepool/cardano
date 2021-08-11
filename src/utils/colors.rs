@@ -58,9 +58,7 @@ pub fn write_color(s: &str, c: Color) {
 }
 
 pub fn write(s: &str) {
-    let term = Term::stdout();
-    match term.write_line(s) {
-        Ok(_) => (),
-        Err(e) => println!("Error: {}", e),
-    }
+    Term::stdout()
+        .write_line(s)
+        .expect("Failed printing to console")
 }
