@@ -1,5 +1,6 @@
 #[cfg(test)]
 pub mod test {
+    use crate::*;
     use crate::utils::Terminal;
     use console::Emoji;
 
