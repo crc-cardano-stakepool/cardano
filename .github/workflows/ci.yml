@@ -18,14 +18,14 @@ jobs:
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-          restore-key: ${{ runner.os }}-cargo-registry-
+          restore-keys: ${{ runner.os }}-cargo-registry-
 
       - name: Cache cargo build
         uses: actions/cache@v2
         with:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-key: ${{ runner.os }}-cargo-build-target-
+          restore-keys: ${{ runner.os }}-cargo-build-target-
 
       - uses: actions-rs/toolchain@v1
         with:
