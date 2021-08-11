@@ -1,5 +1,5 @@
-use structopt::StructOpt;
 use cli::Cli;
+use structopt::StructOpt;
 mod cli;
 mod utils;
 
