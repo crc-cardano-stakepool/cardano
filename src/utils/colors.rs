@@ -1,4 +1,5 @@
 use console::Color;
+use console::Emoji;
 use console::Style;
 use console::Term;
 
@@ -16,49 +17,51 @@ pub fn color(color: &str) -> Color {
     }
 }
 
-pub fn write_color(s: &str, c: Color) {
+pub fn write_color(s: &str, c: Color, e: Emoji) {
     match c {
         Color::Cyan => {
-            let cyan = format!("{}", Style::new().cyan().apply_to(s));
+            let cyan = format!("{} {}", Style::new().cyan().apply_to(s), e);
             write(&cyan)
         }
         Color::Blue => {
-            let blue = format!("{}", Style::new().blue().apply_to(s));
+            let blue = format!("{} {}", Style::new().blue().apply_to(s), e);
             write(&blue)
         }
         Color::Black => {
-            let black = format!("{}", Style::new().black().apply_to(s));
+            let black = format!("{} {}", Style::new().black().apply_to(s), e);
             write(&black)
         }
         Color::Red => {
-            let red = format!("{}", Style::new().red().apply_to(s));
+            let red = format!("{} {}", Style::new().red().apply_to(s), e);
             write(&red)
         }
         Color::Green => {
-            let green = format!("{}", Style::new().green().apply_to(s));
+            let green = format!("{} {}", Style::new().green().apply_to(s), e);
             write(&green)
         }
         Color::Yellow => {
-            let yellow = format!("{}", Style::new().yellow().apply_to(s));
+            let yellow = format!("{} {}", Style::new().yellow().apply_to(s), e);
             write(&yellow)
         }
         Color::Magenta => {
-            let magenta = format!("{}", Style::new().magenta().apply_to(s));
+            let magenta = format!("{} {}", Style::new().magenta().apply_to(s), e);
             write(&magenta)
         }
         Color::White => {
-            let white = format!("{}", Style::new().white().apply_to(s));
+            let white = format!("{} {}", Style::new().white().apply_to(s), e);
             write(&white)
         }
         _ => {
-            let white = format!("{}", Style::new().white().apply_to(s));
+            let white = format!("{} {}", Style::new().white().apply_to(s), e);
             write(&white)
         }
     };
 }
 
 pub fn write(s: &str) {
-    Term::stdout()
-        .write_line(s)
-        .expect("Failed printing to console")
+    let term = Term::stdout();
+    match term.write_line(s) {
+        Ok(_) => (),
+        Err(e) => println!("Error: {}", e),
+    }
 }
