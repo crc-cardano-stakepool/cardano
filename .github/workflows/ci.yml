@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Cache cargo build
+      - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
           command: build
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Cache cargo build
+      - name: Format build
         uses: actions-rs/toolchain@v1
         with:
             toolchain: stable
