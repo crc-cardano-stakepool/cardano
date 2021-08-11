@@ -43,13 +43,13 @@ jobs:
         with:
           path: |
             ~/.cargo/registry
-            target
-          key: |
-            ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-registry-
-            ${{ runner.os }}-cargo-build-target-
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/ 
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
 
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
@@ -62,19 +62,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
+      
       - name: Use cache
         uses: actions/cache@v2
         with:
           path: |
-            - ~/.cargo/registry
-            - target
-          key: |
-            ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-registry-
-            ${{ runner.os }}-cargo-build-target-
+            ~/.cargo/registry
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/ 
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
 
       - name: Format build
         uses: actions-rs/toolchain@v1
@@ -92,19 +92,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
+      
       - name: Use cache
         uses: actions/cache@v2
         with:
           path: |
-            - ~/.cargo/registry
-            - target
-          key: |
-            ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-registry-
-            ${{ runner.os }}-cargo-build-target-
+            ~/.cargo/registry
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/ 
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
 
       - name: Check formatting
         uses: actions-rs/cargo@v1.0.1
@@ -116,19 +116,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
+      
       - name: Use cache
         uses: actions/cache@v2
         with:
           path: |
-            - ~/.cargo/registry
-            - target
-          key: |
-            ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-registry-
-            ${{ runner.os }}-cargo-build-target-
+            ~/.cargo/registry
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/ 
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
 
       - name: Run tests
         uses: actions-rs/cargo@v1.0.1
