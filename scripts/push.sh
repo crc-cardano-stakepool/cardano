@@ -8,7 +8,7 @@ read -r commit_msg
 git add -A &&
 git commit -a -s -m "$commit_msg" &&
 git push origin develop &&
-gh pr create -f &&
+gh pr create -f -p Cardano -r clemenshorn -l enhancement &&
 sleep 2 &&
 gh pr merge --auto -b main -m &&
 git checkout main &&
