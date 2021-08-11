@@ -32,6 +32,8 @@ jobs:
             components: rustfmt
             override: true
       - uses: mbrobbel/rustfmt-check@master
+        with:
+          token: ${{ secrets.TOKEN}}
 
       - uses: actions-rs/cargo@v1.0.1
         with:
