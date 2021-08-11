@@ -31,3 +31,6 @@
 [submodule "contrib/smash"]
 	path = contrib/smash
 	url = https://github.com/input-output-hk/smash
+[submodule "contrib/cardano-scripts"]
+	path = contrib/cardano-scripts
+	url = https://github.com/clemenshorn/cardano-scripts
