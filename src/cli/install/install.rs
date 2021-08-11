@@ -29,24 +29,24 @@ impl InstallCommand {
 
     async fn install_node() {
         NodeCommand::check_node_version().await;
-        Terminal::print("green", "Installing cardano-node", Emoji("✅", ""));
+        Terminal::print("green", "Installing cardano-node", Emoji("✅", "")).await;
     }
 
     async fn install_cli() {
-        Terminal::print("white", "Checking cardano-cli installation", Emoji("❕", ""));
+        Terminal::print("white", "Checking cardano-cli installation", Emoji("❕", "")).await;
         Terminal::async_command("white", "cardano-cli --version", Emoji("❕", "")).await;
-        Terminal::print("white", "Installing cardano-cli", Emoji("❕", ""));
+        Terminal::print("white", "Installing cardano-cli", Emoji("❕", "")).await;
     }
 
     async fn install_wallet() {
-        Terminal::print("white", "Checking cardano-wallet installation", Emoji("❕", ""));
+        Terminal::print("white", "Checking cardano-wallet installation", Emoji("❕", "")).await;
         Terminal::async_command("white", "cardano-wallet --version", Emoji("", "")).await;
-        Terminal::print("white", "Installing cardano-wallet", Emoji("❕", ""));
+        Terminal::print("white", "Installing cardano-wallet", Emoji("❕", "")).await;
     }
 
     async fn install_db() {
-        Terminal::print("white", "Checking cardano-db-sync installation", Emoji("❕", ""));
+        Terminal::print("white", "Checking cardano-db-sync installation", Emoji("❕", "")).await;
         Terminal::async_command("white", "cardano-db-sync --version", Emoji("", "")).await;
-        Terminal::print("white", "Installing cardano-db-sync", Emoji("❕", ""));
+        Terminal::print("white", "Installing cardano-db-sync", Emoji("❕", "")).await;
     }
 }
