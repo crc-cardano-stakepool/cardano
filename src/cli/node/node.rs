@@ -1,5 +1,6 @@
 use super::run::RunCommand;
-use crate::utils::command;
+use crate::utils::terminal::*;
+use console::Emoji;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -16,7 +17,7 @@ impl NodeCommand {
     }
 
     pub async fn check_node_version() {
-        println!("Checking for existing cardano-node binary");
-        command("cardano-node --version").await;
+        Terminal::print("white", "Checking cardano-node installation", Emoji("❕", ""));
+        Terminal::async_command("green", "cardano-node --version", Emoji("🤌", "")).await;
     }
 }

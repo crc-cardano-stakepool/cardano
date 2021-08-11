@@ -1,5 +1,7 @@
 use super::super::NodeCommand;
 use super::RunConfig;
+use crate::utils::Terminal;
+use console::Emoji;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -18,12 +20,14 @@ impl RunCommand {
     }
 
     async fn mainnet(config: RunConfig) {
-        println!("The config to run node in mainnet: {:#?}", config);
+        let output = format!("The config to run node in mainnet: {:#?}", config);
+        Terminal::print("white", &output, Emoji("", ""));
         NodeCommand::check_node_version().await;
     }
 
     async fn testnet(config: RunConfig) {
-        println!("The config to run node in testnet: {:#?}", config);
+        let output = format!("The config to run node in testnet: {:#?}", config);
+        Terminal::print("white", &output, Emoji("", ""));
         NodeCommand::check_node_version().await;
     }
 }
