@@ -14,6 +14,6 @@ git fetch origin main &&
 git merge origin main &&
 git push origin develop &&
 gh pr create -f -p Cardano -r clemenshorn -l enhancement &&
-sleep 2 &&
+sleep 3 &&
 gh pr merge --auto -b main -m &&
 gh browse
