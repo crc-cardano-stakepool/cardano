@@ -86,7 +86,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-      - name: Check formatting
+      - name: Check build
         uses: actions-rs/cargo@v1.0.1
         with:
           command: check
