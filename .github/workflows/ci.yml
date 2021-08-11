@@ -57,6 +57,12 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
  
+      - name: Build Cardano CLI 
+        uses: actions-rs/cargo@v1.0.1
+        with:
+          command: build
+          args: --release --all-features
+ 
   format:
     needs: build
     runs-on: ubuntu-latest
@@ -134,4 +140,4 @@ jobs:
         uses: actions-rs/cargo@v1.0.1
         with: 
           command: test
-          args: --verbose --all-features
+          args: --all-features
