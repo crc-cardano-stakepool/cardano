@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cargo fmt
+scipts/format.sh
 
 cargo build --release
