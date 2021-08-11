@@ -1,5 +1,5 @@
-use crate::cardano::install::InstallCommand;
-use crate::cardano::node::NodeCommand;
+use crate::cli::install::InstallCommand;
+use crate::cli::node::NodeCommand;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
