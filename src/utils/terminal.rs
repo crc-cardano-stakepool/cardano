@@ -1,3 +1,4 @@
+use super::types::*;
 use console::Color;
 use console::Emoji;
 use console::Style;
@@ -8,7 +9,7 @@ use tokio::process::Command;
 pub struct Terminal;
 
 impl Terminal {
-    pub async fn async_command(color: &str, command: &str, emoji: Emoji<'_, '_>) {
+    pub async fn async_command(color: &str, command: &str, emoji: Emoji<'_, '_>) -> TResult<()> {
         let output = Command::new("sh")
             .arg("-c")
             .arg(&command)
@@ -18,69 +19,77 @@ impl Terminal {
             .await;
         if let Ok(output) = output {
             let stdout = String::from_utf8_lossy(&output.stdout);
-            Terminal::print(color, &stdout, emoji).await;
+            Terminal::print(color, &stdout, emoji).await.expect("Failed printing to terminal");
+            Ok(())
         } else {
             panic!("Error executing command: {}", command);
         }
     }
 
-    pub async fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) {
-        let color: Color = Terminal::to_color(&color);
-        match color {
-            Color::Cyan => {
-                let cyan = format!("{} {}", Style::new().cyan().apply_to(output), emoji);
-                Terminal::write(&cyan).await
-            }
-            Color::Blue => {
-                let blue = format!("{} {}", Style::new().blue().apply_to(output), emoji);
-                Terminal::write(&blue).await
-            }
-            Color::Black => {
-                let black = format!("{} {}", Style::new().black().apply_to(output), emoji);
-                Terminal::write(&black).await
-            }
-            Color::Red => {
-                let red = format!("{} {}", Style::new().red().apply_to(output), emoji);
-                Terminal::write(&red).await
-            }
-            Color::Green => {
-                let green = format!("{} {}", Style::new().green().apply_to(output), emoji);
-                Terminal::write(&green).await
-            }
-            Color::Yellow => {
-                let yellow = format!("{} {}", Style::new().yellow().apply_to(output), emoji);
-                Terminal::write(&yellow).await
-            }
-            Color::Magenta => {
-                let magenta = format!("{} {}", Style::new().magenta().apply_to(output), emoji);
-                Terminal::write(&magenta).await
-            }
-            Color::White => {
-                let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
-                Terminal::write(&white).await
-            }
-            _ => {
-                let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
-                Terminal::write(&white).await
-            }
-        };
+    pub async fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) -> TResult<()> {
+        if let Ok(color) = Terminal::to_color(&color) {
+            match color {
+                Color::Cyan => {
+                    let cyan = format!("{} {}", Style::new().cyan().apply_to(output), emoji);
+                    Terminal::write(&cyan).await.expect("Failed printing to terminal");
+                }
+                Color::Blue => {
+                    let blue = format!("{} {}", Style::new().blue().apply_to(output), emoji);
+                    Terminal::write(&blue).await.expect("Failed printing to terminal");
+                }
+                Color::Black => {
+                    let black = format!("{} {}", Style::new().black().apply_to(output), emoji);
+                    Terminal::write(&black).await.expect("Failed printing to terminal");
+                }
+                Color::Red => {
+                    let red = format!("{} {}", Style::new().red().apply_to(output), emoji);
+                    Terminal::write(&red).await.expect("Failed printing to terminal");
+                }
+                Color::Green => {
+                    let green = format!("{} {}", Style::new().green().apply_to(output), emoji);
+                    Terminal::write(&green).await.expect("Failed printing to terminal");
+                }
+                Color::Yellow => {
+                    let yellow = format!("{} {}", Style::new().yellow().apply_to(output), emoji);
+                    Terminal::write(&yellow).await.expect("Failed printing to terminal");
+                }
+                Color::Magenta => {
+                    let magenta = format!("{} {}", Style::new().magenta().apply_to(output), emoji);
+
+                    Terminal::write(&magenta).await.expect("Failed printing to terminal");
+                }
+                Color::White => {
+                    let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
+                    Terminal::write(&white).await.expect("Failed printing to terminal");
+                }
+                _ => {
+                    let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
+                    Terminal::write(&white).await.expect("Failed printing to terminal");
+                }
+            };
+        } 
+        Ok(())
     }
 
-    fn to_color(color: &str) -> Color {
+    fn to_color(color: &str) -> TResult<Color> {
         match color {
-            "black" => Color::Black,
-            "red" => Color::Red,
-            "green" => Color::Green,
-            "yellow" => Color::Yellow,
-            "blue" => Color::Blue,
-            "magenta" => Color::Magenta,
-            "cyan" => Color::Cyan,
-            "white" => Color::White,
-            _ => Color::White,
+            "black" => Ok(Color::Black),
+            "red" => Ok(Color::Red),
+            "green" => Ok(Color::Green),
+            "yellow" => Ok(Color::Yellow),
+            "blue" => Ok(Color::Blue),
+            "magenta" => Ok(Color::Magenta),
+            "cyan" => Ok(Color::Cyan),
+            "white" => Ok(Color::White),
+            _ => Ok(Color::White),
         }
     }
 
-    async fn write(output: &str) {
-        Term::stdout().write_line(output).expect("Failed printing to console")
+    async fn write(output: &str) -> TResult<()> {
+        if let Ok(()) = Term::stdout().write_line(output) {
+        } else {
+            panic!("Error writing to terminal");
+        }
+        Ok(())
     }
 }
