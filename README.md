@@ -1,9 +1,11 @@
 # Cardano Rust CLI
 
-## Installation
+## Install from source
 
+    git clone https://github.com/clemenshorn/cardano-rust-cli.git
+    cd cardano-rust-cli
     cargo build --release
-    mv target/release/cardano /usr/local/bin
+    sudo mv target/release/cardano /usr/local/bin
 
 ## Usage
 
