@@ -42,8 +42,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            - ~/.cargo/registry
-            - target
+            ~/.cargo/registry
+            target
           key: |
             ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
             ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
