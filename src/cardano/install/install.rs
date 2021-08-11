@@ -1,6 +1,7 @@
 use super::super::node::NodeCommand;
 use crate::cardano::component::CardanoComponent;
-use crate::utils::command;
+use crate::utils::colors::color;
+use crate::utils::*;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -27,9 +28,9 @@ impl InstallCommand {
     }
 
     async fn install_node() {
-        println!("Checking cardano-node installation");
+        write_color("Checking cardano-node installation", color("white"));
         NodeCommand::check_node_version().await;
-        println!("Installing cardano-node")
+        write_color("Installing cardano-node", color("green"));
     }
 
     async fn install_cli() {
