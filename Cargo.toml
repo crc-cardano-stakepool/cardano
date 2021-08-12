@@ -3,8 +3,6 @@ name = "cardano"
 version = "0.1.1"
 authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 edition = "2018"
-build = "build.rs"
-links = "libsodium"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,10 +14,3 @@ console = "0.14.1"
 # dialoguer = "0.8.0"
 # regex = "1.5.4"
 # cardano-serialization-lib = "8.0.0"
-
-[build-dependencies]
-autotools = "0.2.3"
-pkg-config = "0.3.19"
-
-[features]
-libsodium-sys = []
