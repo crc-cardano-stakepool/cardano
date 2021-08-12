@@ -26,8 +26,8 @@ fn main() {
     }
 
     // Link with libsodium system library
-    #[cfg(feature = "libsodium-sys")]
-    {
-        pkg_config::Config::new().probe("libsodium").unwrap();
-    }
+    // #[cfg(feature = "libsodium-sys")]
+    // {
+    //     pkg_config::Config::new().probe("libsodium").unwrap();
+    // }
 }
