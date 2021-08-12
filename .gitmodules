@@ -1,36 +1,36 @@
 [submodule "contrib/libsodium"]
 	path = contrib/libsodium
 	url = https://github.com/input-output-hk/libsodium
-[submodule "contrib/cardano-node"]
-	path = contrib/cardano-node
-	url = https://github.com/input-output-hk/cardano-node
-[submodule "contrib/cardano-wallet"]
-	path = contrib/cardano-wallet
-	url = https://github.com/input-output-hk/cardano-wallet
-[submodule "contrib/cardano-db-sync"]
-	path = contrib/cardano-db-sync
-	url = https://github.com/input-output-hk/cardano-db-sync
-[submodule "contrib/cardano-graphql"]
-	path = contrib/cardano-graphql
-	url = https://github.com/input-output-hk/cardano-graphql
-[submodule "contrib/cardano-rosetta"]
-	path = contrib/cardano-rosetta
-	url = https://github.com/input-output-hk/cardano-rosetta
-[submodule "contrib/cardano-addresses"]
-	path = contrib/cardano-addresses
-	url = https://github.com/input-output-hk/cardano-addresses
-[submodule "contrib/bech32"]
-	path = contrib/bech32
-	url = https://github.com/input-output-hk/bech32
-[submodule "contrib/cardano-rt-view"]
-	path = contrib/cardano-rt-view
-	url = https://github.com/input-output-hk/cardano-rt-view
-[submodule "contrib/cardano-ledger-specs"]
-	path = contrib/cardano-ledger-specs
-	url = https://github.com/input-output-hk/cardano-ledger-specs
-[submodule "contrib/smash"]
-	path = contrib/smash
-	url = https://github.com/input-output-hk/smash
-[submodule "contrib/cardano-scripts"]
-	path = contrib/cardano-scripts
-	url = https://github.com/clemenshorn/cardano-scripts
+# [submodule "contrib/cardano-node"]
+# 	path = contrib/cardano-node
+# 	url = https://github.com/input-output-hk/cardano-node
+# [submodule "contrib/cardano-wallet"]
+# 	path = contrib/cardano-wallet
+# 	url = https://github.com/input-output-hk/cardano-wallet
+# [submodule "contrib/cardano-db-sync"]
+# 	path = contrib/cardano-db-sync
+# 	url = https://github.com/input-output-hk/cardano-db-sync
+# [submodule "contrib/cardano-graphql"]
+# 	path = contrib/cardano-graphql
+# 	url = https://github.com/input-output-hk/cardano-graphql
+# [submodule "contrib/cardano-rosetta"]
+# 	path = contrib/cardano-rosetta
+# 	url = https://github.com/input-output-hk/cardano-rosetta
+# [submodule "contrib/cardano-addresses"]
+# 	path = contrib/cardano-addresses
+# 	url = https://github.com/input-output-hk/cardano-addresses
+# [submodule "contrib/bech32"]
+# 	path = contrib/bech32
+# 	url = https://github.com/input-output-hk/bech32
+# [submodule "contrib/cardano-rt-view"]
+# 	path = contrib/cardano-rt-view
+# 	url = https://github.com/input-output-hk/cardano-rt-view
+# [submodule "contrib/cardano-ledger-specs"]
+# 	path = contrib/cardano-ledger-specs
+# 	url = https://github.com/input-output-hk/cardano-ledger-specs
+# [submodule "contrib/smash"]
+# 	path = contrib/smash
+# 	url = https://github.com/input-output-hk/smash
+# [submodule "contrib/cardano-scripts"]
+# 	path = contrib/cardano-scripts
+# 	url = https://github.com/clemenshorn/cardano-scripts
