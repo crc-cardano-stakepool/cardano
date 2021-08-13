@@ -9,7 +9,7 @@ pub mod test {
 
     #[tokio::test]
     async fn async_command() {
-        let res = Terminal::async_command("white", "file target/debug/cardano", Emoji("", "")).await;
+        let res = Terminal::async_command("white", "file target/release/cardano", Emoji("", "")).await;
         assert!(res.is_ok());
     }
 

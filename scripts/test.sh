@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cargo test
+cargo test --release --all-features

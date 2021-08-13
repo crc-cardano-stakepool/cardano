@@ -2,4 +2,4 @@
 
 ./scripts/format.sh
 
-cargo build --release
+cargo build --release --all-features
