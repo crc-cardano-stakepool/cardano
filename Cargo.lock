@@ -21,6 +21,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.42"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "595d3cfa7a60d4555cb5067b99f07142a08ea778de5cf993f7b75c7d8fabc486"
+
+[[package]]
 name = "assert_cmd"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -78,6 +84,7 @@ checksum = "b700ce4376041dcd0a327fd0097c41095743c4c8af8887265942faf1100bd040"
 name = "cardano"
 version = "0.1.1"
 dependencies = [
+ "anyhow",
  "assert_cmd",
  "console",
  "dialoguer",

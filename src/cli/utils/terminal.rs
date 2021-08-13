@@ -1,4 +1,4 @@
-use super::types::*;
+use anyhow::Result;
 use console::Color;
 use console::Emoji;
 use console::Style;
@@ -10,7 +10,7 @@ use tokio::process::Command;
 pub struct Terminal;
 
 impl Terminal {
-    pub async fn async_command(color: &str, command: &str, emoji: Emoji<'_, '_>) -> TResult<()> {
+    pub async fn async_command(color: &str, command: &str, emoji: Emoji<'_, '_>) -> Result<()> {
         let output = Command::new("sh")
             .arg("-c")
             .arg(&command)
@@ -82,7 +82,7 @@ impl Terminal {
         }
     }
 
-    pub fn proceed(prompt: &str) -> TResult<bool> {
+    pub fn proceed(prompt: &str) -> Result<bool> {
         let confirm = Confirm::with_theme(&ColorfulTheme::default())
             .with_prompt(String::from(prompt))
             .interact()?;

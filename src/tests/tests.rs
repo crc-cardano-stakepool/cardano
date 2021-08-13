@@ -1,7 +1,7 @@
 #[cfg(test)]
 pub mod test {
-    use crate::cli::utils::types::TResult;
     use crate::cli::utils::Terminal;
+    use anyhow::Result;
     use assert_cmd::crate_name;
     use assert_cmd::Command;
     use console::Emoji;
@@ -14,7 +14,7 @@ pub mod test {
     }
 
     #[tokio::test]
-    async fn cli_works() -> TResult<()> {
+    async fn cli_works() -> Result<()> {
         let mut cmd = Command::cargo_bin(crate_name!())?;
         cmd.assert().failure().stderr(contains("Manage cardano components"));
         cmd.arg("help");
