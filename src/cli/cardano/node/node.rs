@@ -1,5 +1,5 @@
 use super::run::RunCommand;
-use crate::utils::terminal::*;
+use crate::cli::utils::terminal::Terminal;
 use console::Emoji;
 use structopt::StructOpt;
 

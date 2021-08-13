@@ -1,6 +1,6 @@
 use super::super::NodeCommand;
 use super::RunConfig;
-use crate::utils::Terminal;
+use crate::cli::utils::Terminal;
 use console::Emoji;
 use structopt::StructOpt;
 

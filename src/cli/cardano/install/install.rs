@@ -1,6 +1,6 @@
 use super::super::node::NodeCommand;
 use crate::cli::component::CardanoComponent;
-use crate::utils::Terminal;
+use crate::cli::utils::Terminal;
 use console::Emoji;
 use structopt::StructOpt;
 
