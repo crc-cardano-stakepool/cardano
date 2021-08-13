@@ -95,9 +95,9 @@ impl Terminal {
     }
 
     pub fn proceed() -> TResult<bool> {
-        Confirm::with_theme(&ColorfulTheme::default())
+        let confirm = Confirm::with_theme(&ColorfulTheme::default())
             .with_prompt("Do you wish to continue?")
             .interact()?;
-        Ok(true)
+        Ok(confirm)
     }
 }
