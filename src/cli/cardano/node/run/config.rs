@@ -8,12 +8,20 @@ pub struct RunConfig {
     port: u16,
     #[structopt(short, parse(from_os_str), about = "The path to the blockchain")]
     db: PathBuf,
-    #[structopt(short, default_value = "127.0.0.1")]
+    #[structopt(short, default_value = "127.0.0.1", about = "The IP on which the node runs")]
     host: IpAddr,
-    #[structopt(short, parse(from_os_str))]
+    #[structopt(
+        short,
+        parse(from_os_str),
+        about = "The path to the networking topology configurtion file between nodes and relays"
+    )]
     topology: PathBuf,
-    #[structopt(short, parse(from_os_str))]
+    #[structopt(
+        short,
+        parse(from_os_str),
+        about = "The path to the socket for inter-process-communication between cardano components"
+    )]
     socket: PathBuf,
-    #[structopt(short, parse(from_os_str))]
+    #[structopt(short, parse(from_os_str), about = "The path to the configuration file for the node")]
     config: PathBuf,
 }
