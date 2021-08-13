@@ -1,5 +1,4 @@
 use super::run::RunCommand;
-use crate::cli::utils::proceed;
 use crate::cli::utils::terminal::Terminal;
 use console::Emoji;
 use structopt::StructOpt;
@@ -30,6 +29,6 @@ impl NodeCommand {
         Terminal::print("white", "Installing latest cardano node", Emoji("", ""))
             .await
             .expect("Failed printing to terminal");
-        proceed().expect("Aborting node update");
+        Terminal::proceed().expect("Aborting node update");
     }
 }
