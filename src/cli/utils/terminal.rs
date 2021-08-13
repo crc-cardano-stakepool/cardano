@@ -20,83 +20,71 @@ impl Terminal {
             .await;
         if let Ok(output) = output {
             let stdout = String::from_utf8_lossy(&output.stdout);
-            Terminal::print(color, &stdout, emoji).await.expect("Failed printing to terminal");
+            Terminal::print(color, &stdout, emoji).await;
             Ok(())
         } else {
             panic!("Error executing command: {}", command);
         }
     }
 
-    pub async fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) -> TResult<()> {
-        if let Ok(color) = Terminal::to_color(&color) {
-            match color {
-                Color::Cyan => {
-                    let cyan = format!("{} {}", Style::new().cyan().apply_to(output), emoji);
-                    Terminal::write(&cyan).await.expect("Failed printing to terminal");
-                }
-                Color::Blue => {
-                    let blue = format!("{} {}", Style::new().blue().apply_to(output), emoji);
-                    Terminal::write(&blue).await.expect("Failed printing to terminal");
-                }
-                Color::Black => {
-                    let black = format!("{} {}", Style::new().black().apply_to(output), emoji);
-                    Terminal::write(&black).await.expect("Failed printing to terminal");
-                }
-                Color::Red => {
-                    let red = format!("{} {}", Style::new().red().apply_to(output), emoji);
-                    Terminal::write(&red).await.expect("Failed printing to terminal");
-                }
-                Color::Green => {
-                    let green = format!("{} {}", Style::new().green().apply_to(output), emoji);
-                    Terminal::write(&green).await.expect("Failed printing to terminal");
-                }
-                Color::Yellow => {
-                    let yellow = format!("{} {}", Style::new().yellow().apply_to(output), emoji);
-                    Terminal::write(&yellow).await.expect("Failed printing to terminal");
-                }
-                Color::Magenta => {
-                    let magenta = format!("{} {}", Style::new().magenta().apply_to(output), emoji);
-
-                    Terminal::write(&magenta).await.expect("Failed printing to terminal");
-                }
-                Color::White => {
-                    let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
-                    Terminal::write(&white).await.expect("Failed printing to terminal");
-                }
-                _ => {
-                    let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
-                    Terminal::write(&white).await.expect("Failed printing to terminal");
-                }
-            };
-        }
-        Ok(())
+    pub async fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) {
+        match Terminal::to_color(&color) {
+            Color::Cyan => {
+                let cyan = format!("{} {}", Style::new().cyan().apply_to(output), emoji);
+                Term::stdout().write_line(&cyan).expect("Failed writing to terminal");
+            }
+            Color::Blue => {
+                let blue = format!("{} {}", Style::new().blue().apply_to(output), emoji);
+                Term::stdout().write_line(&blue).expect("Failed writing to terminal");
+            }
+            Color::Black => {
+                let black = format!("{} {}", Style::new().black().apply_to(output), emoji);
+                Term::stdout().write_line(&black).expect("Failed writing to terminal");
+            }
+            Color::Red => {
+                let red = format!("{} {}", Style::new().red().apply_to(output), emoji);
+                Term::stdout().write_line(&red).expect("Failed writing to terminal");
+            }
+            Color::Green => {
+                let green = format!("{} {}", Style::new().green().apply_to(output), emoji);
+                Term::stdout().write_line(&green).expect("Failed writing to terminal");
+            }
+            Color::Yellow => {
+                let yellow = format!("{} {}", Style::new().yellow().apply_to(output), emoji);
+                Term::stdout().write_line(&yellow).expect("Failed writing to terminal");
+            }
+            Color::Magenta => {
+                let magenta = format!("{} {}", Style::new().magenta().apply_to(output), emoji);
+                Term::stdout().write_line(&magenta).expect("Failed writing to terminal");
+            }
+            Color::White => {
+                let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
+                Term::stdout().write_line(&white).expect("Failed writing to terminal");
+            }
+            _ => {
+                let white = format!("{} {}", Style::new().white().apply_to(output), emoji);
+                Term::stdout().write_line(&white).expect("Failed writing to terminal");
+            }
+        };
     }
 
-    fn to_color(color: &str) -> TResult<Color> {
+    fn to_color(color: &str) -> Color {
         match color {
-            "black" => Ok(Color::Black),
-            "red" => Ok(Color::Red),
-            "green" => Ok(Color::Green),
-            "yellow" => Ok(Color::Yellow),
-            "blue" => Ok(Color::Blue),
-            "magenta" => Ok(Color::Magenta),
-            "cyan" => Ok(Color::Cyan),
-            "white" => Ok(Color::White),
-            _ => Ok(Color::White),
+            "black" => Color::Black,
+            "red" => Color::Red,
+            "green" => Color::Green,
+            "yellow" => Color::Yellow,
+            "blue" => Color::Blue,
+            "magenta" => Color::Magenta,
+            "cyan" => Color::Cyan,
+            "white" => Color::White,
+            _ => Color::White,
         }
     }
 
-    async fn write(output: &str) -> TResult<()> {
-        if let Ok(()) = Term::stdout().write_line(output) {
-        } else {
-            panic!("Error writing to terminal");
-        }
-        Ok(())
-    }
-
-    pub fn proceed() -> TResult<bool> {
+    pub fn proceed(prompt: &str) -> TResult<bool> {
         let confirm = Confirm::with_theme(&ColorfulTheme::default())
-            .with_prompt("Do you wish to continue?")
+            .with_prompt(String::from(prompt))
             .interact()?;
         Ok(confirm)
     }
