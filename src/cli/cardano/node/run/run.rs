@@ -5,9 +5,11 @@ use console::Emoji;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(about = "Run cardano node in mainnet or testnet")]
+#[structopt(about = "Run cardano node")]
 pub enum RunCommand {
+    #[structopt(about = "Run cardano node in mainnet")]
     Mainnet(RunConfig),
+    #[structopt(about = "Run cardano node in testnet")]
     Testnet(RunConfig),
 }
 
