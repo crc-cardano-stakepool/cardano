@@ -3,6 +3,7 @@ use console::Color;
 use console::Emoji;
 use console::Style;
 use console::Term;
+use dialoguer::{theme::ColorfulTheme, Confirm};
 use std::process::Stdio;
 use tokio::process::Command;
 
@@ -90,6 +91,13 @@ impl Terminal {
         } else {
             panic!("Error writing to terminal");
         }
+        Ok(())
+    }
+
+    pub fn proceed() -> TResult<()> {
+        Confirm::with_theme(&ColorfulTheme::default())
+            .with_prompt("Do you wish to continue?")
+            .interact()?;
         Ok(())
     }
 }
