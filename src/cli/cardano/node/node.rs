@@ -26,9 +26,10 @@ impl NodeCommand {
     }
 
     pub async fn install_node() {
-        Terminal::print("white", "Installing latest cardano node", Emoji("", ""))
-            .await
-            .expect("Failed printing to terminal");
-        Terminal::proceed().expect("Aborting node update");
+        if let Ok(true) = Terminal::proceed() {
+            Terminal::print("white", "Installing latest cardano node", Emoji("", ""))
+                .await
+                .expect("Failed printing to terminal");
+        }
     }
 }

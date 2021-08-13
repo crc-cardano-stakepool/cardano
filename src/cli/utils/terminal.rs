@@ -94,10 +94,10 @@ impl Terminal {
         Ok(())
     }
 
-    pub fn proceed() -> TResult<()> {
+    pub fn proceed() -> TResult<bool> {
         Confirm::with_theme(&ColorfulTheme::default())
             .with_prompt("Do you wish to continue?")
             .interact()?;
-        Ok(())
+        Ok(true)
     }
 }
