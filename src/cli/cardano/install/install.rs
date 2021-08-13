@@ -32,6 +32,7 @@ impl InstallCommand {
         Terminal::print("green", "Installing cardano-node", Emoji("✅", ""))
             .await
             .expect("Failed printing to terminal");
+        NodeCommand::install_node().await;
     }
 
     async fn install_cli() {
