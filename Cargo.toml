@@ -10,7 +10,7 @@ edition = "2018"
 structopt = "0.3.22"
 tokio = { version = "1.9.0", features = ["full"] }
 console = "0.14.1"
+dialoguer = "0.8.0"
 # indicatif = "0.16.2"
-# dialoguer = "0.8.0"
 # regex = "1.5.4"
 # cardano-serialization-lib = "8.0.0"
