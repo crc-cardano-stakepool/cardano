@@ -14,3 +14,7 @@ dialoguer = "0.8.0"
 # indicatif = "0.16.2"
 # regex = "1.5.4"
 # cardano-serialization-lib = "8.0.0"
+
+[dev-dependencies]
+assert_cmd = "2.0.0"
+predicates = "2.0.1"

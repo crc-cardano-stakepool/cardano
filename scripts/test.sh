@@ -1,5 +1,3 @@
 #!/bin/sh
 
-./scripts/build.sh
-
-cargo test --all-features
+cargo test --release --all-features
