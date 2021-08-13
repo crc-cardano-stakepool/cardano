@@ -1,73 +1,25 @@
+use super::super::cli::CliCommand;
 use super::super::node::NodeCommand;
-use crate::cli::component::CardanoComponent;
-use crate::cli::utils::Terminal;
-use console::Emoji;
+use super::super::wallet::WalletCommand;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Install cardano components")]
 pub enum InstallCommand {
-    #[structopt(about = "Installs a cardano component")]
-    Component(CardanoComponent),
+    #[structopt(about = "Installs the latest cardano-node")]
+    Node,
+    #[structopt(about = "Installs the latest cardano-cli")]
+    Cli,
+    #[structopt(about = "Installs the latest cardano-wallet")]
+    Wallet,
 }
 
 impl InstallCommand {
     pub async fn exec(cmd: InstallCommand) {
         match cmd {
-            InstallCommand::Component(comp) => InstallCommand::install_component(comp).await,
+            InstallCommand::Node => NodeCommand::install_node().await,
+            InstallCommand::Cli => CliCommand::install_cli().await,
+            InstallCommand::Wallet => WalletCommand::install_wallet().await,
         }
-    }
-
-    pub async fn install_component(comp: CardanoComponent) {
-        match comp {
-            CardanoComponent::Node => InstallCommand::install_node().await,
-            CardanoComponent::Cli => InstallCommand::install_cli().await,
-            CardanoComponent::Wallet => InstallCommand::install_wallet().await,
-            CardanoComponent::Db => InstallCommand::install_db().await,
-        };
-    }
-
-    async fn install_node() {
-        NodeCommand::check_node_version().await;
-        Terminal::print("green", "Installing cardano-node", Emoji("✅", ""))
-            .await
-            .expect("Failed printing to terminal");
-        NodeCommand::install_node().await;
-    }
-
-    async fn install_cli() {
-        Terminal::print("white", "Checking cardano-cli installation", Emoji("❕", ""))
-            .await
-            .expect("Failed printing to terminal");
-        Terminal::async_command("white", "cardano-cli --version", Emoji("❕", ""))
-            .await
-            .expect("Failed printing to terminal");
-        Terminal::print("white", "Installing cardano-cli", Emoji("❕", ""))
-            .await
-            .expect("Failed printing to terminal");
-    }
-
-    async fn install_wallet() {
-        Terminal::print("white", "Checking cardano-wallet installation", Emoji("❕", ""))
-            .await
-            .expect("Failed printing to terminal");
-        Terminal::async_command("white", "cardano-wallet --version", Emoji("", ""))
-            .await
-            .expect("Failed printing to terminal");
-        Terminal::print("white", "Installing cardano-wallet", Emoji("❕", ""))
-            .await
-            .expect("Failed printing to terminal");
-    }
-
-    async fn install_db() {
-        Terminal::print("white", "Checking cardano-db-sync installation", Emoji("❕", ""))
-            .await
-            .expect("Failed printing to terminal");
-        Terminal::async_command("white", "cardano-db-sync --version", Emoji("", ""))
-            .await
-            .expect("Failed printing to terminal");
-        Terminal::print("white", "Installing cardano-db-sync", Emoji("❕", ""))
-            .await
-            .expect("Failed printing to terminal");
     }
 }
