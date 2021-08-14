@@ -7,7 +7,7 @@ pub enum WalletCommand {}
 
 impl WalletCommand {
     pub async fn install_wallet() {
-        Terminal::print("white", "Checking cardano-wallet installation", Emoji("❕", "")).await;
-        Terminal::print("white", "Installing cardano-wallet", Emoji("❕", "")).await;
+        Terminal::print("white", "Checking cardano-wallet installation", Emoji("❕", ""));
+        Terminal::print("white", "Installing cardano-wallet", Emoji("❕", ""));
     }
 }

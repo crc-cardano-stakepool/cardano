@@ -18,7 +18,7 @@ impl InstallCommand {
     pub async fn exec(cmd: InstallCommand) {
         match cmd {
             InstallCommand::Node => NodeCommand::install_node().await,
-            InstallCommand::Cli => CliCommand::install_cli().await,
+            InstallCommand::Cli => CliCommand::install_cli(),
             InstallCommand::Wallet => WalletCommand::install_wallet().await,
         }
     }

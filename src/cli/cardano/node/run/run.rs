@@ -23,17 +23,17 @@ impl RunCommand {
 
     async fn mainnet(config: RunConfig) {
         let output = format!("The config to run node in mainnet: {:#?}", config);
-        Terminal::print("white", &output, Emoji("", "")).await;
+        Terminal::print("white", &output, Emoji("", ""));
         if let Ok(true) = NodeCommand::check_node_version().await {
-            Terminal::print("green", "Proceeding to run node in mainnet", Emoji("", "")).await;
+            Terminal::print("green", "Proceeding to run node in mainnet", Emoji("", ""));
         }
     }
 
     async fn testnet(config: RunConfig) {
         let output = format!("The config to run node in testnet: {:#?}", config);
-        Terminal::print("white", &output, Emoji("", "")).await;
+        Terminal::print("white", &output, Emoji("", ""));
         if let Ok(true) = NodeCommand::check_node_version().await {
-            Terminal::print("green", "Proceeding to run node in testnet", Emoji("", "")).await;
+            Terminal::print("green", "Proceeding to run node in testnet", Emoji("", ""));
         }
     }
 }
