@@ -6,9 +6,9 @@ use structopt::StructOpt;
 pub enum CliCommand {}
 
 impl CliCommand {
-    pub async fn install_cli() {
-        Terminal::print("white", "Checking cardano-cli installation", Emoji("❕", "")).await;
-        Terminal::print("white", "Installing cardano-cli", Emoji("❕", "")).await;
-        Terminal::print("white", "Installing cardano-cli", Emoji("❕", "")).await
+    pub fn install_cli() {
+        Terminal::print("white", "Checking cardano-cli installation", Emoji("❕", ""));
+        Terminal::print("white", "Installing cardano-cli", Emoji("❕", ""));
+        Terminal::print("white", "Installing cardano-cli", Emoji("❕", ""));
     }
 }

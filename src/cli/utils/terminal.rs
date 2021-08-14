@@ -18,16 +18,17 @@ impl Terminal {
             .stdout(Stdio::piped())
             .output()
             .await;
+
         if let Ok(output) = output {
             let stdout = String::from_utf8_lossy(&output.stdout);
-            Terminal::print(color, &stdout, emoji).await;
+            Terminal::print(color, &stdout, emoji);
             Ok(())
         } else {
             panic!("Error executing command: {}", command);
         }
     }
 
-    pub async fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) {
+    pub fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) {
         match Terminal::to_color(&color) {
             Color::Cyan => {
                 let cyan = format!("{} {}", Style::new().cyan().apply_to(output), emoji);
