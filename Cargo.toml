@@ -13,6 +13,7 @@ path = "src/main.rs"
 [lib]
 name = "lib"
 path = "src/lib.rs"
+test = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -34,3 +35,4 @@ human-panic = "1.0.3"
 assert_cmd = "2.0.0"
 predicates = "2.0.1"
 serde_test = "1.0.127"
+pretty_assertions = "0.7.2"
