@@ -18,6 +18,7 @@ dialoguer = "0.8.0"
 anyhow = "1.0.42"
 ctrlc = "3.2.0"
 human-panic = "1.0.3"
+reqwest = { version = "0.11.4", features = ["json"] }
 # indicatif = "0.16.2"
 # regex = "1.5.4"
 # cardano-serialization-lib = "8.0.0"

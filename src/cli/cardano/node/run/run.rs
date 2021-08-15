@@ -41,3 +41,18 @@ impl RunCommand {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    #[test]
+    #[ignore]
+    fn test_mainnet() {
+        unimplemented!();
+    }
+
+    #[test]
+    #[ignore]
+    fn test_testnet() {
+        unimplemented!();
+    }
+}
