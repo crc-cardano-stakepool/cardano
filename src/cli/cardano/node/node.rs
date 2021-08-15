@@ -8,12 +8,15 @@ use structopt::StructOpt;
 #[structopt(about = "Manage cardano nodes")]
 pub enum NodeCommand {
     Run(RunCommand),
+    #[structopt(about = "Install the latest cardano-node binary")]
+    Install,
 }
 
 impl NodeCommand {
     pub async fn exec(cmd: NodeCommand) -> Result<()> {
         match cmd {
             NodeCommand::Run(cmd) => RunCommand::exec(cmd).await?,
+            NodeCommand::Install => NodeCommand::install_node().await?,
         }
         Ok(())
     }
