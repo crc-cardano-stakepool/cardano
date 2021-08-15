@@ -10,7 +10,7 @@ use tokio::process::Command;
 pub struct Terminal;
 
 impl Terminal {
-    pub async fn async_command(color: &str, command: &str, emoji: Emoji<'_, '_>) -> Result<String> {
+    pub async fn async_command(command: &str) -> Result<String> {
         let output = Command::new("sh")
             .arg("-c")
             .arg(&command)
@@ -21,7 +21,7 @@ impl Terminal {
 
         if let Ok(output) = output {
             let stdout = String::from_utf8_lossy(&output.stdout);
-            Terminal::print(color, &stdout, emoji)
+            Ok(String::from(stdout))
         } else {
             panic!("Error executing command: {}", command);
         }
@@ -94,11 +94,9 @@ impl Terminal {
 #[cfg(test)]
 mod tests {
     use crate::cli::utils::Terminal;
-    use console::Emoji;
-
     #[tokio::test]
     pub async fn async_command() {
-        let res = Terminal::async_command("white", "file target/release/cardano | awk '{print $2}'", Emoji("", "")).await;
+        let res = Terminal::async_command("file target/release/cardano | awk '{print $2}'").await;
         match res {
             Ok(res) => assert_eq!("ELF\n", res),
             Err(e) => panic!("{}", e),
