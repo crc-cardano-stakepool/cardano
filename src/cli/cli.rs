@@ -1,6 +1,7 @@
 use crate::cli::cardano::install::InstallCommand;
 use crate::cli::cardano::node::NodeCommand;
 use crate::cli::cardano::CardanoCommand;
+use anyhow::Result;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -11,10 +12,10 @@ pub struct Cli {
 }
 
 impl Cli {
-    pub async fn start(command: CardanoCommand) {
+    pub async fn start(command: CardanoCommand) -> Result<()> {
         match command {
-            CardanoCommand::Node(command) => NodeCommand::exec(command).await,
-            CardanoCommand::Install(command) => InstallCommand::exec(command).await,
+            CardanoCommand::Node(command) => NodeCommand::exec(command).await?,
+            CardanoCommand::Install(command) => InstallCommand::exec(command).await?,
             // CardanoCommand::Cli(command) => CliCommand::exec(command).await,
             // CardanoCommand::Wallet(command) => WalletCommand::exec(command).await,
             // CardanoCommand::Tx(command) => TxCommand::exec(command).await,
@@ -31,5 +32,6 @@ impl Cli {
             // CardanoCommand::Update(command) => UpdateCommand::exec(command).await,
             // CardanoCommand::Uninstall(command) => UninstallCommand::exec(command).await,
         }
+        Ok(())
     }
 }
