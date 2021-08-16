@@ -1,11 +1,18 @@
 # Cardano Rust CLI
 
-[![License](https://img.shields.io/github/license/clemenshorn/cardano-rust-cli?style=flat)](https://github.com/clemenshorn/cardano-rust-cli/blob/master/LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/clemenshorn/cardano-rust-cli/cardano-rust-cli?label=cardano-rust-cli&logo=github&style=flat)](https://github.com/clemenshorn/cardano-rust-cli/actions?query=workflow:cardano-rust-cli)
-[![Last Commit](https://img.shields.io/github/last-commit/clemenshorn/cardano-rust-cli?style=flat)](https://github.com/clemenshorn/cardano-rust-cli/graphs/commit-activity)
-[![Commits/month](https://img.shields.io/github/commit-activity/m/clemenshorn/cardano-rust-cli?style=flat)](https://github.com/clemenshorn/cardano-rust-cli/graphs/commit-activity)
-[![Top Language](https://img.shields.io/github/languages/top/clemenshorn/cardano-rust-cli?style=flat)](https://github.com/clemenshorn/cardano-rust-cli)
-[![Repo Size](https://img.shields.io/github/repo-size/clemenshorn/cardano-rust-cli?style=flat)](https://github.com/clemenshorn/cardano-rust-cli)
+[![Top Language](https://img.shields.io/github/languages/top/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano)
+[![Followers](https://img.shields.io/github/followers/cardano-rust-cli?style=flat)](https://github.com/cardano-rust-cli?tab=followers)
+[![Forks](https://img.shields.io/github/forks/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/network/members)
+[![Stars](https://img.shields.io/github/stars/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/stargazers)
+[![Watchers](https://img.shields.io/github/watchers/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/watchers)
+[![Commits/month](https://img.shields.io/github/commit-activity/m/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/graphs/commit-activity)
+[![Last Commit](https://img.shields.io/github/last-commit/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/graphs/commit-activity)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/cardano-rust-cli/cardano/cardano-rust-cli?label=cardano-rust-cli&logo=github&style=flat)](https://github.com/cardano-rust-cli/cardano/actions?query=workflow:cardano-rust-cli)
+[![Github Issues](https://img.shields.io/github/issues-raw/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/issues)
+[![Github open PRs](https://img.shields.io/github/issues-pr-raw/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/pulls)
+[![Contributors](https://img.shields.io/github/contributors/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/graphs/contributors)
+[![License](https://img.shields.io/github/license/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/blob/master/LICENSE)
+[![Repo Size](https://img.shields.io/github/repo-size/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano)
 
 ## Install from source
 
