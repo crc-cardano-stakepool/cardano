@@ -26,6 +26,19 @@ impl NodeCommand {
         Ok(())
     }
 
+    pub async fn install_node() -> Result<()> {
+        if !NodeCommand::check_node_version().await? {
+            if Terminal::proceed("Do you want to install the latest cardano-node binary?")? {
+                Terminal::print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
+            } else {
+                Terminal::print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
+            }
+        } else {
+            Terminal::print("green", "The latest cardano node version is installed", Emoji("🙌🎉", ""))?;
+        }
+        Ok(())
+    }
+
     pub async fn check_node_version() -> Result<bool> {
         let latest_node_version = NodeCommand::fetch_latest_node_version().await?;
         let fetch_node_version = "cardano-node --version | awk '{print $2}'| head -n1";
@@ -39,14 +52,6 @@ impl NodeCommand {
         }
     }
 
-    pub async fn compare_latest_node_version(installed_node_version: &str, latest_node_version: &str) -> Result<bool> {
-        if latest_node_version.eq(installed_node_version) {
-            Ok(true)
-        } else {
-            Ok(false)
-        }
-    }
-
     pub async fn fetch_latest_node_version() -> Result<String> {
         const RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-node/releases/latest";
         let client = Client::new();
@@ -55,17 +60,12 @@ impl NodeCommand {
         Ok(latest_node_version)
     }
 
-    pub async fn install_node() -> Result<()> {
-        if !NodeCommand::check_node_version().await? {
-            if Terminal::proceed("Do you want to install the latest cardano-node binary?")? {
-                Terminal::print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
-            } else {
-                Terminal::print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
-            }
+    pub async fn compare_latest_node_version(installed_node_version: &str, latest_node_version: &str) -> Result<bool> {
+        if latest_node_version.eq(installed_node_version) {
+            Ok(true)
         } else {
-            Terminal::print("green", "The latest cardano node version is installed", Emoji("🙌🎉", ""))?;
+            Ok(false)
         }
-        Ok(())
     }
 
     pub async fn uninstall_node() -> Result<()> {
