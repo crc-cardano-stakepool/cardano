@@ -1,6 +1,6 @@
 use super::super::NodeCommand;
 use super::RunConfig;
-use crate::cli::utils::Terminal;
+use crate::cli::utils::print;
 use anyhow::Result;
 use console::Emoji;
 use structopt::StructOpt;
@@ -24,19 +24,19 @@ impl RunCommand {
     }
 
     async fn mainnet(config: RunConfig) -> Result<()> {
-        let output = format!("The config to run node in mainnet: {:#?}", config);
-        Terminal::print("white", &output, Emoji("", ""))?;
+        let output: String = format!("The config to run node in mainnet: {:#?}", config);
+        print("white", &output, Emoji("", ""))?;
         if NodeCommand::check_node_version().await? {
-            Terminal::print("green", "Proceeding to run node in mainnet", Emoji("💪", ""))?;
+            print("green", "Proceeding to run node in mainnet", Emoji("💪", ""))?;
         }
         Ok(())
     }
 
     async fn testnet(config: RunConfig) -> Result<()> {
-        let output = format!("The config to run node in testnet: {:#?}", config);
-        Terminal::print("white", &output, Emoji("", ""))?;
+        let output: String = format!("The config to run node in testnet: {:#?}", config);
+        print("white", &output, Emoji("", ""))?;
         if NodeCommand::check_node_version().await? {
-            Terminal::print("green", "Proceeding to run node in testnet", Emoji("🔍", ""))?;
+            print("green", "Proceeding to run node in testnet", Emoji("🔍", ""))?;
         }
         Ok(())
     }
