@@ -17,14 +17,8 @@ impl Terminal {
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .output()
-            .await;
-
-        if let Ok(output) = output {
-            let stdout = String::from_utf8_lossy(&output.stdout);
-            Ok(String::from(stdout))
-        } else {
-            panic!("Error executing command: {}", command);
-        }
+            .await?;
+        Ok(String::from(String::from_utf8_lossy(&output.stdout)))
     }
 
     pub fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) -> Result<String> {
@@ -84,10 +78,14 @@ impl Terminal {
     }
 
     pub fn proceed(prompt: &str) -> Result<bool> {
-        let confirm = Confirm::with_theme(&ColorfulTheme::default())
+        if Confirm::with_theme(&ColorfulTheme::default())
             .with_prompt(String::from(prompt))
-            .interact()?;
-        Ok(confirm)
+            .interact()?
+        {
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 }
 
