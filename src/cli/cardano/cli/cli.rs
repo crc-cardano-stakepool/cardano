@@ -11,7 +11,7 @@ impl CliCommand {
         Terminal::print("", "Installing the latest cardano-cli", Emoji("🤟", ""))?;
         Ok(())
     }
-    
+
     pub fn uninstall_cli() -> Result<()> {
         Terminal::print("white", "Uninstalling cardano-cli", Emoji("💔", ""))?;
         Ok(())

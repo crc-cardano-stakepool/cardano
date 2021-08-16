@@ -5,6 +5,7 @@ use anyhow::Result;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
+#[structopt(name = "uninstall", about = "Uninstall cardano components")]
 pub enum UninstallCommand {
     #[structopt(about = "Uninstalls cardano-node")]
     Node,
