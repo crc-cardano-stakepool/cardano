@@ -13,7 +13,6 @@
 [![Stars](https://img.shields.io/github/stars/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/stargazers)
 [![Watchers](https://img.shields.io/github/watchers/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/watchers)
 [![Contributors](https://img.shields.io/github/contributors/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/graphs/contributors)
-[![Hit Count](http://hits.dwyl.com/cardano-rust-cli/cardano.svg?style=flat)](https://github.com/cardano-rust-cli/cardano)
 
 ## Install from source
 
