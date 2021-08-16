@@ -87,13 +87,6 @@ mod test {
     fn test_check_node_version() {
         unimplemented!();
     }
-
-    #[test]
-    #[ignore]
-    fn test_compare_latest_node_version() {
-        unimplemented!();
-    }
-
     #[test]
     #[ignore]
     fn test_fetch_latest_node_version() {
@@ -103,6 +96,12 @@ mod test {
     #[test]
     #[ignore]
     fn test_fetch_installed_node_version() {
+        unimplemented!();
+    }
+
+    #[test]
+    #[ignore]
+    fn test_compare_latest_node_version() {
         unimplemented!();
     }
 
