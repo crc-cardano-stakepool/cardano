@@ -41,15 +41,20 @@ impl NodeCommand {
 
     pub async fn check_node_version() -> Result<bool> {
         let latest_node_version = NodeCommand::fetch_latest_node_version().await?;
-        let fetch_node_version = "cardano-node --version | awk '{print $2}'| head -n1";
-        let node_version = Terminal::async_command(&fetch_node_version).await?;
-        let installed_node_version = node_version.trim();
+        let installed_node_version = NodeCommand::fetch_installed_node_version().await?;
         if NodeCommand::compare_latest_node_version(&installed_node_version, &latest_node_version).await? {
             Ok(true)
         } else {
             Terminal::print("red", "Cardano node is not installed", Emoji("😔", ""))?;
             Ok(false)
         }
+    }
+
+    pub async fn fetch_installed_node_version() -> Result<String> {
+        let fetch_node_version = "cardano-node --version | awk '{print $2}'| head -n1";
+        let node_version = Terminal::async_command(&fetch_node_version).await?;
+        let installed_node_version = String::from(node_version.trim());
+        Ok(installed_node_version)
     }
 
     pub async fn fetch_latest_node_version() -> Result<String> {

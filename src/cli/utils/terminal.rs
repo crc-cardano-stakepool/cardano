@@ -21,7 +21,7 @@ impl Terminal {
         Ok(String::from(String::from_utf8_lossy(&output.stdout)))
     }
 
-    pub fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) -> Result<String> {
+    pub fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) -> Result<()> {
         match Terminal::to_color(&color) {
             Color::Cyan => {
                 let cyan = format!("{} {}", Style::new().cyan().apply_to(output), emoji);
@@ -60,7 +60,7 @@ impl Terminal {
                 Term::stdout().write_line(&white)?;
             }
         };
-        Ok(String::from(output))
+        Ok(())
     }
 
     fn to_color(color: &str) -> Color {
@@ -78,10 +78,9 @@ impl Terminal {
     }
 
     pub fn proceed(prompt: &str) -> Result<bool> {
-        if Confirm::with_theme(&ColorfulTheme::default())
-            .with_prompt(String::from(prompt))
-            .interact()?
-        {
+        let color_theme = &ColorfulTheme::default();
+        let dialog = String::from(prompt);
+        if Confirm::with_theme(color_theme).with_prompt(dialog).interact()? {
             Ok(true)
         } else {
             Ok(false)
