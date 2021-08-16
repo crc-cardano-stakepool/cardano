@@ -81,6 +81,7 @@ impl NodeCommand {
 
 #[cfg(test)]
 mod test {
+
     #[test]
     #[ignore]
     fn test_check_node_version() {
