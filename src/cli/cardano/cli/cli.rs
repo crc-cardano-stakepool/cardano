@@ -8,9 +8,12 @@ pub enum CliCommand {}
 
 impl CliCommand {
     pub fn install_cli() -> Result<()> {
-        Terminal::print("white", "Checking cardano-cli installation", Emoji("❕", ""))?;
-        Terminal::print("white", "Installing cardano-cli", Emoji("❕", ""))?;
-        Terminal::print("white", "Installing cardano-cli", Emoji("❕", ""))?;
+        Terminal::print("", "Installing the latest cardano-cli", Emoji("🤟", ""))?;
+        Ok(())
+    }
+
+    pub fn uninstall_cli() -> Result<()> {
+        Terminal::print("white", "Uninstalling cardano-cli", Emoji("💔", ""))?;
         Ok(())
     }
 }
