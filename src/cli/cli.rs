@@ -1,5 +1,6 @@
 use crate::cli::cardano::install::InstallCommand;
 use crate::cli::cardano::node::NodeCommand;
+use crate::cli::cardano::uninstall::UninstallCommand;
 use crate::cli::cardano::CardanoCommand;
 use anyhow::Result;
 use structopt::StructOpt;
@@ -16,6 +17,7 @@ impl Cli {
         match command {
             CardanoCommand::Node(command) => NodeCommand::exec(command).await?,
             CardanoCommand::Install(command) => InstallCommand::exec(command).await?,
+            CardanoCommand::Uninstall(command) => UninstallCommand::exec(command).await?,
             // CardanoCommand::Cli(command) => CliCommand::exec(command).await,
             // CardanoCommand::Wallet(command) => WalletCommand::exec(command).await,
             // CardanoCommand::Tx(command) => TxCommand::exec(command).await,
@@ -30,7 +32,6 @@ impl Cli {
             // CardanoCommand::Explorer(command) => ExplorerCommand::exec(command).await,
             // CardanoCommand::Smash(command) => SmashCommand::exec(command).await,
             // CardanoCommand::Update(command) => UpdateCommand::exec(command).await,
-            // CardanoCommand::Uninstall(command) => UninstallCommand::exec(command).await,
         }
         Ok(())
     }
