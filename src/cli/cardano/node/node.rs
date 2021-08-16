@@ -90,7 +90,31 @@ mod test {
 
     #[test]
     #[ignore]
+    fn test_compare_latest_node_version() {
+        unimplemented!();
+    }
+
+    #[test]
+    #[ignore]
+    fn test_fetch_latest_node_version() {
+        unimplemented!();
+    }
+
+    #[test]
+    #[ignore]
+    fn test_fetch_installed_node_version() {
+        unimplemented!();
+    }
+
+    #[test]
+    #[ignore]
     fn test_install_node() {
+        unimplemented!();
+    }
+
+    #[test]
+    #[ignore]
+    fn test_uninstall_node() {
         unimplemented!();
     }
 }
