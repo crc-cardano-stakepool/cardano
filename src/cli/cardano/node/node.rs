@@ -1,5 +1,5 @@
 use super::run::RunCommand;
-use crate::cli::utils::{async_command, print, proceed};
+use crate::cli::utils::{async_command, check_directory, check_root, print, proceed};
 use anyhow::Result;
 use console::Emoji;
 use reqwest::Client;
@@ -27,9 +27,11 @@ impl NodeCommand {
     }
 
     pub async fn install_node() -> Result<()> {
+        check_root()?;
         if !NodeCommand::check_node_version().await? {
             if proceed("Do you want to install the latest cardano-node binary?")? {
                 print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
+                check_directory("home", "/home/clemens").await?;
             } else {
                 print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
             }

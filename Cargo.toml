@@ -12,6 +12,7 @@ description = "CLI for managing cardano components"
 structopt = "0.3.22"
 tokio = { version = "1.9.0", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
+sudo = "0.6.0"
 serde_json = "1.0.66"
 console = "0.14.1"
 dialoguer = "0.8.0"

@@ -4,8 +4,38 @@ use console::Emoji;
 use console::Style;
 use console::Term;
 use dialoguer::{theme::ColorfulTheme, Confirm};
+use std::path::Path;
 use std::process::Stdio;
+use sudo::{check, escalate_if_needed, RunningAs::*};
+use tokio::fs::create_dir_all;
 use tokio::process::Command;
+
+pub fn check_root() -> Result<()> {
+    if check() != Root {
+        print("", "Root privileges are required to install the required packages", Emoji("", ""))?;
+        escalate_if_needed().expect("Failed obtaining root privileges");
+    }
+    Ok(())
+}
+
+pub async fn check_directory(dir_name: &str, absolute_path: &str) -> Result<()> {
+    let msg = format!("Checking for {} directory in {}", dir_name, absolute_path);
+    print("", &msg, Emoji("", ""))?;
+    if Path::new(absolute_path).is_dir() {
+        let msg = format!("{} {}", dir_name, "directory found, skipped creating");
+        print("green", &msg, Emoji("", ""))?;
+    } else {
+        create_directory(dir_name, absolute_path).await?;
+    }
+    Ok(())
+}
+
+pub async fn create_directory(dir_name: &str, absolute_path: &str) -> Result<()> {
+    let msg = format!("Creating directory {} in {}", dir_name, absolute_path);
+    print("", &msg, Emoji("", ""))?;
+    create_dir_all(absolute_path).await?;
+    Ok(())
+}
 
 pub async fn async_command(command: &str) -> Result<String> {
     let output = Command::new("sh")
