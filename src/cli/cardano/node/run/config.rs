@@ -2,6 +2,7 @@ use std::net::IpAddr;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
+#[allow(dead_code)]
 #[derive(Debug, StructOpt)]
 pub struct RunConfig {
     #[structopt(short, default_value = "3001", about = "The port the node runs on")]
