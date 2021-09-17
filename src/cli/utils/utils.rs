@@ -34,14 +34,14 @@ pub async fn check_directory(dir_name: &str, absolute_path: &str) -> Result<()> 
 
 pub async fn create_directory(dir_name: &str, absolute_path: &str) -> Result<()> {
     let msg = format!("Creating directory {} in {}", dir_name, absolute_path);
-    print("", &msg, Emoji("", ""))?;
     let user = check_user().await?;
     let user = user.trim();
+    print("", &msg, Emoji("", ""))?;
     create_dir_all(absolute_path).await?;
     chownr(&user, &user, absolute_path).await?;
     change_dir(absolute_path).await?;
     Ok(())
-}
+} 
 
 pub async fn chownr(user: &str, group: &str, absolute_path: &str) -> Result<()> {
     let cmd = format!("chown -R {}:{} {}", user, group, absolute_path);
@@ -50,10 +50,10 @@ pub async fn chownr(user: &str, group: &str, absolute_path: &str) -> Result<()> 
 }
 
 pub async fn change_dir(absolute_path: &str) -> Result<()> {
-    async_command("pwd").await?;
+    let msg = format!("Changing directory to {}", absolute_path);
     let cmd = format!("cd {}", absolute_path);
+    print("", &msg, Emoji("", ""))?;
     async_command(&cmd).await?;
-    async_command("pwd").await?;
     Ok(())
 }
 
