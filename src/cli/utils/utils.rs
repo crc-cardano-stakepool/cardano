@@ -41,7 +41,7 @@ pub async fn create_directory(dir_name: &str, absolute_path: &str) -> Result<()>
     chownr(&user, &user, absolute_path).await?;
     change_dir(absolute_path).await?;
     Ok(())
-} 
+}
 
 pub async fn chownr(user: &str, group: &str, absolute_path: &str) -> Result<()> {
     let cmd = format!("chown -R {}:{} {}", user, group, absolute_path);
