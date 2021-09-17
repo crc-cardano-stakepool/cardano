@@ -1,6 +1,6 @@
 use anyhow::Result;
 use console::{Color, Emoji, Style, Term};
-use dialoguer::{theme::ColorfulTheme, Confirm, Select};
+use dialoguer::{theme::ColorfulTheme, Confirm};
 use std::path::Path;
 use std::process::Stdio;
 use sudo::{check, RunningAs};
@@ -13,6 +13,11 @@ pub fn check_root() -> Result<bool> {
     } else {
         Ok(false)
     }
+}
+
+pub async fn check_user() -> Result<String> {
+    let user = async_command("echo ${SUDO_USER:-$USER}").await?;
+    Ok(user)
 }
 
 pub async fn check_directory(dir_name: &str, absolute_path: &str) -> Result<()> {
@@ -31,6 +36,15 @@ pub async fn create_directory(dir_name: &str, absolute_path: &str) -> Result<()>
     let msg = format!("Creating directory {} in {}", dir_name, absolute_path);
     print("", &msg, Emoji("", ""))?;
     create_dir_all(absolute_path).await?;
+    change_dir(absolute_path).await?;
+    Ok(())
+}
+
+pub async fn change_dir(absolute_path: &str) -> Result<()> {
+    async_command("pwd").await?;
+    let cmd = format!("cd {}", absolute_path);
+    async_command(&cmd).await?;
+    async_command("pwd").await?;
     Ok(())
 }
 
@@ -45,25 +59,25 @@ pub async fn async_command(command: &str) -> Result<String> {
     Ok(String::from(String::from_utf8_lossy(&output.stdout)))
 }
 
-pub async fn check_install_dir() -> Result<String> {
-    let items = vec!["~/.cardano", "Custom install directory"];
-    let selection = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Choose the installation directory")
-        .items(&items)
-        .default(0)
-        .interact_on_opt(&Term::stderr())?;
-    match selection {
-        Some(index) => {
-            let pick = items[index];
-            println!("User selected item : {}", pick);
-            match index {
-                0 => Ok(String::from(pick)),
-                _ => Ok(String::from("Custom install directory")),
-            }
-        }
-        None => Ok(String::from("User did not select anything")),
-    }
-}
+// pub async fn choose_install_dir() -> Result<String> {
+//     let items = vec!["~/.cardano", "Custom install directory"];
+//     let selection = Select::with_theme(&ColorfulTheme::default())
+//         .with_prompt("Choose the installation directory")
+//         .items(&items)
+//         .default(0)
+//         .interact_on_opt(&Term::stderr())?;
+//     match selection {
+//         Some(index) => {
+//             let pick = items[index];
+//             println!("User selected item : {}", pick);
+//             match index {
+//                 0 => Ok(String::from(pick)),
+//                 _ => Ok(String::from("Custom install directory")),
+//             }
+//         }
+//         None => Ok(String::from("User did not select anything")),
+//     }
+// }
 
 pub fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) -> Result<()> {
     match to_color(&color) {
