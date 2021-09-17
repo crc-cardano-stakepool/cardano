@@ -1,21 +1,23 @@
 use anyhow::Result;
-use console::Color;
-use console::Emoji;
-use console::Style;
-use console::Term;
+use console::{Color, Emoji, Style, Term};
 use dialoguer::{theme::ColorfulTheme, Confirm};
 use std::path::Path;
 use std::process::Stdio;
-use sudo::{check, escalate_if_needed, RunningAs::*};
+use sudo::{check, RunningAs};
 use tokio::fs::create_dir_all;
 use tokio::process::Command;
 
-pub fn check_root() -> Result<()> {
-    if check() != Root {
-        print("", "Root privileges are required to install the required packages", Emoji("", ""))?;
-        escalate_if_needed().expect("Failed obtaining root privileges");
+pub fn check_root() -> Result<bool> {
+    if let RunningAs::Root = check() {
+        Ok(true)
+    } else {
+        Ok(false)
     }
-    Ok(())
+}
+
+pub async fn check_user() -> Result<String> {
+    let user = async_command("echo ${SUDO_USER:-$USER}").await?;
+    Ok(user)
 }
 
 pub async fn check_directory(dir_name: &str, absolute_path: &str) -> Result<()> {
@@ -34,6 +36,15 @@ pub async fn create_directory(dir_name: &str, absolute_path: &str) -> Result<()>
     let msg = format!("Creating directory {} in {}", dir_name, absolute_path);
     print("", &msg, Emoji("", ""))?;
     create_dir_all(absolute_path).await?;
+    change_dir(absolute_path).await?;
+    Ok(())
+}
+
+pub async fn change_dir(absolute_path: &str) -> Result<()> {
+    async_command("pwd").await?;
+    let cmd = format!("cd {}", absolute_path);
+    async_command(&cmd).await?;
+    async_command("pwd").await?;
     Ok(())
 }
 
@@ -47,6 +58,26 @@ pub async fn async_command(command: &str) -> Result<String> {
         .await?;
     Ok(String::from(String::from_utf8_lossy(&output.stdout)))
 }
+
+// pub async fn choose_install_dir() -> Result<String> {
+//     let items = vec!["~/.cardano", "Custom install directory"];
+//     let selection = Select::with_theme(&ColorfulTheme::default())
+//         .with_prompt("Choose the installation directory")
+//         .items(&items)
+//         .default(0)
+//         .interact_on_opt(&Term::stderr())?;
+//     match selection {
+//         Some(index) => {
+//             let pick = items[index];
+//             println!("User selected item : {}", pick);
+//             match index {
+//                 0 => Ok(String::from(pick)),
+//                 _ => Ok(String::from("Custom install directory")),
+//             }
+//         }
+//         None => Ok(String::from("User did not select anything")),
+//     }
+// }
 
 pub fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) -> Result<()> {
     match to_color(&color) {
