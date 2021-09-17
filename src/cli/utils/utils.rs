@@ -57,15 +57,23 @@ pub async fn change_dir(absolute_path: &str) -> Result<()> {
     Ok(())
 }
 
+pub async fn update_os_packages() -> Result<()> {
+    println!("Updating");
+    async_command("apt update -y && apt upgrade -y").await?;
+    Ok(())
+}
+
 pub async fn async_command(command: &str) -> Result<String> {
-    let output = Command::new("sh")
+    let child = Command::new("sh")
         .arg("-c")
-        .arg(&command)
+        .arg(command)
         .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .output()
+        .stdout(Stdio::inherit())
+        .spawn()?
+        .wait_with_output()
         .await?;
-    Ok(String::from(String::from_utf8_lossy(&output.stdout)))
+    let output = child.stdout;
+    Ok(String::from(String::from_utf8_lossy(&output)))
 }
 
 // pub async fn choose_install_dir() -> Result<String> {
