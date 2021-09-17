@@ -37,9 +37,9 @@ impl NodeCommand {
         } else {
             if !NodeCommand::check_node_version().await? {
                 if proceed("Do you want to install the latest cardano-node binary?")? {
-                    print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
                     let user = check_user().await?;
                     let install_directory: String = format!("/home/{}/.cardano", user.trim());
+                    print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
                     check_directory("install directory", &install_directory).await?;
                 } else {
                     print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
