@@ -10,8 +10,7 @@ pub async fn async_command(command: &str) -> Result<String> {
         .spawn()?
         .wait_with_output()
         .await?;
-    let output = child.stdout;
-    Ok(String::from(String::from_utf8_lossy(&output)))
+    Ok(String::from(String::from_utf8_lossy(&child.stdout)))
 }
 
 pub async fn async_command_pipe(command: &str) -> Result<String> {

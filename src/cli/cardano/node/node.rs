@@ -3,7 +3,7 @@ use crate::cli::utils::check_version::check_version;
 use crate::cli::utils::color::print;
 use crate::cli::utils::dialog::proceed;
 use crate::cli::utils::fs::check_directory;
-use crate::cli::utils::update::update_os_packages;
+use crate::cli::utils::os::update;
 use crate::cli::utils::user::*;
 use anyhow::Result;
 use console::Emoji;
@@ -43,7 +43,7 @@ impl NodeCommand {
                     let install_directory: String = format!("/home/{}/.cardano", user.trim());
                     print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
                     check_directory("install directory", &install_directory).await?;
-                    update_os_packages().await?;
+                    update().await?;
                 } else {
                     print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
                 }
