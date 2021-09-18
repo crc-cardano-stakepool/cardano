@@ -43,6 +43,7 @@ jobs:
           default: true
           components: rustfmt
       - name: Build Libsodium
+        if: contains(matrix.job.features, 'libsodium-sys')
         run: autoreconf -vfi && ./configure && sudo make && sudo make install
         working-directory: contrib/libsodium
       - name: Format
@@ -55,10 +56,10 @@ jobs:
         with:
           use-cross: ${{ matrix.job.use-cross }}
           command: build
-          args: --release --target ${{ matrix.job.target }}
+          args: --release --features "${{ join(matrix.job.features, ',') }}"  --target ${{ matrix.job.target }}
       - name: Test
         uses: actions-rs/cargo@v1
         with:
           use-cross: ${{ matrix.job.use-cross }}
           command: test
-          args: --release --target ${{ matrix.job.target }}
+          args: --release --features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }}
