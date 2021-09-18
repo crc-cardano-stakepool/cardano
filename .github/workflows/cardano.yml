@@ -20,7 +20,7 @@ jobs:
           - { os: macos-latest, target: x86_64-apple-darwin } 
     steps:
       - name: Checkout
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
         with:
           submodules: true
       - name: Install prerequisites
