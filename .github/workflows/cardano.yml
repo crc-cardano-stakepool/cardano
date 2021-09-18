@@ -43,7 +43,7 @@ jobs:
           default: true
           components: rustfmt
       - name: Build Libsodium
-        run: sudo autoreconf -vfi && ./configure && make && make install
+        run: autoreconf -vfi && ./configure && sudo make && sudo make install
         working-directory: contrib/libsodium
       - name: Format
         uses: actions-rs/cargo@v1
