@@ -52,10 +52,10 @@ jobs:
         with:
           use-cross: ${{ matrix.job.use-cross }}
           command: build
-          args: --release --features "${{ join(matrix.job.features, ',') }}"  --target ${{ matrix.job.target }}
+          args: --release --all-features --target ${{ matrix.job.target }}
       - name: Test
         uses: actions-rs/cargo@v1
         with:
           use-cross: ${{ matrix.job.use-cross }}
           command: test
-          args: --release --features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }}
+          args: --release --all-features --target ${{ matrix.job.target }}
