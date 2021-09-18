@@ -1,6 +1,5 @@
-use super::super::NodeCommand;
 use super::RunConfig;
-use crate::cli::utils::print;
+use crate::cli::utils::{check_version, print};
 use anyhow::Result;
 use console::Emoji;
 use structopt::StructOpt;
@@ -26,7 +25,7 @@ impl RunCommand {
     async fn mainnet(config: RunConfig) -> Result<()> {
         let output: String = format!("The config to run node in mainnet: {:#?}", config);
         print("white", &output, Emoji("", ""))?;
-        if NodeCommand::check_node_version().await? {
+        if check_version("cardano-node").await? {
             print("green", "Proceeding to run node in mainnet", Emoji("💪", ""))?;
         }
         Ok(())
@@ -35,7 +34,7 @@ impl RunCommand {
     async fn testnet(config: RunConfig) -> Result<()> {
         let output: String = format!("The config to run node in testnet: {:#?}", config);
         print("white", &output, Emoji("", ""))?;
-        if NodeCommand::check_node_version().await? {
+        if check_version("cardano-node").await? {
             print("green", "Proceeding to run node in testnet", Emoji("🔍", ""))?;
         }
         Ok(())
