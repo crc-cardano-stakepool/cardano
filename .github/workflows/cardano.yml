@@ -60,4 +60,4 @@ jobs:
         uses: actions-rs/cargo@v1.0.1
         with:
           command: build
-          args: --release --all-features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }
+          args: --release --all-features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }}
