@@ -98,7 +98,6 @@ jobs:
             target/
             contrib/
             /usr/local/lib/
-            /usr/local/bin/
           key: ${{ matrix.job.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ matrix.job.os }}-cargo-
       - name: Test
