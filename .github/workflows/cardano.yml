@@ -62,7 +62,7 @@ jobs:
           default: true
           components: rustfmt
       - name: Format
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.1
         with:
           command: fmt
           args: --all -- --check
