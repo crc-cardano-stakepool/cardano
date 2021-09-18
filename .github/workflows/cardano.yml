@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize]
 jobs:
   build:
-    name: ${{ matrix.job.os }} (${{ matrix.job.target }}
+    name: ${{ matrix.job.os }} (${{ matrix.job.target }})
     runs-on: ${{ matrix.job.os }}
     defaults:
       run:
@@ -56,6 +56,18 @@ jobs:
           use-cross: ${{ matrix.job.use-cross }}
           command: build
           args: --release --all-features --target ${{ matrix.job.target }}
+      - name: Cache build
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/ 
+            target/
+          key: ${{ matrix.job.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ matrix.job.os }}-cargo-
       - name: Test
         uses: actions-rs/cargo@v1
         with:
