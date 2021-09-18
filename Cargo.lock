@@ -157,6 +157,7 @@ dependencies = [
  "console",
  "ctrlc",
  "dialoguer",
+ "gmp-mpfr-sys",
  "human-panic",
  "libc",
  "pkg-config",
@@ -412,6 +413,16 @@ name = "gimli"
 version = "0.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0a01e0497841a3b2db4f8afa483cce65f7e96a3498bd6c541734792aeac8fe7"
+
+[[package]]
+name = "gmp-mpfr-sys"
+version = "1.4.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c909eb55443867ff73a36c7c28784f02496e657c9618cdfed0c70a8379b911a"
+dependencies = [
+ "libc",
+ "winapi",
+]
 
 [[package]]
 name = "h2"

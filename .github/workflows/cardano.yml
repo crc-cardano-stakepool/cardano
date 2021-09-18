@@ -54,10 +54,12 @@ jobs:
       - name: Test
         uses: actions-rs/cargo@v1
         with:
+          use-cross: ${{ matrix.job.use-cross }}
           command: test
           args: --release --all-features --target ${{ matrix.job.target }}
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
+          use-cross: ${{ matrix.job.use-cross }}
           command: build
           args: --release --all-features --target ${{ matrix.job.target }}
