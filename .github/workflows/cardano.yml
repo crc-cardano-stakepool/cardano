@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize]
 jobs:
   build:
-    name: ${{ matrix.job.os }} (${{ matrix.job.target }}
+    name: ${{ matrix.job.os }} (${{ matrix.job.target }})
     runs-on: ${{ matrix.job.os }}
     defaults:
       run:
@@ -42,6 +42,10 @@ jobs:
           override: true
           default: true
           components: rustfmt
+      - name: Build Libsodium
+        if: contains(matrix.job.features, 'libsodium-sys')
+        run: autoreconf -vfi && ./configure && make && make install
+        working-directory: contrib/libsodiu
       - name: Format
         uses: actions-rs/cargo@v1
         with:
@@ -51,9 +55,9 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --release --all-features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }}
+          args: --release --features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }}
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
           command: build
-          args: --release --all-features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }}
+          args: --release --features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }}
