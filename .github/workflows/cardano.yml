@@ -31,11 +31,11 @@ jobs:
         - os: macos-latest
           target: x86_64-apple-darwin
           path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/ 
+            ~/Library/Caches/cargo/registry
+            ~/Library/Caches/cargo/bin/
+            ~/Library/Caches/cargo/index/
+            ~/Library/Caches/cargo/cache/
+            ~/Library/Caches/cargo/git/db/ 
             target/
     steps:
       - uses: actions/cache@v2
