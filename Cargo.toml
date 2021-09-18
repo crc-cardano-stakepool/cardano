@@ -37,6 +37,7 @@ pretty_assertions = "0.7.2"
 [build-dependencies]
 autotools = "0.2.3" 
 pkg-config = "0.3.19" 
+libc = "0.2.102"
 
 [features]
 libsodium-sys = []
