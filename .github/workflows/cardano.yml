@@ -66,6 +66,9 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/ 
             target/
+            contrib/
+            /usr/local/lib/
+            /usr/local/bin/
           key: ${{ matrix.job.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ matrix.job.os }}-cargo-
   test:
@@ -93,6 +96,9 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/ 
             target/
+            contrib/
+            /usr/local/lib/
+            /usr/local/bin/
           key: ${{ matrix.job.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ matrix.job.os }}-cargo-
       - name: Test
