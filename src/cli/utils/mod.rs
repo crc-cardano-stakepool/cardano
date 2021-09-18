@@ -10,5 +10,5 @@ pub mod check_version;
 pub use check_version::*;
 pub mod dialog;
 pub use dialog::*;
-pub mod update;
-pub use update::*;
+pub mod os;
+pub use os::*;
