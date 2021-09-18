@@ -1,117 +1,63 @@
 name: cardano
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
     types: [opened, synchronize]
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.job.os }} (${{ matrix.job.target }}
+    runs-on: ${{ matrix.job.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
+          - { os: macos-latest, target: x86_64-apple-darwin } 
     steps:
+      - name: Checkout
       - uses: actions/checkout@v2
-
-      - uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
-          override: true    
-
+          submodules: true
+      - name: Install prerequisites
+        run: |
+          case ${{ matrix.job.target }} in
+            *-unknown-linux-*)
+              sudo apt-get -y update
+              sudo apt-get -y install automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf
+              ;;
+            *-apple-darwin)
+              brew install automake
+              ;;
+          esac
+      - name: Install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.job.toolchain || 'stable' }}
+          target: ${{ matrix.job.target }}
+          override: true
+          default: true
+          components: rustfmt
+      - name: Build Libsodium
+        if: contains(matrix.job.features, 'libsodium-sys')
+        run: autoreconf -vfi && ./configure && make && make install
+        working-directory: contrib/libsodium
+      - name: Format
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
           command: build
-          args: --release --all-features
- 
-      - name: Cache build
-        uses: actions/cache@v2
+          args: --release --all-features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }
+      - name: Test
+        uses: actions-rs/cargo@v1
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/ 
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-
-  format:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Use cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/ 
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-
-      - name: Format build
-        uses: actions-rs/toolchain@v1
-        with:
-            toolchain: stable
-            components: rustfmt
-            override: true
-
-      - uses: mbrobbel/rustfmt-check@master
-        with:
-          token: ${{ secrets.TOKEN}}
-
-  check:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Use cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/ 
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-
-      - name: Check build
-        uses: actions-rs/cargo@v1.0.1
-        with:
-          command: check
-
-  test:
-    needs: [build, check, format]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Use cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/ 
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1.0.1
-        with: 
           command: test
-          args: --release --all-features
+          args: --release --features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }

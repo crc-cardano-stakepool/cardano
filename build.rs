@@ -1,3 +1,4 @@
+// Source: https://github.com/AndrewWestberg/cncli/blob/develop/build.rs
 use std::process::Command;
 
 macro_rules! ok (($expression:expr) => ($expression.unwrap()));
