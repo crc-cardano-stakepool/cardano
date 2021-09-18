@@ -1,5 +1,5 @@
 use super::run::RunCommand;
-use crate::cli::utils::{async_command, check_directory, check_root, check_user, print, proceed};
+use crate::cli::utils::{async_command_pipe, check_directory, check_root, check_user, print, proceed, update_os_packages};
 use anyhow::Result;
 use console::Emoji;
 use reqwest::Client;
@@ -29,7 +29,6 @@ impl NodeCommand {
 
     pub async fn install_node() -> Result<()> {
         if let Ok(false) = check_root() {
-            print("", "Checking for root privileges", Emoji("", ""))?;
             match escalate_if_needed() {
                 Ok(user) => println!("Running as {:#?}", user),
                 Err(_) => println!("Failed obtaining root privileges"),
@@ -41,6 +40,7 @@ impl NodeCommand {
                     let install_directory: String = format!("/home/{}/.cardano", user.trim());
                     print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
                     check_directory("install directory", &install_directory).await?;
+                    update_os_packages().await?;
                 } else {
                     print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
                 }
@@ -52,8 +52,8 @@ impl NodeCommand {
     }
 
     pub async fn check_node_version() -> Result<bool> {
-        let latest_node_version: String = NodeCommand::fetch_latest_node_version().await?;
-        let installed_node_version: String = NodeCommand::fetch_installed_node_version().await?;
+        let latest_node_version: String = NodeCommand::check_latest_node_version().await?;
+        let installed_node_version: String = NodeCommand::check_installed_version("cardano-node").await?;
         if NodeCommand::compare_latest_node_version(&installed_node_version, &latest_node_version).await? {
             Ok(true)
         } else {
@@ -62,14 +62,21 @@ impl NodeCommand {
         }
     }
 
-    pub async fn fetch_installed_node_version() -> Result<String> {
-        let fetch_node_version = "cardano-node --version | awk '{print $2}'| head -n1";
-        let node_version: String = async_command(&fetch_node_version).await?;
-        let installed_node_version: String = String::from(node_version.trim());
-        Ok(installed_node_version)
+    pub async fn check_installed_version(component: &str) -> Result<String> {
+        let cmd = format!("type {}", component);
+        let installed = String::from(async_command_pipe(&cmd).await?);
+        if !installed.contains("not found") {
+            let helper_string = "'{print $2}'";
+            let cmd = format!("{} --version | awk {} | head -n1", component, helper_string);
+            let version: String = async_command_pipe(&cmd).await?;
+            let installed_version: String = String::from(version.trim());
+            Ok(installed_version)
+        } else {
+            Ok(String::from("not found"))
+        }
     }
 
-    pub async fn fetch_latest_node_version() -> Result<String> {
+    pub async fn check_latest_node_version() -> Result<String> {
         const RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-node/releases/latest";
         let client = Client::new();
         let response: Value = client.get(RELEASE_URL).header("User-Agent", "Web 3").send().await?.json().await?;
