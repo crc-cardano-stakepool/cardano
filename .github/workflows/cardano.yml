@@ -68,14 +68,9 @@ jobs:
             /usr/local/include/
           key: ${{ matrix.job.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ matrix.job.os }}-cargo-
-      - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: ${{ matrix.job.use-cross }}
-          command: test
-          args: --release --target ${{ matrix.job.target }}
 
   test:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
