@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize]
 jobs:
   build:
-    name: ${{ matrix.job.os }} (${{ matrix.job.target }}
+    name: ${{ matrix.job.os }} (${{ matrix.job.target }})
     runs-on: ${{ matrix.job.os }}
     defaults:
       run:
@@ -42,10 +42,6 @@ jobs:
           override: true
           default: true
           components: rustfmt
-      - name: Build Libsodium
-        if: contains(matrix.job.features, 'libsodium-sys')
-        run: autoreconf -vfi && ./configure && sudo make && sudo make install
-        working-directory: contrib/libsodium
       - name: Format
         uses: actions-rs/cargo@v1
         with:
