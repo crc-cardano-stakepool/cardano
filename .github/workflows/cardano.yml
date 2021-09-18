@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
+          working-directory: /home/runner/work/cardano
       - name: Install prerequisites
         run: |
           case ${{ matrix.job.target }} in
@@ -65,6 +66,7 @@ jobs:
             target/
           key: ${{ matrix.job.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ matrix.job.os }}-cargo-
+          working-directory: /home/runner/work/cardano
 
   test:
     needs: build
