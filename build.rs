@@ -20,6 +20,11 @@ fn main() {
         println!("cargo:rustc-link-search=native={}", libsodium.join("lib").display());
         println!("cargo:rustc-link-lib=static=sodium");
     }
+
+    #[cfg(feature = "libsodium-sys")]
+    {
+        pkg_config::Config::new().probe("libsodium").unwrap();
+    
     println!("cargo:return-if-changed=build.rs");
 }
 
