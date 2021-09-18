@@ -24,7 +24,7 @@ fn main() {
     #[cfg(feature = "libsodium-sys")]
     {
         pkg_config::Config::new().probe("libsodium").unwrap();
-    
+    }
     println!("cargo:return-if-changed=build.rs");
 }
 
