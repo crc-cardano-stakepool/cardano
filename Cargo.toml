@@ -7,7 +7,7 @@ license = "MIT"
 description = "CLI for managing cardano components"
 build = "build.rs"
 links = "libsodium"
-
+crate_type = ["rlib", "cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

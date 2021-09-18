@@ -43,7 +43,6 @@ jobs:
           default: true
           components: rustfmt
       - name: Build Libsodium
-        if: contains(matrix.job.features, 'libsodium-sys')
         run: autoreconf -vfi && ./configure && make && make install
         working-directory: contrib/libsodium
       - name: Format
