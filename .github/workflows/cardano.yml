@@ -97,3 +97,4 @@ jobs:
         with: 
           command: test
           args: --release --all-features
+          working-directory: /home/runner/work/cardano
