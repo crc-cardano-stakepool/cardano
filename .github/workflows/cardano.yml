@@ -51,13 +51,13 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
-      - name: Build Cardano CLI 
-        uses: actions-rs/cargo@v1.0.1
-        with:
-          command: build
-          args: --release --all-features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }
       - name: Test
         uses: actions-rs/cargo@v1
         with:
           command: test
           args: --release --features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }
+      - name: Build Cardano CLI 
+        uses: actions-rs/cargo@v1.0.1
+        with:
+          command: build
+          args: --release --all-features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }
