@@ -27,10 +27,7 @@ jobs:
       - name: Cargo Cache
         uses: actions/cache@v2
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git 
-            target
+          path: ${{ matrix.path }}
           key: ${{ matrix.os }}-cargo-v1-${{ hashFiles('**Cargo.toml') }}
           restore-keys: |
             ${{ matrix.os }}-cargo-v1-${{ hashFiles('**Cargo.toml') }}
