@@ -54,6 +54,22 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }} --locked
+  test:
+    needs: build
+    name: ${{ matrix.os }} (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-gnu
+        - os: macos-latest
+          target: x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache
+        uses: Swatinem/rust-cache@v1
       - name: Run tests
         uses: actions-rs/cargo@v1.0.1
         with: 
