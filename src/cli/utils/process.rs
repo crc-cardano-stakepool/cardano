@@ -31,8 +31,8 @@ mod tests {
                 let res = async_command_pipe(&cmd).await;
                 match res {
                     Ok(res) => assert_eq!("ELF\n", res),
-                    Err(e) => panic!("{}", e),
-                }
+                    Err(e) => panic!("{}", e)
+                };
             },
             Err(e) => panic!("{}", e)
         }
