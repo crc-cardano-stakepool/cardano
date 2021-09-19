@@ -38,11 +38,6 @@ jobs:
             $CARGO_HOME/git/db/ 
             target/
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: ${{ matrix.path }} 
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -71,6 +66,11 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
+      - uses: actions/cache@v2
+        with:
+          path: ${{ matrix.path }} 
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
