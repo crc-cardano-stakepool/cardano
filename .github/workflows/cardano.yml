@@ -15,16 +15,8 @@ jobs:
         include:
         - os: ubuntu-latest
           target: x86_64-unknown-linux-gnu
-          path: |
-            /home/runner/.cargo
-            /home/runner/.cargo/registry
-            /home/runner/work/cardano/cardano/target/
         - os: macos-latest
           target: x86_64-apple-darwin
-          path: |
-            /home/runner/.cargo/
-            /home/runner/.cargo/registry/
-            /home/runner/work/cardano/cardano/target/
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -60,7 +52,7 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }} --locked
-      - name: Cargo Cache
+      - name: Cache Cargo 
         uses: Swatinem/rust-cache@v1
       - name: Run tests
         uses: actions-rs/cargo@v1.0.1
