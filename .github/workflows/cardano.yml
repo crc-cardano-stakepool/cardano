@@ -76,4 +76,10 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
             ${{ matrix.os }}-cargo-
+      - name: Run tests
+        uses: actions-rs/cargo@v1.0.1
+        with: 
+          use-cross: ${{ matrix.os.use-cross }}
+          command: test
+          args: --release --target ${{ matrix.target }}
 
