@@ -61,4 +61,4 @@ jobs:
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --target ${{ matrix.target }}
+          args: --release --target-dir target/test --target ${{ matrix.target }}
