@@ -67,7 +67,7 @@ jobs:
         with:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
-          args: --release --all-features --target ${{ matrix.target }} --locked
+          args: --release --target ${{ matrix.target }} --locked
       - name: Cargo Cache
         uses: actions/cache@v2
         with:
@@ -81,4 +81,4 @@ jobs:
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --all-features --target ${{ matrix.target }}
+          args: --release --target ${{ matrix.target }}
