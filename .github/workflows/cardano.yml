@@ -64,10 +64,10 @@ jobs:
         with:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
-          args: --release --verbose --target ${{ matrix.target }} --locked
+          args: --release --target ${{ matrix.target }} --locked
       - name: Run tests
         uses: actions-rs/cargo@v1.0.1
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --verbose --target ${{ matrix.target }}
+          args: --release --target ${{ matrix.target }}
