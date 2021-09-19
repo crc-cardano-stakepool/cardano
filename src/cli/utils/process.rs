@@ -23,17 +23,16 @@ mod tests {
     use crate::cli::utils::process::async_command_pipe;
     #[tokio::test]
     pub async fn test_async_command_pipe() {
-        let bin = async_command_pipe("find ./target/ -type f -name cardano").await;
-        match bin {
+        match async_command_pipe("find ./target/ -type f -name cardano").await {
             Ok(bin) => {
                 let helper_string = "'{print $2}'";
                 let cmd = format!("file {} | awk {}", bin.trim(), helper_string);
-                match async_command_pipe(&cmd).await  {
+                match async_command_pipe(&cmd).await {
                     Ok(result) => assert_eq!("ELF\n", result),
-                    Err(e) => panic!("{}", e)
+                    Err(e) => panic!("{}", e),
                 }
-            },
-            Err(e) => panic!("{}", e)
+            }
+            Err(e) => panic!("{}", e),
         }
     }
 }
