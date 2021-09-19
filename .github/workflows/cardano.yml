@@ -75,8 +75,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ matrix.path }} 
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
+          key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ matrix.os }}-cargo-
       - name: Test
         uses: actions-rs/cargo@v1.0.1
         with:
