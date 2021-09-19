@@ -21,7 +21,6 @@ jobs:
             ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
-            ~/.cargo/cache/
             ~/.cargo/git/db/ 
             target/
         - os: macos-latest
@@ -30,7 +29,6 @@ jobs:
             ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
-            ~/.cargo/cache/
             ~/.cargo/git/db/ 
             target/
     steps:
