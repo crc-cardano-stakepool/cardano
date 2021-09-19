@@ -1,6 +1,6 @@
-use tokio::process::Command;
-use std::process::Stdio;
 use anyhow::Result;
+use std::process::Stdio;
+use tokio::process::Command;
 
 pub async fn async_command(command: &str) -> Result<String> {
     let child = Command::new("sh")
