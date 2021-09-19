@@ -28,11 +28,10 @@ mod tests {
             Ok(bin) => {
                 let helper_string = "'{print $2}'";
                 let cmd = format!("file {} | awk {}", bin.trim(), helper_string);
-                let res = async_command_pipe(&cmd).await;
-                match res {
-                    Ok(res) => assert_eq!("ELF\n", res),
+                match async_command_pipe(&cmd).await  {
+                    Ok(result) => assert_eq!("ELF\n", result),
                     Err(e) => panic!("{}", e)
-                };
+                }
             },
             Err(e) => panic!("{}", e)
         }
