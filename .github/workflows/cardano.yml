@@ -57,6 +57,10 @@ jobs:
           override: true
           default: true
           components: rustfmt
+      - name: Build Libsodium
+        if: contains(matrix.job.features, 'libsodium-sys')
+        run: sudo autoreconf -vfi && ./configure && make && make install
+        working-directory: contrib/libsodium
       - name: Format
         uses: actions-rs/cargo@v1.0.1
         with:
@@ -67,7 +71,7 @@ jobs:
         with:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
-          args: --release --target ${{ matrix.target }}
+          args: --release --features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.target }}
       - name: Use cache
         uses: actions/cache@v2
         with:
@@ -82,4 +86,4 @@ jobs:
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --all-features --target ${{ matrix.target }}
+          args: --release --features "${{ join(matrix.job.features, ',') }}" --target ${{ matrix.job.target }}
