@@ -66,17 +66,17 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
-      - uses: actions/cache@v2
-        with:
-          path: ${{ matrix.path }} 
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }}
+      - uses: actions/cache@v2
+        with:
+          path: ${{ matrix.path }} 
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
       - name: Test
         uses: actions-rs/cargo@v1.0.1
         with:
