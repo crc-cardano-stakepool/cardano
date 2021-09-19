@@ -20,10 +20,10 @@ pub async fn async_command_pipe(command: &str) -> Result<String> {
 
 #[cfg(test)]
 mod tests {
-    use crate::cli::utils::async_command_pipe;
+    use crate::cli::utils::process::async_command_pipe;
     #[tokio::test]
     pub async fn test_async_command_pipe() {
-        let res = async_command_pipe("file target/release/cardano | awk '{print $2}'").await;
+        let res = async_command_pipe("file target/release/cardano | awk '{print $2}' ").await;
         match res {
             Ok(res) => assert_eq!("ELF\n", res),
             Err(e) => panic!("{}", e),

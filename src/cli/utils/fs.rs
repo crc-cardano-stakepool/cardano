@@ -7,10 +7,10 @@ use std::path::Path;
 use tokio::fs::create_dir_all;
 
 pub async fn check_directory(dir_name: &str, absolute_path: &str) -> Result<()> {
-    let msg = format!("Checking for {} directory in {}", dir_name, absolute_path);
+    let msg = format!("Checking for {} in {}", dir_name, absolute_path);
     print("", &msg, Emoji("", ""))?;
     if Path::new(absolute_path).is_dir() {
-        let msg = format!("{} {}", dir_name, "directory found, skipped creating");
+        let msg = format!("Found {}, skipped creating", dir_name);
         print("green", &msg, Emoji("", ""))?;
     } else {
         create_directory(dir_name, absolute_path).await?;
@@ -19,7 +19,7 @@ pub async fn check_directory(dir_name: &str, absolute_path: &str) -> Result<()> 
 }
 
 pub async fn create_directory(dir_name: &str, absolute_path: &str) -> Result<()> {
-    let msg = format!("Creating directory {} in {}", dir_name, absolute_path);
+    let msg = format!("Creating {} in {}", dir_name, absolute_path);
     let user = check_user().await?;
     let user = user.trim();
     print("", &msg, Emoji("", ""))?;
