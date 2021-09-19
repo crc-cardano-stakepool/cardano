@@ -54,11 +54,11 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }} --locked
-      - name: Cache Cargo 
-        uses: Swatinem/rust-cache@v1
       - name: Run tests
         uses: actions-rs/cargo@v1.0.1
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --target-dir target/test --target ${{ matrix.target }}
+          args: --release --target ${{ matrix.target }}
+      - name: Cache Cargo 
+        uses: Swatinem/rust-cache@v1
