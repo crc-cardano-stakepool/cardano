@@ -11,29 +11,25 @@ jobs:
   build:
     name: ${{ matrix.os }} (${{ matrix.target }})
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         include:
         - os: ubuntu-latest
           target: x86_64-unknown-linux-gnu
           path: |
-            ~/.cargo/registry
             ~/.cargo/bin/
-            ~/.cargo/index/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
             ~/.cargo/cache/
             ~/.cargo/git/db/ 
             target/
         - os: macos-latest
           target: x86_64-apple-darwin
           path: |
-            ~/.cargo/registry
             ~/.cargo/bin/
-            ~/.cargo/index/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
             ~/.cargo/cache/
             ~/.cargo/git/db/ 
             target/
@@ -72,37 +68,6 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }}
-  test:
-    needs: [build]
-    runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        include:
-        - os: ubuntu-latest
-          target: x86_64-unknown-linux-gnu
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/
-            ~/.cargo/index/
-            ~/.cargo/cache/
-            ~/.cargo/git/db/ 
-            target/
-        - os: macos-latest
-          target: x86_64-apple-darwin
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/
-            ~/.cargo/index/
-            ~/.cargo/cache/
-            ~/.cargo/git/db/ 
-            target/
-    steps:
-      - uses: actions/checkout@v2
       - name: Use cache
         uses: actions/cache@v2
         with:
