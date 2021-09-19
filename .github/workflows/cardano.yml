@@ -59,6 +59,6 @@ jobs:
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --target ${{ matrix.target }}
+          args: --release --target-dir target --target ${{ matrix.target }}
       - name: Cache Cargo 
         uses: Swatinem/rust-cache@v1
