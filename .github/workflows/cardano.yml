@@ -1,12 +1,10 @@
 name: cardano
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
     types: [opened, synchronize]
-
 jobs:
   build:
     name: ${{ matrix.os }} (${{ matrix.target }})
@@ -24,14 +22,22 @@ jobs:
         - os: macos-latest
           target: x86_64-apple-darwin
           path: |
-            /home/runner/.cargo
-            /home/runner/.cargo/registry
-            target
+            /home/runner/.cargo/
+            /home/runner/.cargo/registry/
+            target/
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Cargo Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.path }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
+            ${{ runner.os }}-cargo-
       - name: Install Prerequisites
         run: |
           case ${{ matrix.target }} in
@@ -66,7 +72,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ matrix.path }}
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
+          key: ${{ matrix.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
-            ${{ runner.os }}-cargo-
+            ${{ matrix.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
+            ${{ matrix.os }}-cargo-
+
