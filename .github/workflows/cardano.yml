@@ -18,7 +18,7 @@ jobs:
           path: |
             /home/runner/.cargo
             /home/runner/.cargo/registry
-            target
+            /home/runner/work/cardano/cardano/target/
         - os: macos-latest
           target: x86_64-apple-darwin
           path: |
