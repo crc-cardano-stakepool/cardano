@@ -76,3 +76,4 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: test
           args: --release --target ${{ matrix.target }}
+
