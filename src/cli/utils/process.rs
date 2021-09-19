@@ -23,7 +23,7 @@ mod tests {
     use crate::cli::utils::process::async_command_pipe;
     #[tokio::test]
     pub async fn test_async_command_pipe() {
-        let res = async_command_pipe("pwd && ls").await;
+        let res = async_command_pipe("ls target/release").await;
         match res {
             Ok(res) => assert_eq!("ELF\n", res),
             Err(e) => panic!("{}", e),
