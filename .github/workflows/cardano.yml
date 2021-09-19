@@ -31,10 +31,10 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git 
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.toml') }}
+          key: ${{ matrix.os }}-cargo-v1-${{ hashFiles('**Cargo.toml') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('Cargo.toml') }}
-            ${{ runner.os }}-cargo
+            ${{ matrix.os }}-cargo-v1-${{ hashFiles('**Cargo.toml') }}
+            ${{ matrix.os }}-cargo-v1-
       - name: Install Prerequisites
         run: |
           case ${{ matrix.target }} in
