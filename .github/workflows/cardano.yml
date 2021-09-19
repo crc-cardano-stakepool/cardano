@@ -72,8 +72,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ matrix.path }}
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
+          key: ${{ matrix.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
-            ${{ runner.os }}-cargo-
+            ${{ matrix.os }}-cargo-${{ hashFiles('**Cargo.toml') }}
+            ${{ matrix.os }}-cargo-
 
