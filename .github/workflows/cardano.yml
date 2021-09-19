@@ -24,7 +24,7 @@ jobs:
           path: |
             /home/runner/.cargo/
             /home/runner/.cargo/registry/
-            target/
+            /home/runner/work/cardano/cardano/target/
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -67,7 +67,7 @@ jobs:
         with:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
-          args: --release --target ${{ matrix.target }} --locked
+          args: --release --all-features --target ${{ matrix.target }} --locked
       - name: Cargo Cache
         uses: actions/cache@v2
         with:
@@ -81,4 +81,4 @@ jobs:
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --target ${{ matrix.target }}
+          args: --release --all-features --target ${{ matrix.target }}
