@@ -72,7 +72,39 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }}
-      - uses: actions/cache@v2
+  test:
+    needs: [build]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-gnu
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/bin/
+            ~/.cargo/index/
+            ~/.cargo/cache/
+            ~/.cargo/git/db/ 
+            target/
+        - os: macos-latest
+          target: x86_64-apple-darwin
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/bin/
+            ~/.cargo/index/
+            ~/.cargo/cache/
+            ~/.cargo/git/db/ 
+            target/
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use cache
+        uses: actions/cache@v2
         with:
           path: ${{ matrix.path }} 
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
@@ -80,9 +112,9 @@ jobs:
             ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
             ${{ runner.os }}-cargo-
             ${{ runner.os }}-
-      - name: Test
+      - name: Run tests
         uses: actions-rs/cargo@v1.0.1
-        with:
+        with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --target ${{ matrix.target }}
+          args: --release --all-features --target ${{ matrix.target }}
