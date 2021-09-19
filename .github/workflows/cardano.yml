@@ -22,9 +22,9 @@ jobs:
         - os: macos-latest
           target: x86_64-apple-darwin
           path: |
-            /home/runner/.cargo
-            /home/runner/.cargo/registry
-            target
+            /home/runner/.cargo/
+            /home/runner/.cargo/registry/
+            target/
     steps:
       - name: Checkout
         uses: actions/checkout@v2
