@@ -24,6 +24,7 @@ jobs:
           submodules: true
       - name: Cache
         uses: Swatinem/rust-cache@v1
+      - name: Install Prerequisites
         run: |
           case ${{ matrix.target }} in
             *-unknown-linux-*)
