@@ -16,10 +16,10 @@
 
 ## Install from source
 
+    # Make sure Rust is installed properly
     git clone https://github.com/crc-cardano-stakepool/cardano.git
     cd cardano
-    cargo build --release
-    sudo mv target/release/cardano /usr/local/bin
+    cargo install --path .
 
 ## Usage
 
