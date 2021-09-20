@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Cache Cargo 
+      - name: Cache
         uses: Swatinem/rust-cache@v1
       - name: Install Prerequisites
         run: |
@@ -60,5 +60,3 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: test
           args: --release --target-dir target --target ${{ matrix.target }}
-      - name: Cache Cargo 
-        uses: Swatinem/rust-cache@v1
