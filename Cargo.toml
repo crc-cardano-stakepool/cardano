@@ -1,14 +1,12 @@
 [package]
 name = "cardano"
-authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 version = "0.0.1-alpha"
+authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 edition = "2018"
 license = "MIT"
 description = "CLI for managing cardano components"
 build = "build.rs"
 links = "libsodium"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 structopt = "0.3.22"
