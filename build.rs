@@ -14,18 +14,12 @@ fn main() {
     run("git", |command| {
         command.arg("submodule").arg("update").arg("--init").arg("--recursive")
     });
-
     // Build libsodium automatically (as part of rust build)
     #[cfg(not(feature = "libsodium-sys"))]
     {
         let libsodium = autotools::Config::new("contrib/libsodium").reconf("-vfi").build();
         println!("cargo:rustc-link-search=native={}", libsodium.join("lib").display());
         println!("cargo:rustc-link-lib=static=sodium");
-    }
-
-    #[cfg(feature = "libsodium-sys")]
-    {
-        pkg_config::Config::new().probe("libsodium").unwrap();
     }
     println!("cargo:return-if-changed=build.rs");
 }
