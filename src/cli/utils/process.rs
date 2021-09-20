@@ -14,7 +14,12 @@ pub async fn async_command(command: &str) -> Result<String> {
 }
 
 pub async fn async_command_pipe(command: &str) -> Result<String> {
-    let output = Command::new("sh").arg("-c").arg(command).stdout(Stdio::piped()).output().await?;
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(command)
+        .stdout(Stdio::piped())
+        .output()
+        .await?;
     Ok(String::from(String::from_utf8_lossy(&output.stdout)))
 }
 
