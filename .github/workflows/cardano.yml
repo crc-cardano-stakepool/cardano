@@ -83,6 +83,11 @@ jobs:
           esac
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.os.toolchain || 'stable' }}
+          target: ${{ matrix.target }}
+          override: true
+          default: true
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
