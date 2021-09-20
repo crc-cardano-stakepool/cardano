@@ -6,7 +6,7 @@ on:
     branches: [ main ]
     types: [opened, synchronize]
 jobs:
-  build:
+  test:
     name: ${{ matrix.os }} (${{ matrix.target }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -48,15 +48,49 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
+      - name: Run tests
+        uses: actions-rs/cargo@v1.0.1
+        with: 
+          use-cross: ${{ matrix.os.use-cross }}
+          command: test
+          args: --release --target ${{ matrix.target }}
+  build:
+    needs: test
+    name: ${{ matrix.os }} (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-gnu
+        - os: macos-latest
+          target: x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache
+        uses: Swatinem/rust-cache@v1
+      - name: Install Prerequisites
+        run: |
+          case ${{ matrix.target }} in
+            *-unknown-linux-*)
+              sudo apt-get update -y
+              sudo apt-get install automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf -y
+              ;;
+            *-apple-darwin)
+              brew install automake
+              ;;
+          esac
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.os.toolchain || 'stable' }}
+          target: ${{ matrix.target }}
+          override: true
+          default: true
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }} --locked
-      - name: Run tests
-        uses: actions-rs/cargo@v1.0.1
-        with: 
-          use-cross: ${{ matrix.os.use-cross }}
-          command: test
-          args: --release --target-dir target --target ${{ matrix.target }}
