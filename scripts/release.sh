@@ -1,7 +1,9 @@
 #!/bin/sh
 
-cargo fmt &&
-cargo test --release --target x86_64-unknown-linux-gnu &&
-cargo build --release --target x86_64-unknown-linux-gnu &&
+TARGET="x86_64-unknown-linux-gnu"
+TAG="0.0.1-alpha"
 
-tar -cvzf ./target/x86_64-unknown-linux-gnu/cardano.tar.gz ./target/x86_64-unknown-linux-gnu/release/cardano
+cargo fmt &&
+cargo test --release --target $TARGET &&
+cargo build --release --target $TARGET &&
+tar -cvzf ./target/$TARGET/cardano-$TAG-$TARGET.tar.gz ./target/$TARGET/release/cardano
