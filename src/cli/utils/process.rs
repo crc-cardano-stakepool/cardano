@@ -3,7 +3,7 @@ use std::process::Stdio;
 use tokio::process::Command;
 
 pub async fn async_command(command: &str) -> Result<String> {
-    let child = Command::new("sh")
+    let child = Command::new("bash")
         .arg("-c")
         .arg(command)
         .stdout(Stdio::inherit())
@@ -23,9 +23,15 @@ mod tests {
     use crate::cli::utils::process::async_command_pipe;
     #[tokio::test]
     pub async fn test_async_command_pipe() {
-        let res = async_command_pipe("file target/release/cardano | awk '{print $2}' ").await;
-        match res {
-            Ok(res) => assert_eq!("ELF\n", res),
+        match async_command_pipe("find ./target/ -type f -name cardano | tail -n1").await {
+            Ok(bin) => {
+                let helper_string = "'{print $3}'";
+                let cmd = format!("file {} | awk {}", bin.trim(), helper_string);
+                match async_command_pipe(&cmd).await {
+                    Ok(result) => assert_eq!("64-bit\n", result),
+                    Err(e) => panic!("{}", e),
+                }
+            }
             Err(e) => panic!("{}", e),
         }
     }
