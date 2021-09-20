@@ -24,7 +24,6 @@ jobs:
           submodules: true
       - name: Cache
         uses: Swatinem/rust-cache@v1
-      - name: Install Prerequisites
         run: |
           case ${{ matrix.target }} in
             *-unknown-linux-*)
@@ -53,7 +52,7 @@ jobs:
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --target-dir target --target ${{ matrix.target }}
+          args: --release --target ${{ matrix.target }}
   build:
     needs: test
     name: ${{ matrix.os }} (${{ matrix.target }})
@@ -70,6 +69,17 @@ jobs:
       - uses: actions/checkout@v2
       - name: Cache
         uses: Swatinem/rust-cache@v1
+      - name: Install Prerequisites
+        run: |
+          case ${{ matrix.target }} in
+            *-unknown-linux-*)
+              sudo apt-get update -y
+              sudo apt-get install automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf -y
+              ;;
+            *-apple-darwin)
+              brew install automake
+              ;;
+          esac
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
