@@ -18,6 +18,8 @@ pub fn test_cardano_node_install() -> Result<()> {
     cmd.arg("node");
     cmd.arg("install");
     cmd.arg("-h");
-    cmd.assert().success().stdout(contains("Install the latest cardano-node binary"));
+    cmd.assert()
+        .success()
+        .stdout(contains("Install the latest cardano-node binary"));
     Ok(())
 }

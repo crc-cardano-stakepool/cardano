@@ -48,7 +48,11 @@ impl NodeCommand {
                     print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
                 }
             } else {
-                print("green", "The latest cardano node version is installed", Emoji("🙌🎉", ""))?;
+                print(
+                    "green",
+                    "The latest cardano node version is installed",
+                    Emoji("🙌🎉", ""),
+                )?;
             }
         }
         Ok(())
