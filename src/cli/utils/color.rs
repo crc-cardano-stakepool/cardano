@@ -2,7 +2,7 @@ use anyhow::Result;
 use console::{Color, Emoji, Style, Term};
 
 pub fn print(color: &str, output: &str, emoji: Emoji<'_, '_>) -> Result<()> {
-    match to_color(&color) {
+    match to_color(color) {
         Color::Cyan => {
             let cyan = format!("{} {}", Style::new().cyan().apply_to(output), emoji);
             Term::stdout().write_line(&cyan)?;

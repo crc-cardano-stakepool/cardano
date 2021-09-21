@@ -47,12 +47,17 @@ jobs:
           target: ${{ matrix.target }}
           override: true
           default: true
-          components: rustfmt
+          components: rustfmt, clippy
       - name: Format
         uses: actions-rs/cargo@v1.0.1
         with:
           command: fmt
           args: --all -- --check
+      - name: Lint (Clippy)
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --release --target ${{ matrix.target }} -- -D warnings
       - name: Run tests
         uses: actions-rs/cargo@v1.0.1
         with: 

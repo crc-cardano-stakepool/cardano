@@ -1,6 +1,5 @@
-use super::super::cli::CliCommand;
 use super::super::node::NodeCommand;
-use super::super::wallet::WalletCommand;
+use super::super::wallet::cli::WalletCommand;
 use anyhow::Result;
 use structopt::StructOpt;
 
@@ -9,8 +8,6 @@ use structopt::StructOpt;
 pub enum UninstallCommand {
     #[structopt(about = "Uninstalls cardano-node")]
     Node,
-    #[structopt(about = "Uninstalls cardano-cli")]
-    Cli,
     #[structopt(about = "Uninstalls cardano-wallet")]
     Wallet,
 }
@@ -19,7 +16,6 @@ impl UninstallCommand {
     pub async fn exec(cmd: UninstallCommand) -> Result<()> {
         match cmd {
             UninstallCommand::Node => NodeCommand::uninstall_node().await?,
-            UninstallCommand::Cli => CliCommand::uninstall_cli()?,
             UninstallCommand::Wallet => WalletCommand::uninstall_wallet().await?,
         }
         Ok(())

@@ -1,6 +1,6 @@
 use crate::cli::install::InstallCommand;
 use crate::cli::node::NodeCommand;
-use crate::cli::uninstall::UninstallCommand;
+use crate::cli::uninstall::cli::UninstallCommand;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -9,7 +9,6 @@ pub enum CardanoCommand {
     Node(NodeCommand),
     Install(InstallCommand),
     Uninstall(UninstallCommand),
-    // Cli(CliCommand),
     // Wallet(WalletCommand),
     // Tx(TxCommand),
     // Mint(MintCommand),

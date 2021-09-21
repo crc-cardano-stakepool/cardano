@@ -18,7 +18,6 @@ impl Cli {
             CardanoCommand::Node(command) => NodeCommand::exec(command).await?,
             CardanoCommand::Install(command) => InstallCommand::exec(command).await?,
             CardanoCommand::Uninstall(command) => UninstallCommand::exec(command).await?,
-            // CardanoCommand::Cli(command) => CliCommand::exec(command).await,
             // CardanoCommand::Wallet(command) => WalletCommand::exec(command).await,
             // CardanoCommand::Tx(command) => TxCommand::exec(command).await,
             // CardanoCommand::Mint(command) => MintCommand::exec(command).await,
