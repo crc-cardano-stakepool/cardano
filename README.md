@@ -22,7 +22,7 @@
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     source $HOME/.cargo/env
 
-## Install from source to $HOME/.cargo/bin/cardano
+## Install from source to ~/.cargo/bin/cardano
 
     git clone https://github.com/crc-cardano-stakepool/cardano.git
     cd cardano
