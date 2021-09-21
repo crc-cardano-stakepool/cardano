@@ -1,2 +1,2 @@
-pub mod wallet;
-pub use wallet::*;
+pub mod cli;
+pub use cli::*;

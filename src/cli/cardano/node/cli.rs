@@ -36,24 +36,22 @@ impl NodeCommand {
                 Ok(user) => println!("Running as {:#?}", user),
                 Err(_) => println!("Failed obtaining root privileges"),
             }
-        } else {
-            if !check_version("cardano-node").await? {
-                if proceed("Do you want to install the latest cardano-node binary?")? {
-                    let user = check_user().await?;
-                    let install_directory: String = format!("/home/{}/.cardano", user.trim());
-                    print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
-                    check_directory("install directory", &install_directory).await?;
-                    update().await?;
-                } else {
-                    print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
-                }
+        } else if !check_version("cardano-node").await? {
+            if proceed("Do you want to install the latest cardano-node binary?")? {
+                let user = check_user().await?;
+                let install_directory: String = format!("/home/{}/.cardano", user.trim());
+                print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
+                check_directory("install directory", &install_directory).await?;
+                update().await?;
             } else {
-                print(
-                    "green",
-                    "The latest cardano node version is installed",
-                    Emoji("🙌🎉", ""),
-                )?;
+                print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
             }
+        } else {
+            print(
+                "green",
+                "The latest cardano node version is installed",
+                Emoji("🙌🎉", ""),
+            )?;
         }
         Ok(())
     }

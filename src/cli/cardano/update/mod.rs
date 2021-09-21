@@ -1,2 +1,2 @@
-pub mod update;
-pub use update::*;
+pub mod cli;
+pub use cli::*;

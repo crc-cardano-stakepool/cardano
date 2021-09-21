@@ -19,7 +19,7 @@ pub async fn check_version(component: &str) -> Result<bool> {
 
 async fn check_installed_version(component: &str) -> Result<String> {
     let cmd = format!("type {}", component);
-    let installed = String::from(async_command_pipe(&cmd).await?);
+    let installed = async_command_pipe(&cmd).await?;
     if !installed.contains("not found") {
         let helper_string = "'{print $2}'";
         let cmd = format!("{} --version | awk {} | head -n1", component, helper_string);

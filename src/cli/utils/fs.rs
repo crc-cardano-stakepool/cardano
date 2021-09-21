@@ -24,7 +24,7 @@ pub async fn create_directory(dir_name: &str, absolute_path: &str) -> Result<()>
     let user = user.trim();
     print("", &msg, Emoji("", ""))?;
     create_dir_all(absolute_path).await?;
-    chownr(&user, &user, absolute_path).await?;
+    chownr(user, user, absolute_path).await?;
     change_dir(absolute_path).await?;
     Ok(())
 }

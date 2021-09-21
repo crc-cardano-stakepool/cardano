@@ -1,2 +1,2 @@
-pub mod install;
-pub use install::*;
+pub mod cli;
+pub use cli::*;
