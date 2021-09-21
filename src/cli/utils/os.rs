@@ -32,15 +32,15 @@ pub async fn setup_packages() -> Result<()> {
     let platform = output.as_str().trim();
     match platform {
         "linux" | "Linux" => {
-            print("green", "Detected Linux", Emoji("",""))?;
+            print("green", "Detected Linux", Emoji("", ""))?;
             let output = check_distro().await?;
             let distro = output.as_str().trim();
             install_distro_packages(distro).await?;
         }
         "darwin" | "Darwin" => {
-            print("green", "Detected macOS", Emoji("",""))?;
+            print("green", "Detected macOS", Emoji("", ""))?;
             install_mac_packages().await?
-        },
+        }
         _ => panic!("Unsupported platform: {}", platform),
     }
     Ok(())
