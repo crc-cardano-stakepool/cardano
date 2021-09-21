@@ -10,4 +10,3 @@ pub mod wallet;
 pub use wallet::*;
 pub mod uninstall;
 pub use uninstall::*;
-
