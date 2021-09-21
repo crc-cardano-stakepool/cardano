@@ -72,6 +72,7 @@ jobs:
           echo ${PROJECT_VERSION}
           PKG_SUFFIX=".tar.gz"
           PKG_NAME="${PROJECT_NAME}-${PROJECT_VERSION}-${{ matrix.target }}${PKG_SUFFIX}"
+          echo ${PKG_NAME}
           tar -C target/${{matrix.target}}/release -czf "${PKG_NAME}" cardano
           echo ::set-output name=PKG_NAME::${PKG_NAME}
           echo ::set-output name=PKG_PATH::${PKG_NAME}
