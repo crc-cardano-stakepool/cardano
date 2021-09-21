@@ -16,10 +16,10 @@
 
 ## Prerequisites
 
-    sudo apt update -y &&
-    sudo apt upgrade -y &&
-    sudo apt install curl git -y &&
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh &&
+    sudo apt update
+    sudo apt upgrade
+    sudo apt install curl git libssl-dev build-essential pkg-config
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     source $HOME/.cargo/env
 
 ## Install from source
