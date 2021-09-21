@@ -36,3 +36,7 @@ pretty_assertions = "0.7.2"
 [build-dependencies]
 autotools = "0.2.3"
 pkg-config = "0.3.19" 
+anyhow = "1.0.44"
+console = "0.14.1"
+tokio = { version = "1.9.0", features = ["full"] }
+
