@@ -148,8 +148,6 @@ dependencies = [
  "ctrlc",
  "dialoguer",
  "human-panic",
- "libc",
- "pkg-config",
  "predicates",
  "pretty_assertions",
  "reqwest",

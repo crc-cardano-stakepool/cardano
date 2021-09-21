@@ -14,9 +14,13 @@
 [![License](https://img.shields.io/github/license/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/blob/master/LICENSE)
 [![Repo Size](https://img.shields.io/github/repo-size/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano)
 
-## Prerequisites - Install Rust
+## Prerequisites
 
+    sudo apt update -y
+    sudo apt upgrade -y
+    sudo apt install curl git -y
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    source $HOME/.cargo/env
 
 ## Install from source
 
