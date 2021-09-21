@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use std::process::Stdio;
 use tokio::process::Command;
 
@@ -9,18 +9,24 @@ pub async fn async_command(command: &str) -> Result<String> {
         .stdout(Stdio::inherit())
         .spawn()?
         .wait_with_output()
-        .await?;
-    Ok(String::from(String::from_utf8_lossy(&child.stdout)))
+        .await;
+    match child {
+        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
+        Err(e) => Err(anyhow!("{}", e)),
+    }
 }
 
 pub async fn async_command_pipe(command: &str) -> Result<String> {
-    let output = Command::new("sh")
+    let process = Command::new("sh")
         .arg("-c")
         .arg(command)
         .stdout(Stdio::piped())
         .output()
-        .await?;
-    Ok(String::from(String::from_utf8_lossy(&output.stdout)))
+        .await;
+    match process {
+        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
+        Err(e) => Err(anyhow!("{}", e)),
+    }
 }
 
 #[cfg(test)]
