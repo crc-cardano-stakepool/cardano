@@ -30,9 +30,11 @@
 
 ## Install precompiled binary
 
-    sudo apt update -y sudo apt upgrade -y && sudo apt install wget -y &&
-    wget https://github.com/crc-cardano-stakepool/cardano/releases/download/v0.0.1-alpha/cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz &&
-    tar xvf cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz &&
+    sudo apt update 
+    sudo apt upgrade 
+    sudo apt install wget
+    wget https://github.com/crc-cardano-stakepool/cardano/releases/download/v0.0.1-alpha/cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
+    tar xvf cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
     cp cardano ~/.cargo/bin/cardano
 
 ## Usage
