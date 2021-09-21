@@ -3,7 +3,7 @@ use crate::cli::utils::check_version::check_version;
 use crate::cli::utils::color::print;
 use crate::cli::utils::dialog::proceed;
 use crate::cli::utils::fs::check_directory;
-use crate::cli::utils::os::update;
+use crate::cli::utils::os::*;
 use crate::cli::utils::user::*;
 use anyhow::Result;
 use console::Emoji;
@@ -39,10 +39,10 @@ impl NodeCommand {
         } else if !check_version("cardano-node").await? {
             if proceed("Do you want to install the latest cardano-node binary?")? {
                 let user = check_user().await?;
-                let install_directory: String = format!("/home/{}/.cardano", user.trim());
+                let install_directory = format!("/home/{}/.cardano", user.trim());
                 print("white", "Installing latest cardano node", Emoji("🤟", ""))?;
                 check_directory("install directory", &install_directory).await?;
-                update().await?;
+                setup_packages().await?;
             } else {
                 print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
             }
