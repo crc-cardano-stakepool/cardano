@@ -22,20 +22,17 @@
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     source $HOME/.cargo/env
 
-## Install from source
+## Install from source to $HOME/.cargo/bin/cardano
 
     git clone https://github.com/crc-cardano-stakepool/cardano.git
     cd cardano
     cargo install --path .
 
-## Install precompiled binary
+## Install precompiled binary to /usr/bin/cardano
 
-    sudo apt update 
-    sudo apt upgrade 
-    sudo apt install wget
-    wget https://github.com/crc-cardano-stakepool/cardano/releases/download/v0.0.1-alpha/cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
-    tar xvf cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
-    sudo cp cardano /usr/bin/cardano
+    git clone https://github.com/crc-cardano-stakepool/cardano.git
+    cd cardano
+    ./install.sh
 
 ## Usage
 
