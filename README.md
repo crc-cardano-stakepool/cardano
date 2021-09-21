@@ -16,9 +16,9 @@
 
 ## Prerequisites
 
-    sudo apt update -y
-    sudo apt upgrade -y
-    sudo apt install curl git libssl-dev build-essential pkg-config -y
+    sudo apt update
+    sudo apt upgrade
+    sudo apt install curl git libssl-dev build-essential pkg-config
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     source $HOME/.cargo/env
 
@@ -30,9 +30,12 @@
 
 ## Install precompiled binary
 
-    wget https://github.com/crc-cardano-stakepool/cardano/releases/download/v0.0.1-alpha/cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz ~/Downloads
-    tar xvf ~/Downloads/cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
-    cp ~/Downloads/cardano ~/.cargo/bin/cardano
+    sudo apt update 
+    sudo apt upgrade 
+    sudo apt install wget
+    wget https://github.com/crc-cardano-stakepool/cardano/releases/download/v0.0.1-alpha/cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
+    tar xvf cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
+    sudo cp cardano /usr/bin/cardano
 
 ## Usage
 
