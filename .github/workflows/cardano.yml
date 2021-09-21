@@ -1,12 +1,10 @@
 name: cardano
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
     types: [opened, synchronize]
-
 jobs:
   test:
     name: ${{ matrix.os }} (${{ matrix.target }})
