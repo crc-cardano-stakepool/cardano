@@ -88,15 +88,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
-name = "autotools"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b875eaceeddbbfb52c4d102af0e28872be06ba363b9b28c7551304beb3eac42"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -152,15 +143,12 @@ version = "0.0.1-alpha"
 dependencies = [
  "anyhow",
  "assert_cmd",
- "autotools",
  "config",
  "console",
  "ctrlc",
  "dialoguer",
  "gmp-mpfr-sys",
  "human-panic",
- "libc",
- "pkg-config",
  "predicates",
  "pretty_assertions",
  "reqwest",
