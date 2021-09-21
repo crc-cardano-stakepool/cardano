@@ -35,7 +35,7 @@
     sudo apt install wget
     wget https://github.com/crc-cardano-stakepool/cardano/releases/download/v0.0.1-alpha/cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
     tar xvf cardano-0.0.1-alpha-x86_64-unknown-linux-gnu.tar.gz
-    cp cardano ~/.cargo/bin/cardano
+    sudo cp cardano /usr/bin/cardano
 
 ## Usage
 
