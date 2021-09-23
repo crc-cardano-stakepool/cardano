@@ -12,3 +12,5 @@ pub mod dialog;
 pub use dialog::*;
 pub mod os;
 pub use os::*;
+pub mod config_map;
+pub use config_map::*;

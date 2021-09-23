@@ -148,6 +148,7 @@ dependencies = [
  "ctrlc",
  "dialoguer",
  "human-panic",
+ "lazy_static",
  "predicates",
  "pretty_assertions",
  "reqwest",

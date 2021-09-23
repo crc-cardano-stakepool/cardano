@@ -1,6 +1,6 @@
 use super::color::print;
 use super::process::async_command_pipe;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use console::Emoji;
 use reqwest::Client;
 use serde_json::{json, Value};
@@ -31,19 +31,21 @@ async fn check_installed_version(component: &str) -> Result<String> {
     }
 }
 
+async fn get_request(url: &str) -> Result<Value> {
+    let client = Client::new();
+    let response = client.get(url).header("User-Agent", "Web 3").send().await?.json().await;
+    match response {
+        Ok(result) => Ok(result),
+        Err(e) => Err(anyhow!("Request failed with error: {}", e)),
+    }
+}
+
 async fn check_latest_version(component: &str) -> Result<String> {
     let release_url = format!(
         "https://api.github.com/repos/input-output-hk/{}/releases/latest",
         component
     );
-    let client = Client::new();
-    let response: Value = client
-        .get(release_url)
-        .header("User-Agent", "Web 3")
-        .send()
-        .await?
-        .json()
-        .await?;
+    let response = get_request(&release_url).await?;
     let latest_node_version: String = json!(response)["tag_name"].to_string().trim().replace("\"", "");
     Ok(latest_node_version)
 }
