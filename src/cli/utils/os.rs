@@ -1,3 +1,4 @@
+use super::config_map::CONFIG;
 use super::process::{async_command_pipe, pipe};
 use crate::cli::utils::color::print;
 use anyhow::{anyhow, Result};
@@ -5,8 +6,7 @@ use console::Emoji;
 
 pub async fn check_distro() -> Result<String> {
     println!("Checking distro");
-    let helper_string = "'{print $2}'";
-    let cmd = format!("cat /etc/*ease | grep DISTRIB_ID | awk -F '=' {}", helper_string);
+    let cmd = format!("cat /etc/*ease | grep DISTRIB_ID | awk -F '=' {}", "'{print $2}'");
     let distro = async_command_pipe(&cmd).await;
     match distro {
         Ok(distro) => {
@@ -51,57 +51,22 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
     match distro {
         "Ubuntu" | "Debian" => {
             let package_manager = "apt";
-            let packages = vec![
-                "curl",
-                "automake",
-                "build-essential",
-                "pkg-config",
-                "libffi-dev",
-                "libgmp-dev",
-                "libssl-dev",
-                "libtinfo-dev",
-                "libsystemd-dev",
-                "zlib1g-dev",
-                "make",
-                "g++",
-                "tmux",
-                "git",
-                "jq",
-                "wget",
-                "libncursesw5",
-                "libtool",
-                "autoconf",
-            ];
-            install_packages(package_manager, packages).await?;
+            if let Some(packages) = CONFIG.get("debian_packages") {
+                install_packages(package_manager, packages).await?;
+            }
         }
         "Fedora" | "Hat" | "CentOs" => {
             let package_manager = "yum";
-            let packages = vec![
-                "curl",
-                "git",
-                "gcc",
-                "gcc-c++",
-                "tmux",
-                "gmp-devel",
-                "make",
-                "tar",
-                "xz",
-                "wget",
-                "zlib-devel",
-                "libtool",
-                "autoconf",
-                "systemd-devel",
-                "ncurses-devel",
-                "ncurses-compat-libs",
-            ];
-            install_packages(package_manager, packages).await?;
+            if let Some(packages) = CONFIG.get("non_debian_packages") {
+                install_packages(package_manager, packages).await?;
+            }
         }
         _ => panic!("Unsupported distro: {}", distro),
     }
     Ok(())
 }
 
-pub async fn install_packages(package_manager: &str, packages: Vec<&str>) -> Result<()> {
+pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
     println!("Updating");
     let cmd = format!("{} update -y", package_manager);
     async_command_pipe(&cmd).await?;
