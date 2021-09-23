@@ -10,9 +10,24 @@ pub async fn check_distro() -> Result<String> {
     let distro = async_command_pipe(&cmd).await;
     match distro {
         Ok(distro) => {
-            let msg = format!("Detected {}", distro.trim());
+            if distro.is_empty() {
+                let cmd = format!("cat /etc/*ease | grep ID | awk -F '=' {}", "'{print $2}'");
+                let distro = async_command_pipe(&cmd).await;
+                check_distro_result(distro)
+            } else {
+                Ok(distro)
+            }
+        }
+        Err(e) => Err(anyhow!("{}", e)),
+    }
+}
+
+pub fn check_distro_result(distro: Result<String>) -> Result<String> {
+    match distro {
+        Ok(result) => {
+            let msg = format!("Detected {}", result.trim());
             print("green", &msg, Emoji("", ""))?;
-            Ok(distro)
+            Ok(result)
         }
         Err(e) => Err(anyhow!("{}", e)),
     }
@@ -49,7 +64,7 @@ pub async fn setup_packages() -> Result<()> {
 pub async fn install_distro_packages(distro: &str) -> Result<()> {
     println!("Installing {} dependencies", distro);
     match distro {
-        "debian" => {
+        "ubuntu" | "debian" => {
             let package_manager = "apt";
             if let Some(packages) = PACKAGES.get("debian_packages") {
                 install_packages(package_manager, packages).await?;
@@ -68,7 +83,10 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
 
 pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
     println!("Updating");
-    let cmd = format!("sudo {} update -y", package_manager);
+    let cmd = format!(
+        "sudo {} update -y && sudo {} upgrade -y",
+        package_manager, package_manager
+    );
     async_command(&cmd).await?;
     print("green", "Finished updating", Emoji("", ""))?;
     for package in packages {
@@ -122,7 +140,7 @@ pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
 pub async fn install_package(package_manager: &str, package: &str) -> Result<()> {
     let msg = format!("{} is not installed", package);
     print("red", &msg, Emoji("", ""))?;
-    let cmd = format!("sudo {} install {}", package_manager, package);
+    let cmd = format!("sudo {} install {} -y", package_manager, package);
     let process = async_command(&cmd).await;
     match process {
         Ok(_) => {
