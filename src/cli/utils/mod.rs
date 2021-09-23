@@ -14,3 +14,7 @@ pub mod os;
 pub use os::*;
 pub mod config_map;
 pub use config_map::*;
+pub mod env;
+pub use env::*;
+pub mod shell;
+pub use shell::*;
