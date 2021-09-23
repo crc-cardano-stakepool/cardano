@@ -1,5 +1,5 @@
 use super::config_map::PACKAGES;
-use super::process::{async_command_pipe, pipe};
+use super::process::{async_command, async_command_pipe, pipe};
 use crate::cli::utils::color::print;
 use anyhow::{anyhow, Result};
 use console::Emoji;
@@ -68,8 +68,8 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
 
 pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
     println!("Updating");
-    let cmd = format!("{} update -y", package_manager);
-    async_command_pipe(&cmd).await?;
+    let cmd = format!("sudo {} update -y", package_manager);
+    async_command(&cmd).await?;
     print("green", "Finished updating", Emoji("", ""))?;
     for package in packages {
         check_package(package_manager, package).await?;
@@ -122,8 +122,8 @@ pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
 pub async fn install_package(package_manager: &str, package: &str) -> Result<()> {
     let msg = format!("{} is not installed", package);
     print("red", &msg, Emoji("", ""))?;
-    let cmd = format!("{} install {}", package_manager, package);
-    let process = async_command_pipe(&cmd).await;
+    let cmd = format!("sudo {} install {}", package_manager, package);
+    let process = async_command(&cmd).await;
     match process {
         Ok(_) => {
             let msg = format!("Installed {}", package);
