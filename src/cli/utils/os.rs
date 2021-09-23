@@ -1,4 +1,4 @@
-use super::config_map::CONFIG;
+use super::config_map::PACKAGES;
 use super::process::{async_command_pipe, pipe};
 use crate::cli::utils::color::print;
 use anyhow::{anyhow, Result};
@@ -51,13 +51,13 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
     match distro {
         "Ubuntu" | "Debian" => {
             let package_manager = "apt";
-            if let Some(packages) = CONFIG.get("debian_packages") {
+            if let Some(packages) = PACKAGES.get("debian_packages") {
                 install_packages(package_manager, packages).await?;
             }
         }
         "Fedora" | "Hat" | "CentOs" => {
             let package_manager = "yum";
-            if let Some(packages) = CONFIG.get("non_debian_packages") {
+            if let Some(packages) = PACKAGES.get("non_debian_packages") {
                 install_packages(package_manager, packages).await?;
             }
         }

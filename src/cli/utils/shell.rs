@@ -1,8 +1,17 @@
 use super::color::print;
+use super::config_map::PATH_CONFIG;
 use super::dialog::proceed;
 use super::env::*;
+use super::process::{async_command, process_success};
 use anyhow::Result;
 use console::Emoji;
+
+pub async fn setup_shell() -> Result<()> {
+    let shell = check_shell().await?;
+    match_shell(&shell)?;
+    ask_shell_config().await?;
+    Ok(())
+}
 
 pub async fn check_shell() -> Result<String> {
     let shell = check_env("SHELL")?;
@@ -39,13 +48,6 @@ pub fn match_shell(shell: &str) -> Result<()> {
     Ok(())
 }
 
-pub async fn setup_shell() -> Result<()> {
-    let shell = check_shell().await?;
-    match_shell(&shell)?;
-    ask_shell_config().await?;
-    Ok(())
-}
-
 pub async fn ask_shell_config() -> Result<()> {
     let shell = check_env("MY_SHELL")?;
     let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
@@ -64,8 +66,44 @@ pub async fn ask_shell_config() -> Result<()> {
             shell, shell_profile_file
         );
         print("magenta", &msg, Emoji("", ""))?;
+        change_shell_config().await?;
     } else {
-        print("red", "Skipped adding path variables", Emoji("", ""))?;
+        print(
+            "red",
+            "Skipped adding path variables, setting at runtime manually",
+            Emoji("", ""),
+        )?;
     }
+    Ok(())
+}
+
+pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
+    let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
+    let cmd = format!("grep -q {} {}", pattern, shell_profile_file);
+    if process_success(&cmd).await? {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+
+pub async fn change_shell_config() -> Result<()> {
+    println!("Checking for shell configuration");
+    for (key, value) in PATH_CONFIG.iter() {
+        if let Ok(false) = check_shell_config_env(key).await {
+            write_shell_config(value).await?;
+        }
+    }
+    print("green", "Shell configured", Emoji("", ""))?;
+    Ok(())
+}
+
+pub async fn write_shell_config(value: &str) -> Result<()> {
+    let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
+    let append_string = format!("$(cat << 'EOF'\n{}\nEOF\n)", value);
+    let cmd = format!("echo \"{}\" >> {}", append_string, shell_profile_file);
+    let msg = format!("Added line to {}: {}", shell_profile_file, value);
+    print("green", &msg, Emoji("", ""))?;
+    async_command(&cmd).await?;
     Ok(())
 }
