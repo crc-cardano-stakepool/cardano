@@ -18,12 +18,18 @@
 
     sudo apt update
     sudo apt upgrade
-    sudo apt install curl git libssl-dev build-essential pkg-config
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    source $HOME/.cargo/env
+    sudo apt install git curl wget
 
 ## Install from source to ~/.cargo/bin/cardano
 
+### Install Rust Toolchain
+
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    source $HOME/.cargo/env
+
+### Compile
+
+    sudo apt install build-essential
     git clone https://github.com/crc-cardano-stakepool/cardano.git
     cd cardano
     cargo install --path .
