@@ -6,7 +6,7 @@ use console::Emoji;
 
 pub async fn check_distro() -> Result<String> {
     println!("Checking distro");
-    let cmd = format!("cat /etc/*ease | grep DISTRIB_ID | awk -F '=' {}", "'{print $2}'");
+    let cmd = format!("cat /etc/*ease | grep ID_LIKE | awk -F '=' {}", "'{print $2}'");
     let distro = async_command_pipe(&cmd).await;
     match distro {
         Ok(distro) => {
@@ -49,7 +49,7 @@ pub async fn setup_packages() -> Result<()> {
 pub async fn install_distro_packages(distro: &str) -> Result<()> {
     println!("Installing {} dependencies", distro);
     match distro {
-        "Ubuntu" | "Debian" => {
+        "debian" => {
             let package_manager = "apt";
             if let Some(packages) = PACKAGES.get("debian_packages") {
                 install_packages(package_manager, packages).await?;
