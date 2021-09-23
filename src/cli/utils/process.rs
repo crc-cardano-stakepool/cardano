@@ -53,6 +53,15 @@ pub async fn pipe(command: &str, pipe_command: &str) -> Result<String> {
     }
 }
 
+pub async fn process_success(cmd: &str) -> Result<bool> {
+    let output = Command::new("sh").arg("-c").arg(&cmd).output().await?;
+    if output.status.success() {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::cli::utils::process::async_command_pipe;
