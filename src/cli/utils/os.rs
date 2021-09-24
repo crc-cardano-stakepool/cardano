@@ -1,5 +1,5 @@
 use super::config_map::PACKAGES;
-use super::process::{async_command, async_command_pipe, pipe};
+use super::process::{async_command, async_command_pipe, pipe, process_success};
 use crate::cli::utils::color::print;
 use anyhow::{anyhow, Result};
 use console::Emoji;
@@ -15,7 +15,7 @@ pub async fn check_distro() -> Result<String> {
                 let distro = async_command_pipe(&cmd).await;
                 check_distro_result(distro)
             } else {
-                Ok(distro)
+                check_distro_result(Ok(distro))
             }
         }
         Err(e) => Err(anyhow!("{}", e)),
@@ -99,41 +99,45 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
 pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
     println!("Checking for {}", package);
     match package_manager {
-        "apt" => {
-            let cmd = format!("dpkg -s {}", package.trim());
-            let piped_cmd = "grep installed";
-            let output = pipe(&cmd, piped_cmd).await;
-            match output {
-                Ok(result) => {
-                    if result.trim().is_empty() {
-                        install_package(package_manager, package).await?;
-                    } else {
-                        let msg = format!("{} is installed", package);
-                        print("green", &msg, Emoji("", ""))?;
-                    }
-                }
-                Err(_) => {
-                    let msg = format!("Failed checking {}", package);
-                    print("red", &msg, Emoji("", ""))?
-                }
-            }
-        }
-        "yum" => {
-            let cmd = format!("rpm -q {}", package);
-            let output = async_command_pipe(&cmd).await;
-            match output {
-                Ok(_) => {
-                    let msg = format!("{} is installed", package);
-                    print("green", &msg, Emoji("", ""))?;
-                }
-                Err(_) => install_package(package_manager, package).await?,
-            }
-        }
+        "apt" => apt_install(package).await?,
+        "yum" => yum_install(package).await?,
         _ => {
             let msg = format!("Failed checking {}", package);
             print("red", &msg, Emoji("", ""))?
         }
     };
+    Ok(())
+}
+
+pub async fn apt_install(package: &str) -> Result<()> {
+    let cmd = format!("dpkg -s {}", package.trim());
+    let piped_cmd = "grep installed";
+    let output = pipe(&cmd, piped_cmd).await;
+    match output {
+        Ok(result) => {
+            if result.trim().is_empty() {
+                install_package("apt", package).await?;
+            } else {
+                let msg = format!("{} is installed", package);
+                print("green", &msg, Emoji("", ""))?;
+            }
+        }
+        Err(_) => {
+            let msg = format!("Failed checking {}", package);
+            print("red", &msg, Emoji("", ""))?
+        }
+    }
+    Ok(())
+}
+
+pub async fn yum_install(package: &str) -> Result<()> {
+    let cmd = format!("rpm -q {}", package);
+    if process_success(&cmd).await? {
+        let msg = format!("{} is installed", package);
+        print("green", &msg, Emoji("", ""))?;
+    } else {
+        install_package("yum", package).await?
+    }
     Ok(())
 }
 
