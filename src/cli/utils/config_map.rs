@@ -80,3 +80,14 @@ lazy_static! {
         map
     };
 }
+
+lazy_static! {
+    pub static ref REPO_URLS: HashMap<&'static str, String> = {
+        let mut map = HashMap::new();
+        map.insert(
+            "cardano-node",
+            "https://github.com/input-output-hk/cardano-node.git".to_string(),
+        );
+        map
+    };
+}
