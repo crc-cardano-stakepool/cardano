@@ -3,7 +3,9 @@ use crate::cli::utils::check_version::check_version;
 use crate::cli::utils::color::print;
 use crate::cli::utils::dialog::proceed;
 use crate::cli::utils::fs::{check_directory, check_work_dir};
+use crate::cli::utils::git::clone_cardano_repository;
 use crate::cli::utils::os::*;
+use crate::cli::utils::prepare_build::prepare_build;
 use crate::cli::utils::shell::setup_shell;
 use crate::cli::utils::user::*;
 use anyhow::Result;
@@ -43,6 +45,8 @@ impl NodeCommand {
                 check_directory("install directory", &check_work_dir().await?).await?;
                 setup_packages().await?;
                 setup_shell().await?;
+                prepare_build().await?;
+                clone_cardano_repository("cardano-node").await?;
             } else {
                 print("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
             }
@@ -55,7 +59,6 @@ impl NodeCommand {
         }
         Ok(())
     }
-
     pub async fn uninstall_node() -> Result<()> {
         print("white", "Uninstalling cardano-node", Emoji("💔", ""))?;
         Ok(())

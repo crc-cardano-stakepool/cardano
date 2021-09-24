@@ -1,6 +1,6 @@
 [package]
 name = "cardano"
-version = "0.0.2-alpha"
+version = "0.0.2"
 authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 edition = "2018"
 license = "MIT"
@@ -20,6 +20,7 @@ human-panic = "1.0.3"
 reqwest = { version = "0.11.4", features = ["json"] }
 config = "0.11.0"
 lazy_static = "1.4.0"
+convert_case = "0.4.0"
 # indicatif = "0.16.2"
 # regex = "1.5.4"
 # cardano-serialization-lib = "8.0.0"
