@@ -1,18 +1,22 @@
 # Cardano Rust CLI
 
-[![Top Language](https://img.shields.io/github/languages/top/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano)
-[![Followers](https://img.shields.io/github/followers/cardano-rust-cli?style=flat)](https://github.com/cardano-rust-cli?tab=followers)
-[![Forks](https://img.shields.io/github/forks/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/network/members)
-[![Stars](https://img.shields.io/github/stars/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/stargazers)
-[![Watchers](https://img.shields.io/github/watchers/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/watchers)
-[![Commits/month](https://img.shields.io/github/commit-activity/m/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/graphs/commit-activity)
-[![Last Commit](https://img.shields.io/github/last-commit/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/graphs/commit-activity)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/cardano-rust-cli/cardano/cardano-rust-cli?label=cardano-rust-cli&logo=github&style=flat)](https://github.com/cardano-rust-cli/cardano/actions?query=workflow:cardano-rust-cli)
-[![Github Issues](https://img.shields.io/github/issues-raw/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/issues)
-[![Github open PRs](https://img.shields.io/github/issues-pr-raw/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/pulls)
-[![Contributors](https://img.shields.io/github/contributors/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/graphs/contributors)
-[![License](https://img.shields.io/github/license/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano/blob/master/LICENSE)
-[![Repo Size](https://img.shields.io/github/repo-size/cardano-rust-cli/cardano?style=flat)](https://github.com/cardano-rust-cli/cardano)
+[![License](https://img.shields.io/github/license/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/blob/master/LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/crc-cardano-stakepool/cardano/cardano?label=cardano&logo=github&style=flat)](https://github.com/crc-cardano-stakepool/cardano/actions?query=workflow:cardano)
+[![Last release date](https://img.shields.io/github/release-date/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/graphs/commit-activity)
+[![Top Language](https://img.shields.io/github/languages/top/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano)
+[![Followers](https://img.shields.io/github/followers/crc-cardano-stakepool?style=flat)](https://github.com/crc-cardano-stakepool?tab=followers)
+[![Forks](https://img.shields.io/github/forks/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/network/members)
+[![Stars](https://img.shields.io/github/stars/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/stargazers)
+[![Watchers](https://img.shields.io/github/watchers/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/watchers)
+[![Github Issues](https://img.shields.io/github/issues-raw/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/issues)
+[![Github closed Issues](https://img.shields.io/github/issues-closed/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/issues?q=is%3Aissue+is%3Aclosed)
+[![Github open PRs](https://img.shields.io/github/issues-pr-raw/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/pulls)
+[![Github closed PRs](https://img.shields.io/github/issues-pr-closed/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/pulls?q=is%3Apr+is%3Aclosed)
+[![Commits/month](https://img.shields.io/github/commit-activity/m/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/graphs/commit-activity)
+[![Contributors](https://img.shields.io/github/contributors/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/graphs/contributors)
+[![Release Version](https://img.shields.io/github/v/release/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/releases)
+[![Twitter Follow](https://img.shields.io/twitter/follow/clemenscodes?logo=twitter&style=flat)](https://twitter.com/clemenscodes)
 
 ## Prerequisites
 
@@ -20,7 +24,13 @@
     sudo apt upgrade
     sudo apt install git curl wget
 
-## Install from source to ~/.cargo/bin/cardano
+## Install latest precompiled binary globally
+
+    git clone https://github.com/crc-cardano-stakepool/cardano.git
+    cd cardano
+    ./install.sh
+
+## Install from source
 
 ### Install Rust Toolchain
 
@@ -32,12 +42,6 @@
     git clone https://github.com/crc-cardano-stakepool/cardano.git
     cd cardano
     cargo install --path .
-
-## Install precompiled binary to /usr/bin/cardano
-
-    git clone https://github.com/crc-cardano-stakepool/cardano.git
-    cd cardano
-    ./install.sh
 
 ## Usage
 
@@ -53,6 +57,7 @@
     help       Prints this message or the help of the given subcommand(s)
     install    Install cardano components
     node       Manage cardano nodes
+    uninstall  Uninstall cardano components
 
 ## Documentation
 
