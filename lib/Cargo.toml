@@ -1,0 +1,25 @@
+[package]
+name = "lib"
+version = "0.0.3-alpha"
+edition = "2018"
+authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
+license = "MIT"
+description = "Library for managing cardano components"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1.9.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+sudo = "0.6.0"
+serde_json = "1.0.66"
+console = "0.14.1"
+dialoguer = "0.8.0"
+anyhow = "1.0.42"
+reqwest = { version = "0.11.4", features = ["json"] }
+config = "0.11.0"
+lazy_static = "1.4.0"
+convert_case = "0.4.0"
+# indicatif = "0.16.2"
+# regex = "1.5.4"
+# cardano-serialization-lib = "8.0.0"

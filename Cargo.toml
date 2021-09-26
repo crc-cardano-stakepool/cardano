@@ -1,32 +1,3 @@
-[package]
-name = "cardano"
-version = "0.0.2"
-authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
-edition = "2018"
-license = "MIT"
-description = "CLI for managing cardano components"
+[workspace]
 
-[dependencies]
-structopt = "0.3.22"
-tokio = { version = "1.9.0", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-sudo = "0.6.0"
-serde_json = "1.0.66"
-console = "0.14.1"
-dialoguer = "0.8.0"
-anyhow = "1.0.42"
-ctrlc = "3.2.0"
-human-panic = "1.0.3"
-reqwest = { version = "0.11.4", features = ["json"] }
-config = "0.11.0"
-lazy_static = "1.4.0"
-convert_case = "0.4.0"
-# indicatif = "0.16.2"
-# regex = "1.5.4"
-# cardano-serialization-lib = "8.0.0"
-
-[dev-dependencies]
-assert_cmd = "2.0.0"
-predicates = "2.0.1"
-serde_test = "1.0.127"
-pretty_assertions = "0.7.2"
+members = ["cardano", "lib"]
