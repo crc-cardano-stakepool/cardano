@@ -61,4 +61,4 @@
 
 ## Documentation
 
-    cargo doc --open
+    cargo doc --workspace --no-deps --open

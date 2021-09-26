@@ -1,5 +1,6 @@
 #!/bin/sh
 
 cargo fmt &&
-cargo clippy &&
-cargo test --release --target x86_64-unknown-linux-gnu
+cargo clippy --workspace &&
+cargo doc --workspace --no-deps --open &&
+cargo test --workspace --release --target x86_64-unknown-linux-gnu

@@ -1,10 +1,10 @@
 use super::run::RunCommand;
 use anyhow::Result;
-use console::Emoji;
-use lib::{
+use cardano_lib::{
     check_dir, check_root, check_version, check_work_dir, clone_cardano_repo, prepare_build, print_emoji, proceed,
     setup_packages, setup_shell,
 };
+use console::Emoji;
 use structopt::StructOpt;
 use sudo::escalate_if_needed;
 

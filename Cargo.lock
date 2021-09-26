@@ -143,14 +143,31 @@ version = "0.0.3-alpha"
 dependencies = [
  "anyhow",
  "assert_cmd",
+ "cardano_lib",
  "console",
  "ctrlc",
  "human-panic",
- "lib",
  "predicates",
  "pretty_assertions",
  "serde_test",
  "structopt",
+ "sudo",
+ "tokio",
+]
+
+[[package]]
+name = "cardano_lib"
+version = "0.0.3-alpha"
+dependencies = [
+ "anyhow",
+ "config",
+ "console",
+ "convert_case",
+ "dialoguer",
+ "lazy_static",
+ "reqwest",
+ "serde 1.0.130",
+ "serde_json",
  "sudo",
  "tokio",
 ]
@@ -609,23 +626,6 @@ dependencies = [
  "cfg-if",
  "ryu",
  "static_assertions",
-]
-
-[[package]]
-name = "lib"
-version = "0.0.3-alpha"
-dependencies = [
- "anyhow",
- "config",
- "console",
- "convert_case",
- "dialoguer",
- "lazy_static",
- "reqwest",
- "serde 1.0.130",
- "serde_json",
- "sudo",
- "tokio",
 ]
 
 [[package]]

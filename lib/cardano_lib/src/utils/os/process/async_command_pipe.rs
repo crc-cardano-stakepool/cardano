@@ -20,7 +20,7 @@ mod tests {
     use crate::async_command_pipe;
     #[tokio::test]
     pub async fn test_async_command_pipe() {
-        match async_command_pipe("find ../target/ -type f -name cardano | tail -n1").await {
+        match async_command_pipe("find ../../target/ -type f -name cardano | tail -n1").await {
             Ok(bin) => {
                 let helper_string = "'{print $3}'";
                 let cmd = format!("file {} | awk {}", bin.trim(), helper_string);
