@@ -1,12 +1,9 @@
-use crate::{install_package, print, process_success};
+use crate::{install_package, process_success};
 use anyhow::Result;
 
 pub async fn yum_install(package: &str) -> Result<()> {
     let cmd = format!("rpm -q {}", package);
-    if process_success(&cmd).await? {
-        let msg = format!("{} is installed", package);
-        print("green", &msg)?;
-    } else {
+    if !process_success(&cmd).await? {
         install_package("yum", package).await?
     }
     Ok(())

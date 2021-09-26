@@ -8,11 +8,7 @@ pub async fn install_package(package_manager: &str, package: &str) -> Result<()>
     let cmd = format!("sudo {} install {} -y", package_manager, package);
     let process = async_command(&cmd).await;
     match process {
-        Ok(_) => {
-            let msg = format!("Installed {}", package);
-            print("green", &msg)?;
-            Ok(())
-        }
+        Ok(_) => Ok(()),
         Err(e) => Err(anyhow!("Failed installing {} with error: {}", package, e)),
     }
 }
