@@ -63,7 +63,7 @@ jobs:
         with: 
           use-cross: ${{ matrix.os.use-cross }}
           command: test
-          args: --release --target ${{ matrix.target }}
+          args: --workspace --release --target ${{ matrix.target }}
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:

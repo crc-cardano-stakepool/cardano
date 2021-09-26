@@ -1,7 +1,7 @@
 use super::RunConfig;
 use anyhow::Result;
+use cardano_lib::{check_version, print, print_emoji};
 use console::Emoji;
-use lib::{check_version, print, print_emoji};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]

@@ -1,4 +1,4 @@
-extern crate lib;
+extern crate cardano_lib;
 mod cli;
 use anyhow::Result;
 use cli::Cli;
