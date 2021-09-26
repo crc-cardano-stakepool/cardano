@@ -9,10 +9,6 @@ pub async fn apt_install(package: &str) -> Result<()> {
         Ok(result) => {
             if result.trim().is_empty() {
                 install_package("apt", package).await?;
-            } else {
-                ()
-                // let msg = format!("{} is installed", package);
-                // print("green", &msg)?;
             }
         }
         Err(_) => {

@@ -1,7 +1,7 @@
+use clap_verbosity_flag::Verbosity;
 use std::net::IpAddr;
 use std::path::PathBuf;
 use structopt::StructOpt;
-use clap_verbosity_flag::Verbosity;
 
 #[allow(dead_code)]
 #[derive(Debug, StructOpt)]

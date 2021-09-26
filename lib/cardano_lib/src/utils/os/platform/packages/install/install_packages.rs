@@ -14,8 +14,8 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
     print("green", "Finished updating")?;
     print("", "Installing packages")?;
     let spinner_style = ProgressStyle::default_bar()
-        .template("{spinner:.green} [{wide_bar:.white/white}] {msg:.green/green}")
-        .progress_chars("#>-");
+        .template("{spinner:.green} [{bar:.white/white}] {wide_msg:.green/green}")
+        .progress_chars("=>-");
     let pkgs: u64 = packages.len() as u64;
     let pb = ProgressBar::new(pkgs);
     let mut i = 1;
@@ -26,7 +26,7 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
         check_package(package_manager, package).await?;
         pb.set_message(format!("[{}/{}] {} is installed", i, pkgs, package));
         pb.inc(1);
-        i = i+1;
+        i = i + 1;
     }
     pb.finish_and_clear();
     print("green", "Successfully installed packages")?;
