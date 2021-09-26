@@ -1,6 +1,7 @@
 use std::net::IpAddr;
 use std::path::PathBuf;
 use structopt::StructOpt;
+use clap_verbosity_flag::Verbosity;
 
 #[allow(dead_code)]
 #[derive(Debug, StructOpt)]
@@ -25,4 +26,6 @@ pub struct RunConfig {
     socket: PathBuf,
     #[structopt(short, parse(from_os_str), about = "The path to the configuration file for the node")]
     config: PathBuf,
+    #[structopt(flatten)]
+    verbose: Verbosity,
 }
