@@ -29,10 +29,9 @@
 
 ### Compile
 
-    sudo apt install build-essential
     git clone https://github.com/crc-cardano-stakepool/cardano.git
     cd cardano
-    cargo install --path .
+    cargo install --path ./cardano
 
 ## Install precompiled binary to /usr/bin/cardano
 
