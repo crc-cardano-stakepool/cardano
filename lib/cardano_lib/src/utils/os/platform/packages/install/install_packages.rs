@@ -20,7 +20,6 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
     let pb = ProgressBar::new(pkgs);
     let mut i = 1;
     pb.set_style(spinner_style);
-    pb.set_draw_rate(1000);
     for package in packages {
         sleep(Duration::from_millis(80));
         check_package(package_manager, package).await?;
