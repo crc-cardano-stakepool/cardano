@@ -1,3 +1,25 @@
-[workspace]
+[package]
+name = "cardano"
+version = "0.0.3-alpha"
+authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
+edition = "2018"
+license = "MIT"
+description = "CLI for managing cardano components"
 
-members = ["cardano", "lib"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lib = { path = "lib" }
+structopt = "0.3.23"
+sudo = "0.6.0"
+human-panic = "1.0.3"
+ctrlc = "3.2.0"
+anyhow = "1.0.42"
+tokio = { version = "1.9.0", features = ["full"] }
+console = "0.14.1"
+
+[dev-dependencies]
+assert_cmd = "2.0.0"
+predicates = "2.0.1"
+serde_test = "1.0.127"
+pretty_assertions = "0.7.2"

@@ -31,7 +31,7 @@
 
     git clone https://github.com/crc-cardano-stakepool/cardano.git
     cd cardano
-    cargo install --path ./cardano
+    cargo install --path .
 
 ## Install precompiled binary to /usr/bin/cardano
 
