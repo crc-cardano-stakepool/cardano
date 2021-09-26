@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cargo install --path ./cardano
+cargo install --path .

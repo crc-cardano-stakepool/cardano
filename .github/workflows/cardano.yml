@@ -73,8 +73,8 @@ jobs:
       - name: Package
         id: package
         run: |
-          PROJECT_NAME="$(sed -n 's/^name = "\(.*\)"/\1/p' cardano/Cargo.toml)"
-          PROJECT_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' cardano/Cargo.toml | head -n1)"
+          PROJECT_NAME="$(sed -n 's/^name = "\(.*\)"/\1/p' Cargo.toml)"
+          PROJECT_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)"
           PKG_SUFFIX=".tar.gz"
           PKG_NAME="${PROJECT_NAME}-${PROJECT_VERSION}-${{ matrix.target }}${PKG_SUFFIX}"
           tar -C target/${{matrix.target}}/release -czf "${PKG_NAME}" cardano
