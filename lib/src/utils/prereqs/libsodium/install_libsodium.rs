@@ -1,6 +1,7 @@
+use crate::print;
 use anyhow::Result;
 
 pub async fn install_libsodium() -> Result<()> {
-    println!("Installing libsodium");
+    print("", "Installing libsodium")?;
     Ok(())
 }
