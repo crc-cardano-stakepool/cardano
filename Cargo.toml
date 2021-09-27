@@ -3,7 +3,7 @@
 [package]
 name = "cardano"
 version = "0.0.4"
-authos = ["Clemens Horn <clemens.horn@mni.thm.de>"]
+authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 edition = "2018"
 license = "MIT"
 description = "CLI for managing cardano components"
