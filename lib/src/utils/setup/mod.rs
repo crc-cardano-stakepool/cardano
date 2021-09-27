@@ -12,3 +12,7 @@ pub mod build_latest_component;
 pub use build_latest_component::build_latest_component;
 pub mod check_dependencies;
 pub use check_dependencies::check_dependencies;
+pub mod install_component;
+pub use install_component::install_component;
+pub mod check_install;
+pub use check_install::check_install;

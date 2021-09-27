@@ -6,5 +6,3 @@ pub mod ghcup;
 pub use ghcup::*;
 pub mod libsodium;
 pub use libsodium::*;
-pub mod setup;
-pub use setup::*;

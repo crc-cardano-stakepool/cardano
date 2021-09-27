@@ -1,6 +1,6 @@
 use crate::{
     build_latest_component, check_dir, check_root, check_version, check_work_dir, clone_cardano_repo, configure_build,
-    copy_binary, prepare_build, print, print_emoji, proceed, setup_packages, setup_shell,
+    copy_binary, check_install, prepare_build, print, print_emoji, proceed, setup_packages, setup_shell,
 };
 use anyhow::Result;
 use console::Emoji;
@@ -28,6 +28,7 @@ pub async fn install_component(component: &str) -> Result<()> {
             configure_build(component).await?;
             build_latest_component(component).await?;
             copy_binary(component).await?;
+            check_install(component).await?;
         } else {
             let msg = format!("Aborted {} installation", component);
             print_emoji("red", &msg, Emoji("", ""))?;
