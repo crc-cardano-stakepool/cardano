@@ -1,4 +1,4 @@
-use crate::{check_env, check_repo, set_env, URLS};
+use crate::{check_env, check_repo, checkout_latest_release, set_env, URLS};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 
@@ -10,6 +10,7 @@ pub async fn clone_cardano_repo(component: &str) -> Result<()> {
         let converted = env_name.to_case(Case::UpperSnake);
         set_env(&converted, &cardano_component_dir);
         check_repo(url, &cardano_component_dir, "cardano-node").await?;
+        checkout_latest_release(component).await?;
         Ok(())
     } else {
         let msg = format!("Failed cloning {} repository", component);
