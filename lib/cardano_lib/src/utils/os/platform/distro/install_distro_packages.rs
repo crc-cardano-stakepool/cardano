@@ -2,7 +2,6 @@ use crate::{install_packages, update, PACKAGES};
 use anyhow::Result;
 
 pub async fn install_distro_packages(distro: &str) -> Result<()> {
-    println!("Installing {} dependencies", distro);
     match distro {
         "ubuntu" | "debian" => {
             let package_manager = "apt";
