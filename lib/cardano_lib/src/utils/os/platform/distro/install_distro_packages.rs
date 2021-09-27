@@ -1,4 +1,4 @@
-use crate::{install_packages, PACKAGES};
+use crate::{install_packages, update, PACKAGES};
 use anyhow::Result;
 
 pub async fn install_distro_packages(distro: &str) -> Result<()> {
@@ -7,6 +7,7 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
         "ubuntu" | "debian" => {
             let package_manager = "apt";
             if let Some(packages) = PACKAGES.get("debian_packages") {
+                update(package_manager).await?;
                 install_packages(package_manager, packages).await?;
             }
         }
