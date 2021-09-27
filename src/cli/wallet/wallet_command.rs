@@ -1,6 +1,6 @@
 use anyhow::Result;
-use cardano_lib::print_emoji;
 use console::Emoji;
+use lib::print_emoji;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
