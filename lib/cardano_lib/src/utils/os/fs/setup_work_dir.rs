@@ -11,7 +11,7 @@ pub async fn setup_work_dir() -> Result<()> {
         let work_dir = check_env("WORK_DIR")?;
         let ipc_dir = format!("{}/ipc", work_dir);
         let config_dir = format!("{}/config", work_dir);
-        let data_dir = format!("{}/data/db", work_dir);
+        let data_dir = format!("{}/data", work_dir);
         let mainnet_data_dir = format!("{}/mainnet", data_dir);
         let testnet_data_dir = format!("{}/testnet", data_dir);
         map.insert("working", &work_dir);
@@ -22,7 +22,7 @@ pub async fn setup_work_dir() -> Result<()> {
         map.insert("testnet", &testnet_data_dir);
         for (key, value) in map.iter() {
             sleep(Duration::from_millis(300));
-            check_dir(key, value).await?;
+            check_dir(value).await?;
             pb.set_message(format!("{} directory checked", key));
         }
         pb.finish_and_clear();
