@@ -2,7 +2,7 @@ use crate::{check_cabal, check_ghc, check_ghcup, install_libsodium, print, setup
 use anyhow::Result;
 
 pub async fn install_build_dependencies() -> Result<()> {
-    println!("Checking dependencies");
+    print("", "Checking dependencies")?;
     setup_work_dir().await?;
     check_ghcup().await?;
     check_ghc().await?;

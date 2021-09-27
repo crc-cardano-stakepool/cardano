@@ -33,11 +33,11 @@ pub fn print(color: &str, output: &str) -> Result<()> {
             Term::stdout().write_line(&magenta)?;
         }
         Color::White => {
-            let white = format!("{}", Style::new().white().apply_to(output));
+            let white = format!("{}", Style::new().white().bold().apply_to(output));
             Term::stdout().write_line(&white)?;
         }
         _ => {
-            let white = format!("{}", Style::new().white().apply_to(output));
+            let white = format!("{}", Style::new().white().bold().apply_to(output));
             Term::stdout().write_line(&white)?;
         }
     };

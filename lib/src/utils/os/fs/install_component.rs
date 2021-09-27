@@ -7,12 +7,13 @@ use console::Emoji;
 use sudo::escalate_if_needed;
 
 pub async fn install_component(component: &str) -> Result<()> {
-    let msg = format!("Installing {}", component);
-    print("", &msg)?;
     if let Ok(false) = check_root() {
         match escalate_if_needed() {
-            Ok(user) => println!("Running as {:#?}", user),
-            Err(_) => println!("Failed obtaining root privileges"),
+            Ok(user) => {
+                let msg = format!("Running as {:#?}", user);
+                print("", &msg)?
+            }
+            Err(_) => print("", "Failed obtaining root privileges")?,
         }
     } else if !check_version(component).await? {
         let msg = format!("Do you want to install the latest {} binary?", component);
