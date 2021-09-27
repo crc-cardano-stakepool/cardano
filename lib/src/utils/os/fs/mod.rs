@@ -14,5 +14,3 @@ pub mod copy_binary;
 pub use copy_binary::copy_binary;
 pub mod check_component;
 pub use check_component::check_component;
-pub mod install_component;
-pub use install_component::install_component;
