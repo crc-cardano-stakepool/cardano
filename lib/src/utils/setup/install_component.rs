@@ -1,6 +1,6 @@
 use crate::{
-    build_latest_component, check_dir, check_root, check_version, check_work_dir, clone_cardano_repo, configure_build,
-    copy_binary, check_install, prepare_build, print, print_emoji, proceed, setup_packages, setup_shell,
+    build_latest_component, check_dir, check_install, check_root, check_version, check_work_dir, clone_cardano_repo,
+    configure_build, copy_binary, prepare_build, print, print_emoji, proceed, setup_packages, setup_shell,
 };
 use anyhow::Result;
 use console::Emoji;

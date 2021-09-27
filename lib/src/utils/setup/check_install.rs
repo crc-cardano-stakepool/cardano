@@ -1,4 +1,4 @@
-use crate::{print_emoji, check_installed_version, print};
+use crate::{check_installed_version, print, print_emoji};
 use anyhow::Result;
 use console::Emoji;
 
