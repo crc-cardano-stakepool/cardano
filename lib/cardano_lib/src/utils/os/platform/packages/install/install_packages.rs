@@ -5,18 +5,17 @@ use std::thread::sleep;
 use std::time::Duration;
 
 pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
-    print("", "Installing packages")?;
-    let progress_style = ProgressStyle::default_bar()
-        .template("[{bar:.white/white}] {wide_msg:.green/green}")
-        .progress_chars("=>-");
+    let mut i = 1;
     let pkgs: u64 = packages.len() as u64;
     let pb = ProgressBar::new(pkgs);
-    let mut i = 1;
+    let progress_style = ProgressStyle::default_bar()
+        .template("{msg:.green}[{bar:.white}]")
+        .progress_chars("=>-");
     pb.set_style(progress_style);
     for package in packages {
         sleep(Duration::from_millis(80));
         check_package(package_manager, package).await?;
-        pb.set_message(format!("[{}/{}] {} is installed", i, pkgs, package));
+        pb.set_message(format!("{} is installed\n[{}/{}]", package, i, pkgs));
         pb.inc(1);
         i += 1;
     }

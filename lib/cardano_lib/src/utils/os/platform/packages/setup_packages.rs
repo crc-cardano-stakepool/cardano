@@ -6,7 +6,7 @@ pub async fn setup_packages() -> Result<()> {
     let platform = output.as_str().trim();
     match platform {
         "linux" | "Linux" => {
-            print("green", "Detected Linux")?;
+            print("green", "Detected linux")?;
             let output = check_distro().await?;
             let distro = output.as_str().trim();
             install_distro_packages(distro).await?;
