@@ -1,4 +1,4 @@
-use crate::{chownr, async_command, change_dir, check_env, print};
+use crate::{async_command, change_dir, check_env, chownr, print};
 use anyhow::Result;
 
 pub async fn clone_repo(url: &str, destination_path: &str, repo_name: &str) -> Result<()> {

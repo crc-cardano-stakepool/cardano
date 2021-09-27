@@ -1,4 +1,4 @@
-use crate::{print, check_dir, check_env, spinner, SPINNERS};
+use crate::{check_dir, check_env, print, spinner, SPINNERS};
 use anyhow::Result;
 use std::collections::HashMap;
 use std::thread::sleep;
