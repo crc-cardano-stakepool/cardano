@@ -1,4 +1,4 @@
-use crate::{check_dir, check_env, print, spinner, SPINNERS};
+use crate::{check_dir, check_env, chownr, print, spinner, SPINNERS};
 use anyhow::Result;
 use std::collections::HashMap;
 use std::thread::sleep;
@@ -25,6 +25,7 @@ pub async fn setup_work_dir() -> Result<()> {
             check_dir(value).await?;
             pb.set_message(format!("{} directory checked", key));
         }
+        chownr(&work_dir).await?;
         pb.finish_and_clear();
         print("green", "Working directory is setup")?;
     }
