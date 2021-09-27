@@ -1,15 +1,10 @@
-use crate::{check_package, print, spinner_cmd};
+use crate::{check_package, print};
 use anyhow::Result;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::thread::sleep;
 use std::time::Duration;
 
 pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
-    let cmd = format!(
-        "sudo {} update -y && sudo {} upgrade -y",
-        package_manager, package_manager
-    );
-    spinner_cmd(&cmd, "Updating", "Finished updating").await?;
     print("", "Installing packages")?;
     let progress_style = ProgressStyle::default_bar()
         .template("[{bar:.white/white}] {wide_msg:.green/green}")
