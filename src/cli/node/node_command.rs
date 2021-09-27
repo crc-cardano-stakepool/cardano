@@ -1,12 +1,8 @@
 use super::run::RunCommand;
 use anyhow::Result;
 use console::Emoji;
-use lib::{
-    check_dir, check_root, check_version, check_work_dir, clone_cardano_repo, prepare_build, print_emoji, proceed,
-    setup_packages, setup_shell,
-};
+use lib::{install_component, print_emoji};
 use structopt::StructOpt;
-use sudo::escalate_if_needed;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Manage cardano nodes")]
@@ -29,29 +25,7 @@ impl NodeCommand {
     }
 
     pub async fn install_node() -> Result<()> {
-        if let Ok(false) = check_root() {
-            match escalate_if_needed() {
-                Ok(user) => println!("Running as {:#?}", user),
-                Err(_) => println!("Failed obtaining root privileges"),
-            }
-        } else if !check_version("cardano-node").await? {
-            if proceed("Do you want to install the latest cardano-node binary?")? {
-                print_emoji("white", "Installing latest cardano node", Emoji("🤟", ""))?;
-                check_dir(&check_work_dir().await?).await?;
-                setup_packages().await?;
-                setup_shell().await?;
-                prepare_build().await?;
-                clone_cardano_repo("cardano-node").await?;
-            } else {
-                print_emoji("red", "Aborted cardano-node installation", Emoji("😔", ""))?;
-            }
-        } else {
-            print_emoji(
-                "green",
-                "The latest cardano node version is installed",
-                Emoji("🙌🎉", ""),
-            )?;
-        }
+        install_component("cardano-node").await?;
         Ok(())
     }
 

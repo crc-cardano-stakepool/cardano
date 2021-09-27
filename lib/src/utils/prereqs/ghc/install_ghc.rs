@@ -1,6 +1,7 @@
+use crate::print;
 use anyhow::Result;
 
 pub async fn install_ghc() -> Result<()> {
-    println!("Installing GHC");
+    print("", "Installing GHC")?;
     Ok(())
 }
