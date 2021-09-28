@@ -26,3 +26,13 @@ pub fn match_shell(shell: &str) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::match_shell;
+    #[tokio::test]
+    #[ignore]
+    async fn test_match_shell() {
+        unimplemented!();
+    }
+}

@@ -15,3 +15,13 @@ pub async fn async_command(command: &str) -> Result<String> {
         Err(e) => Err(anyhow!("{}", e)),
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::async_command;
+    #[tokio::test]
+    #[ignore]
+    async fn test_async_command() {
+        unimplemented!();
+    }
+}

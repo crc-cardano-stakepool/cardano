@@ -10,3 +10,13 @@ pub fn spinner(exec_msg: &'static str, tick_strings: &[&str]) -> ProgressBar {
     spinner.set_message(exec_msg);
     spinner
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::spinner;
+    #[tokio::test]
+    #[ignore]
+    async fn test_spinner() {
+        unimplemented!();
+    }
+}

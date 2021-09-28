@@ -7,3 +7,13 @@ pub async fn copy_binary(component: &str) -> Result<()> {
     print("", &msg)?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::copy_binary;
+    #[tokio::test]
+    #[ignore]
+    async fn test_copy_binary() {
+        unimplemented!();
+    }
+}

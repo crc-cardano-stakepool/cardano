@@ -17,3 +17,13 @@ pub async fn check_distro() -> Result<String> {
         Err(e) => Err(anyhow!("{}", e)),
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_distro;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_distro() {
+        unimplemented!();
+    }
+}

@@ -43,3 +43,13 @@ pub fn print(color: &str, output: &str) -> Result<()> {
     };
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::print;
+    #[tokio::test]
+    #[ignore]
+    async fn test_print() {
+        unimplemented!();
+    }
+}

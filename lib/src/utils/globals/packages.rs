@@ -52,3 +52,13 @@ lazy_static! {
         map
     };
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::PACKAGES;
+    #[test]
+    #[ignore]
+    fn test_packages() {
+        unimplemented!();
+    }
+}

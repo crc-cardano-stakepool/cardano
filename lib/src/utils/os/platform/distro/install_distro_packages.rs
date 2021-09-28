@@ -20,3 +20,13 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::install_distro_packages;
+    #[tokio::test]
+    #[ignore]
+    async fn test_install_distro_packages() {
+        unimplemented!();
+    }
+}

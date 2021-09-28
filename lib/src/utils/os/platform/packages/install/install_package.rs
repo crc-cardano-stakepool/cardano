@@ -12,3 +12,13 @@ pub async fn install_package(package_manager: &str, package: &str) -> Result<()>
         Err(e) => Err(anyhow!("Failed installing {} with error: {}", package, e)),
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::install_package;
+    #[tokio::test]
+    #[ignore]
+    async fn test_install_package() {
+        unimplemented!();
+    }
+}

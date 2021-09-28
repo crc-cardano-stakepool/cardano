@@ -11,3 +11,13 @@ pub async fn change_shell_config() -> Result<()> {
     print("green", "Shell configured")?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::change_shell_config;
+    #[tokio::test]
+    #[ignore]
+    async fn test_change_shell_config() {
+        unimplemented!();
+    }
+}

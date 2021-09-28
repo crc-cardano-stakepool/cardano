@@ -11,3 +11,13 @@ pub async fn install_build_dependencies() -> Result<()> {
     print("green", "Successfully installed dependencies")?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::install_build_dependencies;
+    #[tokio::test]
+    #[ignore]
+    async fn test_install_build_dependencies() {
+        unimplemented!();
+    }
+}

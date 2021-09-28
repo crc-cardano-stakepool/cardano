@@ -13,3 +13,13 @@ pub async fn clone_repo(url: &str, destination_path: &str, repo_name: &str) -> R
     print("green", &msg)?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::clone_repo;
+    #[tokio::test]
+    #[ignore]
+    async fn test_clone_repo() {
+        unimplemented!();
+    }
+}

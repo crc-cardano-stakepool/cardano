@@ -10,3 +10,13 @@ pub async fn get_request(url: &str) -> Result<Value> {
         Err(e) => Err(anyhow!("Request failed with error: {}", e)),
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::get_request;
+    #[tokio::test]
+    #[ignore]
+    async fn test_get_request() {
+        unimplemented!();
+    }
+}

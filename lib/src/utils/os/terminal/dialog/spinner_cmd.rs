@@ -17,3 +17,13 @@ pub async fn spinner_cmd(cmd: &str, exec_msg: &'static str, finish_msg: &'static
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::spinner_cmd;
+    #[tokio::test]
+    #[ignore]
+    async fn test_spinner_cmd() {
+        unimplemented!();
+    }
+}

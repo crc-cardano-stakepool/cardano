@@ -7,3 +7,13 @@ pub async fn configure_build(component: &str) -> Result<()> {
     check_project_file(component).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::configure_build;
+    #[tokio::test]
+    #[ignore]
+    async fn test_configure_build() {
+        unimplemented!();
+    }
+}

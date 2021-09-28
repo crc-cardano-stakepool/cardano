@@ -10,3 +10,13 @@ pub async fn write_shell_config(value: &str) -> Result<()> {
     async_command(&cmd).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::write_shell_config;
+    #[tokio::test]
+    #[ignore]
+    async fn test_write_shell_config() {
+        unimplemented!();
+    }
+}

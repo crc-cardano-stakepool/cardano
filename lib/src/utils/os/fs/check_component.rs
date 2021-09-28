@@ -6,3 +6,13 @@ pub async fn check_component(component: &str) -> Result<()> {
     print("", &msg)?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_component;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_component() {
+        unimplemented!();
+    }
+}

@@ -7,3 +7,13 @@ pub async fn setup_shell() -> Result<()> {
     ask_shell_config().await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::setup_shell;
+    #[tokio::test]
+    #[ignore]
+    async fn test_setup_shell() {
+        unimplemented!();
+    }
+}

@@ -8,3 +8,13 @@ lazy_static! {
         map
     };
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::SPINNERS;
+    #[test]
+    #[ignore]
+    fn test_spinners() {
+        unimplemented!();
+    }
+}

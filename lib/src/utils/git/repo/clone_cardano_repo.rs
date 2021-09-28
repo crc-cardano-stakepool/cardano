@@ -17,3 +17,13 @@ pub async fn clone_cardano_repo(component: &str) -> Result<()> {
         Err(anyhow!(msg))
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::clone_cardano_repo;
+    #[tokio::test]
+    #[ignore]
+    async fn test_clone_cardano_repo() {
+        unimplemented!();
+    }
+}

@@ -7,3 +7,13 @@ pub async fn create_dir(absolute_path: &str) -> Result<()> {
     chownr(absolute_path).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::create_dir;
+    #[tokio::test]
+    #[ignore]
+    async fn test_create_dir() {
+        unimplemented!();
+    }
+}

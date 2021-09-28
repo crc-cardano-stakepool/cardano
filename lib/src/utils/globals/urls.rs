@@ -11,3 +11,13 @@ lazy_static! {
         map
     };
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::URLS;
+    #[test]
+    #[ignore]
+    fn test_urls() {
+        unimplemented!();
+    }
+}

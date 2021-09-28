@@ -38,3 +38,13 @@ pub async fn setup_work_dir() -> Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::setup_work_dir;
+    #[tokio::test]
+    #[ignore]
+    async fn test_setup_work_dir() {
+        unimplemented!();
+    }
+}

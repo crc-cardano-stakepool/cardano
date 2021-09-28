@@ -8,3 +8,13 @@ pub async fn chownr(absolute_path: &str) -> Result<()> {
     async_command(&cmd).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::chownr;
+    #[tokio::test]
+    #[ignore]
+    async fn test_chownr() {
+        unimplemented!();
+    }
+}

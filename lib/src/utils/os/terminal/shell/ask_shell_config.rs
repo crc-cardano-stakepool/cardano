@@ -25,3 +25,13 @@ pub async fn ask_shell_config() -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::ask_shell_config;
+    #[tokio::test]
+    #[ignore]
+    async fn test_ask_shell_config() {
+        unimplemented!();
+    }
+}
