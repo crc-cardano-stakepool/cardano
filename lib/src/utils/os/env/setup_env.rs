@@ -15,8 +15,6 @@ pub async fn setup_env() -> Result<()> {
     map.insert("GHC_BIN", &ghc_bin);
     map.insert("CABAL_BIN", &cabal_bin);
     for (key, value) in map {
-        let msg = format!("Setting environment variable: {}={}", key, value);
-        print("green", &msg)?;
         set_env(key, value);
     }
     Ok(())

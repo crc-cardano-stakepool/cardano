@@ -2,7 +2,7 @@
 
 [package]
 name = "cardano"
-version = "0.0.5-alpha"
+version = "0.0.5"
 authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 edition = "2018"
 license = "MIT"
