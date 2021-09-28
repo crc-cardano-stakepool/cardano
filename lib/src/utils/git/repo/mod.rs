@@ -6,3 +6,5 @@ pub mod clone_cardano_repo;
 pub use clone_cardano_repo::clone_cardano_repo;
 pub mod checkout_latest_release;
 pub use checkout_latest_release::checkout_latest_release;
+pub mod fetch_tags;
+pub use fetch_tags::fetch_tags;
