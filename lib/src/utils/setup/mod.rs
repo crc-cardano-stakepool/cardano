@@ -16,3 +16,7 @@ pub mod install_component;
 pub use install_component::install_component;
 pub mod check_install;
 pub use check_install::check_install;
+pub mod build_component;
+pub use build_component::build_component;
+pub mod get_component_path;
+pub use get_component_path::get_component_path;

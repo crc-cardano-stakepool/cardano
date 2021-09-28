@@ -1,6 +1,6 @@
 use crate::{
-    build_latest_component, check_dir, check_install, check_root, check_version, check_work_dir, clone_cardano_repo,
-    configure_build, copy_binary, prepare_build, print, print_emoji, proceed, setup_packages, setup_shell,
+    build_component, check_install, check_root, check_version, clone_cardano_repo, copy_binary, prepare_build, print,
+    print_emoji, proceed,
 };
 use anyhow::Result;
 use console::Emoji;
@@ -20,13 +20,9 @@ pub async fn install_component(component: &str) -> Result<()> {
         if proceed(&msg)? {
             let msg = format!("Installing latest {}", component);
             print_emoji("white", &msg, Emoji("🤟", ""))?;
-            check_dir(&check_work_dir().await?).await?;
-            setup_packages().await?;
-            setup_shell().await?;
             prepare_build().await?;
             clone_cardano_repo(component).await?;
-            configure_build(component).await?;
-            build_latest_component(component).await?;
+            build_component(component).await?;
             copy_binary(component).await?;
             check_install(component).await?;
         } else {
