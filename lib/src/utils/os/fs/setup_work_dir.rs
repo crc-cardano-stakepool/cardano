@@ -1,4 +1,4 @@
-use crate::{check_dir, check_env, chownr, print, set_env, spinner, SPINNERS};
+use crate::{check_dir, check_env, check_home_dir, chownr, print, set_env, spinner, SPINNERS};
 use anyhow::Result;
 use convert_case::{Case, Casing};
 use std::collections::HashMap;
@@ -8,14 +8,16 @@ use std::time::Duration;
 pub async fn setup_work_dir() -> Result<()> {
     if let Some(arrows) = SPINNERS.get("arrows") {
         let pb = spinner("Setting up working directory", arrows);
-        let mut map: HashMap<&str, &str> = HashMap::new();
+        let home_dir = check_home_dir().await?;
         let work_dir = check_env("WORK_DIR")?;
         let ipc_dir = format!("{}/ipc", work_dir);
         let config_dir = format!("{}/config", work_dir);
         let data_dir = format!("{}/data", work_dir);
+        let libsodium_dir = format!("{}/libsodium", work_dir);
         let mainnet_data_dir = format!("{}/mainnet", data_dir);
         let testnet_data_dir = format!("{}/testnet", data_dir);
-        let install_dir = format!("{}/.local/bin", work_dir);
+        let install_dir = format!("{}/.local/bin", home_dir);
+        let mut map: HashMap<&str, &str> = HashMap::new();
         map.insert("working", &work_dir);
         map.insert("ipc", &ipc_dir);
         map.insert("config", &config_dir);
@@ -23,6 +25,7 @@ pub async fn setup_work_dir() -> Result<()> {
         map.insert("mainnet", &mainnet_data_dir);
         map.insert("testnet", &testnet_data_dir);
         map.insert("install", &install_dir);
+        map.insert("libsodium", &libsodium_dir);
         for (key, value) in map.iter() {
             sleep(Duration::from_millis(300));
             check_dir(value).await?;
@@ -35,7 +38,6 @@ pub async fn setup_work_dir() -> Result<()> {
         pb.finish_and_clear();
         print("green", "Working directory is setup")?;
     }
-
     Ok(())
 }
 

@@ -1,5 +1,9 @@
 pub mod check_dir;
 pub use check_dir::check_dir;
+pub mod is_dir;
+pub use is_dir::is_dir;
+pub mod file_exists;
+pub use file_exists::file_exists;
 pub mod change_dir;
 pub use change_dir::change_dir;
 pub mod create_dir;

@@ -6,3 +6,5 @@ pub mod urls;
 pub use urls::URLS;
 pub mod spinners;
 pub use spinners::SPINNERS;
+pub mod versions;
+pub use versions::VERSIONS;
