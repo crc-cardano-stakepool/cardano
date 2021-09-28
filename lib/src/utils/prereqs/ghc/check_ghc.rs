@@ -1,9 +1,14 @@
-use crate::{install_ghc, print};
+use crate::{compare_ghc, check_env, file_exists, install_ghc, print};
 use anyhow::Result;
 
 pub async fn check_ghc() -> Result<()> {
     print("", "Checking GHC")?;
-    install_ghc().await?;
+    let ghc = check_env("GHC_BIN")?;
+    if file_exists(&ghc) {
+        compare_ghc(&ghc).await?;
+    } else {
+        install_ghc().await?;
+    }
     Ok(())
 }
 

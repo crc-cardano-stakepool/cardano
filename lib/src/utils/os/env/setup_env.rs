@@ -8,15 +8,15 @@ pub async fn setup_env() -> Result<()> {
     let ghcup_dir = format!("{}/.ghcup", home_dir);
     let ghcup_bin = format!("{}/bin/ghcup", ghcup_dir);
     let ghc_bin = format!("{}/bin/ghc", ghcup_dir);
-    let cabal_dir = format!("{}/.cabal", home_dir);
-    let cabal_bin = format!("{}/bin/cabal", cabal_dir);
+    let cabal_bin = format!("{}/bin/cabal", ghcup_dir);
     let mut map: HashMap<&str, &str> = HashMap::new();
     map.insert("GHCUP_DIR", &ghcup_dir);
     map.insert("GHCUP_BIN", &ghcup_bin);
     map.insert("GHC_BIN", &ghc_bin);
-    map.insert("CABAL_DIR", &cabal_dir);
     map.insert("CABAL_BIN", &cabal_bin);
     for (key, value) in map {
+        let msg = format!("Setting environment variable: {}={}", key, value);
+        print("green", &msg)?;
         set_env(key, value);
     }
     Ok(())
