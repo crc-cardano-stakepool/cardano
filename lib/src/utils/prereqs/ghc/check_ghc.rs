@@ -1,4 +1,4 @@
-use crate::{compare_ghc, check_env, file_exists, install_ghc, print};
+use crate::{check_env, compare_ghc, file_exists, install_ghc, print};
 use anyhow::Result;
 
 pub async fn check_ghc() -> Result<()> {
