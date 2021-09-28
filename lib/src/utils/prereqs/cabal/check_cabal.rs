@@ -1,15 +1,19 @@
-use crate::{check_env, compare_cabal, file_exists, install_cabal, print};
+use crate::{check_installed_cabal, compare_cabal, install_cabal, print};
 use anyhow::Result;
 
 pub async fn check_cabal() -> Result<()> {
     print("", "Checking Cabal")?;
-    let cabal = check_env("CABAL_BIN")?;
-    if file_exists(&cabal) {
-        compare_cabal(&cabal).await?;
+    let cabal = check_installed_cabal().await?;
+    if compare_cabal(&cabal).await? {
+        print("green", "Cabal is installed")
     } else {
-        install_cabal().await?;
+        let msg = format!(
+            "Currently Cabal v{} is installed, installing correct version of Cabal",
+            cabal
+        );
+        print("yellow", &msg)?;
+        install_cabal().await
     }
-    Ok(())
 }
 
 #[cfg(test)]

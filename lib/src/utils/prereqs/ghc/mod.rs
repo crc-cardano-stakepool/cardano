@@ -1,3 +1,5 @@
+pub mod check_installed_ghc;
+pub use check_installed_ghc::check_installed_ghc;
 pub mod check_ghc;
 pub use check_ghc::check_ghc;
 pub mod install_ghc;

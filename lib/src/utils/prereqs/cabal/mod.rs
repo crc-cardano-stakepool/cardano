@@ -1,3 +1,5 @@
+pub mod check_installed_cabal;
+pub use check_installed_cabal::check_installed_cabal;
 pub mod check_cabal;
 pub use check_cabal::check_cabal;
 pub mod install_cabal;

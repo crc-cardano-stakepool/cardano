@@ -1,15 +1,16 @@
-use crate::{check_env, compare_ghc, file_exists, install_ghc, print};
+use crate::{check_installed_ghc, compare_ghc, install_ghc, print};
 use anyhow::Result;
 
 pub async fn check_ghc() -> Result<()> {
     print("", "Checking GHC")?;
-    let ghc = check_env("GHC_BIN")?;
-    if file_exists(&ghc) {
-        compare_ghc(&ghc).await?;
+    let ghc = check_installed_ghc().await?;
+    if compare_ghc(&ghc).await? {
+        print("green", "GHC is installed")
     } else {
-        install_ghc().await?;
+        let msg = format!("Currently GHC v{} is installed, installing correct version of GHC", ghc);
+        print("yellow", &msg)?;
+        install_ghc().await
     }
-    Ok(())
 }
 
 #[cfg(test)]

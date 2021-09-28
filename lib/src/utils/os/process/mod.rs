@@ -6,3 +6,5 @@ pub mod pipe;
 pub use pipe::pipe;
 pub mod process_success;
 pub use process_success::process_success;
+pub mod is_program_installed;
+pub use is_program_installed::is_program_installed;
