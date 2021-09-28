@@ -3,8 +3,9 @@ use anyhow::Result;
 
 pub async fn check_user() -> Result<String> {
     let user = async_command_pipe("echo ${SUDO_USER:-$USER}").await?;
-    set_env("RUNNER", &user);
-    Ok(user)
+    let user = user.trim();
+    set_env("RUNNER", user);
+    Ok(user.to_string())
 }
 
 #[cfg(test)]
