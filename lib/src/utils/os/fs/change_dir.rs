@@ -6,3 +6,13 @@ pub async fn change_dir(absolute_path: &str) -> Result<()> {
     async_command(&cmd).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::change_dir;
+    #[tokio::test]
+    #[ignore]
+    async fn test_change_dir() {
+        unimplemented!();
+    }
+}

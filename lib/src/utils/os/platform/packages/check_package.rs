@@ -12,3 +12,13 @@ pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
     };
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_package;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_package() {
+        unimplemented!();
+    }
+}

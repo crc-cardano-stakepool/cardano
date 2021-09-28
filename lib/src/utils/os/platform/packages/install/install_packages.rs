@@ -23,3 +23,13 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
     print("green", "Successfully installed packages")?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::install_packages;
+    #[tokio::test]
+    #[ignore]
+    async fn test_install_packages() {
+        unimplemented!();
+    }
+}

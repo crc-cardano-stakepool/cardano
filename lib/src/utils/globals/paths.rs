@@ -28,3 +28,13 @@ lazy_static! {
         map
     };
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::PATHS;
+    #[test]
+    #[ignore]
+    fn test_paths() {
+        unimplemented!();
+    }
+}

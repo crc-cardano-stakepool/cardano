@@ -9,3 +9,13 @@ pub async fn process_success(cmd: &str) -> Result<bool> {
         Ok(false)
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::process_success;
+    #[tokio::test]
+    #[ignore]
+    async fn test_process_success() {
+        unimplemented!();
+    }
+}

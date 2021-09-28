@@ -8,3 +8,13 @@ pub async fn check_dependencies() -> Result<()> {
     check_cabal().await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_dependencies;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_dependencies() {
+        unimplemented!();
+    }
+}

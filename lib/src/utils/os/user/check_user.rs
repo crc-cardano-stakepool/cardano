@@ -6,3 +6,13 @@ pub async fn check_user() -> Result<String> {
     set_env("RUNNER", &user);
     Ok(user)
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_user;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_user() {
+        unimplemented!();
+    }
+}

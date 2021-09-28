@@ -7,3 +7,13 @@ pub async fn check_home_dir() -> Result<String> {
     set_env("RUNNER_HOME", &home_directory);
     Ok(home_directory)
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_home_dir;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_home_dir() {
+        unimplemented!();
+    }
+}

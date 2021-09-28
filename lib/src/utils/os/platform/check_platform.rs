@@ -8,3 +8,13 @@ pub async fn check_platform() -> Result<String> {
         Err(e) => Err(anyhow!("{}", e)),
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_platform;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_platform() {
+        unimplemented!();
+    }
+}

@@ -7,3 +7,13 @@ pub async fn check_project_file(component: &str) -> Result<()> {
     update_project_file(component).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_project_file;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_project_file() {
+        unimplemented!();
+    }
+}

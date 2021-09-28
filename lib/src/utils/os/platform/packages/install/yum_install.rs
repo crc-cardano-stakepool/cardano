@@ -8,3 +8,13 @@ pub async fn yum_install(package: &str) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::yum_install;
+    #[tokio::test]
+    #[ignore]
+    async fn test_yum_install() {
+        unimplemented!();
+    }
+}

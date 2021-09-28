@@ -6,3 +6,13 @@ pub async fn check_ghcup() -> Result<()> {
     install_ghcup().await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_ghcup;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_ghcup() {
+        unimplemented!();
+    }
+}

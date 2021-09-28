@@ -24,3 +24,13 @@ pub async fn pipe(command: &str, pipe_command: &str) -> Result<String> {
         Err(anyhow!("Failed executing piped command"))
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::pipe;
+    #[tokio::test]
+    #[ignore]
+    async fn test_pipe() {
+        unimplemented!();
+    }
+}

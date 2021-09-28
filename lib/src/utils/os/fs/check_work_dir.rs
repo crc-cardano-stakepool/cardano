@@ -7,3 +7,13 @@ pub async fn check_work_dir() -> Result<String> {
     set_env("WORK_DIR", &install_directory);
     Ok(install_directory)
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_work_dir;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_work_dir() {
+        unimplemented!();
+    }
+}

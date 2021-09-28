@@ -51,3 +51,13 @@ pub fn print_emoji(color: &str, output: &str, emoji: Emoji<'_, '_>) -> Result<St
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::print_emoji;
+    #[tokio::test]
+    #[ignore]
+    async fn test_print_emoji() {
+        unimplemented!();
+    }
+}

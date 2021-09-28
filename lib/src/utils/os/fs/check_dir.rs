@@ -8,3 +8,13 @@ pub async fn check_dir(absolute_path: &str) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_dir;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_dir() {
+        unimplemented!();
+    }
+}

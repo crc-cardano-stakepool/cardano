@@ -13,3 +13,13 @@ pub fn to_color(color: &str) -> Color {
         _ => Color::White,
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::to_color;
+    #[tokio::test]
+    #[ignore]
+    async fn test_to_color() {
+        unimplemented!();
+    }
+}

@@ -10,3 +10,13 @@ pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
         Ok(false)
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_shell_config_env;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_shell_config_env() {
+        unimplemented!();
+    }
+}

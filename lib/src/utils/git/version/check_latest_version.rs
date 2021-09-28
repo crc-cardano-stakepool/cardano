@@ -11,3 +11,13 @@ pub async fn check_latest_version(component: &str) -> Result<String> {
     let latest_node_version: String = json!(response)["tag_name"].to_string().trim().replace("\"", "");
     Ok(latest_node_version)
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_latest_version;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_latest_version() {
+        unimplemented!();
+    }
+}

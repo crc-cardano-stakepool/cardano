@@ -26,3 +26,13 @@ pub async fn check_repo(url: &str, absolute_path: &str, repo_name: &str) -> Resu
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_repo;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_repo() {
+        unimplemented!();
+    }
+}

@@ -9,3 +9,13 @@ pub async fn update(package_manager: &str) -> Result<()> {
     spinner_cmd(&cmd, "Updating", "Finished updating").await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::update;
+    #[tokio::test]
+    #[ignore]
+    async fn test_update() {
+        unimplemented!();
+    }
+}

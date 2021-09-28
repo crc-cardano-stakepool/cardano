@@ -19,3 +19,13 @@ pub async fn setup_packages() -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::setup_packages;
+    #[tokio::test]
+    #[ignore]
+    async fn test_setup_packages() {
+        unimplemented!();
+    }
+}

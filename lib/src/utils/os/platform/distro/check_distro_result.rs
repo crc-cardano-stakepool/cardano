@@ -11,3 +11,13 @@ pub fn check_distro_result(distro: Result<String>) -> Result<String> {
         Err(e) => Err(anyhow!("{}", e)),
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_distro_result;
+    #[test]
+    #[ignore]
+    fn test_check_distro_result() {
+        unimplemented!();
+    }
+}

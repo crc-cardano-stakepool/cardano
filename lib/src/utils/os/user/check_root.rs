@@ -8,3 +8,13 @@ pub fn check_root() -> Result<bool> {
         Ok(false)
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_root;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_root() {
+        unimplemented!();
+    }
+}

@@ -13,3 +13,13 @@ pub async fn check_install(component: &str) -> Result<()> {
     print_emoji("green", &msg, Emoji("🙌🎉", ""))?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_install;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_install() {
+        unimplemented!();
+    }
+}

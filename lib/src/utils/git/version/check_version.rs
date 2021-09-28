@@ -16,26 +16,10 @@ pub async fn check_version(component: &str) -> Result<bool> {
 
 #[cfg(test)]
 mod test {
-    #[test]
+    // use crate::check_version;
+    #[tokio::test]
     #[ignore]
-    fn test_check_node_version() {
-        unimplemented!();
-    }
-    #[test]
-    #[ignore]
-    fn test_fetch_latest_node_version() {
-        unimplemented!();
-    }
-
-    #[test]
-    #[ignore]
-    fn test_fetch_installed_node_version() {
-        unimplemented!();
-    }
-
-    #[test]
-    #[ignore]
-    fn test_compare_latest_node_version() {
+    async fn test_check_version() {
         unimplemented!();
     }
 }

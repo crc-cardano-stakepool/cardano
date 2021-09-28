@@ -39,3 +39,13 @@ pub async fn install_component(component: &str) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::install_component;
+    #[tokio::test]
+    #[ignore]
+    async fn test_install_component() {
+        unimplemented!();
+    }
+}

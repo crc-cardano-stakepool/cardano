@@ -18,3 +18,13 @@ pub async fn apt_install(package: &str) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::apt_install;
+    #[tokio::test]
+    #[ignore]
+    async fn test_apt_install() {
+        unimplemented!();
+    }
+}

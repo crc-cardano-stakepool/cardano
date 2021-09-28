@@ -13,3 +13,13 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
         Ok(String::from("not found"))
     }
 }
+
+#[cfg(test)]
+mod test {
+    // use crate::check_installed_version;
+    #[tokio::test]
+    #[ignore]
+    async fn test_check_installed_version() {
+        unimplemented!();
+    }
+}
