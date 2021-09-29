@@ -6,7 +6,7 @@ pub async fn build_component(component: &str) -> Result<()> {
     clone_component(component).await?;
     configure_build(component, ghc_version).await?;
     let msg = format!("Successfully built {}", component);
-    print("", &msg)?;
+    print("green", &msg)?;
     Ok(())
 }
 

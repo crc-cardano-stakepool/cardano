@@ -1,4 +1,4 @@
-use crate::{ask_shell_config, check_shell, match_shell, setup_env};
+use crate::{ask_shell_config, check_shell, match_shell, setup_env, source_shell};
 use anyhow::Result;
 
 pub async fn setup_shell() -> Result<()> {
@@ -6,6 +6,7 @@ pub async fn setup_shell() -> Result<()> {
     match_shell(&shell)?;
     ask_shell_config().await?;
     setup_env().await?;
+    source_shell().await?;
     Ok(())
 }
 

@@ -1,11 +1,8 @@
-use crate::{file_exists, get_component_path, print, process_success, update_project_file};
+use crate::{file_exists, get_project_file, print, process_success, update_project_file};
 use anyhow::Result;
 
 pub async fn check_project_file(component: &str) -> Result<()> {
-    let msg = format!("Checking project file of {}", component);
-    print("", &msg)?;
-    let path = get_component_path(component).await?;
-    let project_file = format!("{}/cabal.project.local", path);
+    let project_file = get_project_file(component).await?;
     if !file_exists(&project_file) {
         update_project_file(component, &project_file).await?;
     } else {

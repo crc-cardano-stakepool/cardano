@@ -1,4 +1,4 @@
-use crate::{async_command_pipe, check_env, file_exists, install_ghcup, is_dir, print};
+use crate::{check_env, file_exists, install_ghcup, is_dir, print};
 use anyhow::Result;
 
 pub async fn check_ghcup() -> Result<()> {
@@ -7,10 +7,7 @@ pub async fn check_ghcup() -> Result<()> {
     let ghcup_bin = check_env("GHCUP_BIN")?;
     if is_dir(&ghcup_dir) {
         if file_exists(&ghcup_bin) {
-            let cmd = format!("{} --version", ghcup_bin);
-            let msg = async_command_pipe(&cmd).await?;
-            let msg = msg.trim();
-            print("green", msg)?;
+            print("green", "GHCup is installed")?;
         } else {
             print("red", "Failed installing GHCup")?;
         }

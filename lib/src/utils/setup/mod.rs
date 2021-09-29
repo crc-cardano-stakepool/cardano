@@ -20,3 +20,5 @@ pub mod build_component;
 pub use build_component::build_component;
 pub mod get_component_path;
 pub use get_component_path::get_component_path;
+pub mod get_project_file;
+pub use get_project_file::get_project_file;
