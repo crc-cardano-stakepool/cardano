@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_repo, chownr, get_libsodium_url, print, source_shell};
+use crate::{async_user_command, check_env, check_repo, chownr, export_shell_variables, get_libsodium_url, print};
 use anyhow::Result;
 
 pub async fn install_libsodium() -> Result<()> {
@@ -14,10 +14,9 @@ pub async fn install_libsodium() -> Result<()> {
     let make = "make";
     let sudo = "sudo make install";
     let cmd = format!("{}\n{}\n{}\n{}\n{}\n{}", cd, checkout, autogen, configure, make, sudo);
-    async_command(&cmd).await?;
+    async_user_command(&cmd).await?;
     chownr(&libsodium_path).await?;
-    source_shell().await?;
-    print("", "Successfully installed libsodium")?;
+    export_shell_variables().await?;
     Ok(())
 }
 
