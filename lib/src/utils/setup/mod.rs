@@ -4,8 +4,6 @@ pub mod prepare_build;
 pub use prepare_build::prepare_build;
 pub mod configure_build;
 pub use configure_build::configure_build;
-pub mod check_project_file;
-pub use check_project_file::check_project_file;
 pub mod update_project_file;
 pub use update_project_file::update_project_file;
 pub mod build_latest_component;

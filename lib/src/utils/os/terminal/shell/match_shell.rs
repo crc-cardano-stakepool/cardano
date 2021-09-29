@@ -7,12 +7,10 @@ pub fn match_shell(shell: &str) -> Result<()> {
         let shell_profile_file = format!("{}/.zshrc", home);
         set_env("SHELL_PROFILE_FILE", &shell_profile_file);
         set_env("MY_SHELL", "zsh");
-        print("green", "Detected zsh")?;
     } else if shell.contains("/bash") {
         let shell_profile_file = format!("{}/.bashrc", home);
         set_env("SHELL_PROFILE_FILE", &shell_profile_file);
         set_env("MY_SHELL", "bash");
-        print("green", "Detected bash")?;
     } else if shell.contains("/sh") {
         if !check_env("BASH")?.is_empty() {
             let shell_profile_file = format!("{}/.bashrc", home);
