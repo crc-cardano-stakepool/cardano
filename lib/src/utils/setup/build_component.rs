@@ -1,11 +1,12 @@
-use crate::{check_project_file, configure_build, print};
+use crate::{clone_component, configure_build, get_ghc_version, print};
 use anyhow::Result;
 
 pub async fn build_component(component: &str) -> Result<()> {
-    let msg = format!("Building {}", component);
+    let ghc_version = get_ghc_version();
+    clone_component(component).await?;
+    configure_build(component, ghc_version).await?;
+    let msg = format!("Successfully built {}", component);
     print("", &msg)?;
-    configure_build(component).await?;
-    check_project_file(component).await?;
     Ok(())
 }
 

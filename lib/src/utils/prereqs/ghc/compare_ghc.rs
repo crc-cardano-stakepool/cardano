@@ -1,13 +1,9 @@
-use crate::get_ghc_version;
+use crate::{compare_version, get_ghc_version};
 use anyhow::Result;
 
 pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
     let version = get_ghc_version();
-    if version == installed_ghc {
-        Ok(true)
-    } else {
-        Ok(false)
-    }
+    compare_version(installed_ghc, version).await
 }
 
 #[cfg(test)]
