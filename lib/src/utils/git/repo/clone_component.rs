@@ -2,7 +2,7 @@ use crate::{check_env, check_repo, checkout_latest_release, set_env, URLS};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 
-pub async fn clone_cardano_repo(component: &str) -> Result<()> {
+pub async fn clone_component(component: &str) -> Result<()> {
     if let Some(url) = URLS.get(component) {
         let work_dir = check_env("WORK_DIR")?;
         let cardano_component_dir = format!("{}/{}", work_dir, component);

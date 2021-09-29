@@ -1,6 +1,6 @@
 use crate::{
-    build_component, check_install, check_root, check_version, clone_cardano_repo, copy_binary, prepare_build, print,
-    print_emoji, proceed,
+    build_component, check_install, check_installed_version, check_root, check_version, copy_binary, prepare_build,
+    print, print_emoji, proceed,
 };
 use anyhow::Result;
 use console::Emoji;
@@ -21,7 +21,6 @@ pub async fn install_component(component: &str) -> Result<()> {
             let msg = format!("Installing latest {}", component);
             print_emoji("white", &msg, Emoji("🤟", ""))?;
             prepare_build().await?;
-            clone_cardano_repo(component).await?;
             build_component(component).await?;
             copy_binary(component).await?;
             check_install(component).await?;
@@ -30,7 +29,8 @@ pub async fn install_component(component: &str) -> Result<()> {
             print_emoji("red", &msg, Emoji("", ""))?;
         }
     } else {
-        let msg = format!("The latest {} version is installed", component);
+        let latest_version = check_installed_version(component).await?;
+        let msg = format!("Already installed latest {} (v{})", component, latest_version);
         print_emoji("green", &msg, Emoji("🙌🎉", ""))?;
     }
     Ok(())

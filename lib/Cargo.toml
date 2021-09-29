@@ -1,6 +1,6 @@
 [package]
 name = "lib"
-version = "0.0.5"
+version = "0.1.0-alpha"
 edition = "2018"
 license = "MIT"
 description = "Library for managing cardano components"
