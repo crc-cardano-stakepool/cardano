@@ -3,15 +3,9 @@ use anyhow::Result;
 
 pub async fn check_libsodium() -> Result<()> {
     print("", "Checking libsodium")?;
-    let lib_files = &[
-        "/usr/local/lib/libsodium.la",
-        "/usr/local/lib/libsodium.a",
-        "/usr/local/lib/libsodium.so",
-    ];
-    for file in lib_files {
-        if !file_exists(file) {
-            install_libsodium().await?;
-        }
+    let libsodium = "/usr/local/lib/pkconfig/libsodium.pc";
+    if !file_exists(file) {
+        install_libsodium().await?;
     }
     print("green", "libsodium is installed")?;
     Ok(())
