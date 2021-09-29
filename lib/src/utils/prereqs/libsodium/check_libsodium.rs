@@ -1,22 +1,19 @@
-use crate::{async_command_pipe, install_libsodium, print};
+use crate::{file_exists, install_libsodium, print};
 use anyhow::Result;
 
 pub async fn check_libsodium() -> Result<()> {
     print("", "Checking libsodium")?;
     let lib_files = &[
-        "/usr/local/lib/libsodium.la ",
-        "/usr/local/lib/libsodium.a ",
+        "/usr/local/lib/libsodium.la",
+        "/usr/local/lib/libsodium.a",
         "/usr/local/lib/libsodium.so",
     ];
-    let expected = lib_files.concat();
-    let cmd = format!("whereis libsodium | awk -F ':' {}", "'{print $2}'");
-    let result = async_command_pipe(&cmd).await?;
-    let result = result.trim();
-    if result != expected {
-        install_libsodium().await?;
-    } else {
-        print("green", "libsodium is installed")?;
+    for file in lib_files {
+        if !file_exists(file) {
+            install_libsodium().await?;
+        }
     }
+    print("green", "libsodium is installed")?;
     Ok(())
 }
 
