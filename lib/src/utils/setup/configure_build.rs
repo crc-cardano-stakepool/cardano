@@ -1,6 +1,6 @@
 use crate::{
-    async_command, async_user_command, check_cabal, check_env, check_ghc, get_component_path, get_project_file, print,
-    update_project_file,
+    async_command, async_user_command, check_cabal, check_env, check_ghc, export_shell_variables, file_exists,
+    get_component_path, get_project_file, print, update_project_file,
 };
 use anyhow::Result;
 
@@ -12,12 +12,15 @@ pub async fn configure_build(component: &str, ghc_version: &str) -> Result<()> {
     let cabal = check_env("CABAL_BIN")?;
     let ghc = check_env("GHC_BIN")?;
     let project_file = get_project_file(component).await?;
-    let cmd = format!("rm {}", project_file);
-    async_command(&cmd).await?;
+    if file_exists(&project_file) {
+        let cmd = format!("rm {}", project_file);
+        async_command(&cmd).await?;
+    }
     print("", "Updating Cabal")?;
     let cmd = format!("cd {} && {} update", path, cabal);
     async_user_command(&cmd).await?;
     print("green", "Updated Cabal successfully")?;
+    export_shell_variables().await?;
     let cmd = format!(
         "cd {} && {} configure --with-compiler={}-{}",
         path, cabal, ghc, ghc_version
