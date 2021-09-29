@@ -6,8 +6,6 @@ pub mod configure_build;
 pub use configure_build::configure_build;
 pub mod update_project_file;
 pub use update_project_file::update_project_file;
-pub mod build_latest_component;
-pub use build_latest_component::build_latest_component;
 pub mod check_dependencies;
 pub use check_dependencies::check_dependencies;
 pub mod install_component;

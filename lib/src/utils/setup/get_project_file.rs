@@ -1,9 +1,7 @@
-use crate::{get_component_path, print};
+use crate::get_component_path;
 use anyhow::Result;
 
 pub async fn get_project_file(component: &str) -> Result<String> {
-    let msg = format!("Checking project file of {}", component);
-    print("", &msg)?;
     let path = get_component_path(component).await?;
     let project_file = format!("{}/cabal.project.local", path);
     Ok(project_file)
