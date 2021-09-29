@@ -11,7 +11,6 @@ pub async fn copy_binary(component: &str) -> Result<()> {
             let bin_path = format!("{}/scripts/bin-path.sh", path);
             let node = format!("cd {} && cp -p \"$({} cardano-node)\" {}", path, bin_path, install_dir);
             let cli = format!("cd {} && cp -p \"$({} cardano-cli)\" {}", path, bin_path, install_dir);
-            println!("{}\n{}", node, cli);
             async_command(&node).await?;
             async_command(&cli).await?;
             let node_bin = format!("{}/cardano-node", install_dir);
@@ -19,7 +18,7 @@ pub async fn copy_binary(component: &str) -> Result<()> {
             set_env("CARDANO_NODE_BIN", &node_bin);
             set_env("CARDANO_CLI_BIN", &cli_bin);
             let msg = format!("Successfully copied binaries to {}", install_dir);
-            print("", &msg)?;
+            print("green", &msg)?;
             Ok(())
         }
         _ => Err(anyhow!("Unknown component")),

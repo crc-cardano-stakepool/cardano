@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, print, source_shell};
+use crate::{async_command, check_env, print};
 use anyhow::Result;
 
 pub async fn write_shell_config(value: &str) -> Result<()> {
@@ -8,7 +8,6 @@ pub async fn write_shell_config(value: &str) -> Result<()> {
     let msg = format!("Added line to {}: {}", shell_profile_file, value);
     print("green", &msg)?;
     async_command(&cmd).await?;
-    source_shell(&shell_profile_file).await?;
     Ok(())
 }
 
