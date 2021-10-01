@@ -1,4 +1,6 @@
-use crate::{change_shell_config, check_env, export_shell_variables, print, proceed};
+use crate::{
+    change_shell_config, check_env, export_shell_variables, print, proceed,
+};
 use anyhow::Result;
 
 pub async fn ask_shell_config() -> Result<()> {
@@ -21,7 +23,10 @@ pub async fn ask_shell_config() -> Result<()> {
         print("magenta", &msg)?;
         change_shell_config().await?;
     } else {
-        print("red", "Skipped adding path variables, setting at runtime manually")?;
+        print(
+            "red",
+            "Skipped adding path variables, setting at runtime manually",
+        )?;
         export_shell_variables().await?;
     }
     Ok(())

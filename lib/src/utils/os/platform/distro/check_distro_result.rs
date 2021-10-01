@@ -1,6 +1,7 @@
 use crate::print;
 use anyhow::{anyhow, Result};
 
+// TODO: Use lib sysinfo for this
 pub fn check_distro_result(distro: Result<String>) -> Result<String> {
     match distro {
         Ok(result) => {

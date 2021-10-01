@@ -1,4 +1,6 @@
-use crate::{async_command, check_shell_config_env, print, write_shell_config, PATHS};
+use crate::{
+    async_command, check_shell_config_env, print, write_shell_config, PATHS,
+};
 use anyhow::Result;
 
 pub async fn change_shell_config() -> Result<()> {

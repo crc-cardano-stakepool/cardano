@@ -8,7 +8,10 @@ pub async fn check_latest_version(component: &str) -> Result<String> {
         component
     );
     let response = get_request(&release_url).await?;
-    let latest_node_version: String = json!(response)["tag_name"].to_string().trim().replace("\"", "");
+    let latest_node_version: String = json!(response)["tag_name"]
+        .to_string()
+        .trim()
+        .replace("\"", "");
     Ok(latest_node_version)
 }
 

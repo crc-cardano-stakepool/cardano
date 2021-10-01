@@ -4,7 +4,7 @@ use anyhow::Result;
 pub async fn check_cabal() -> Result<()> {
     print("", "Checking Cabal")?;
     let cabal = check_installed_cabal().await?;
-    if compare_cabal(&cabal).await? {
+    if compare_cabal(&cabal) {
         print("green", "Cabal is installed")
     } else {
         let msg = format!(

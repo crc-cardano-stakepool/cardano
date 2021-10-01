@@ -1,4 +1,7 @@
-use crate::{check_distro, check_platform, install_distro_packages, install_mac_packages, print};
+use crate::{
+    check_distro, check_platform, install_distro_packages,
+    install_mac_packages, print,
+};
 use anyhow::Result;
 
 pub async fn setup_packages() -> Result<()> {
