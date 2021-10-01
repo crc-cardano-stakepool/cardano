@@ -2,6 +2,8 @@ pub mod packages;
 pub use packages::PACKAGES;
 pub mod paths;
 pub use paths::PATHS;
+pub mod envs;
+pub use envs::ENVS;
 pub mod urls;
 pub use urls::URLS;
 pub mod spinners;
