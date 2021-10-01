@@ -10,8 +10,6 @@ pub mod check_shell_config_env;
 pub use check_shell_config_env::check_shell_config_env;
 pub mod setup_shell;
 pub use setup_shell::setup_shell;
-pub mod source_shell;
-pub use source_shell::source_shell;
 pub mod write_shell_config;
 pub use write_shell_config::write_shell_config;
 pub mod export_shell_variables;

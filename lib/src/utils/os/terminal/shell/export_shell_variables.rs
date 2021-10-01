@@ -1,10 +1,10 @@
-use crate::{async_command, print, PATHS};
+use crate::{print, set_env, ENVS};
 use anyhow::Result;
 
 pub async fn export_shell_variables() -> Result<()> {
     print("", "Exporting shell variables")?;
-    for (_, value) in PATHS.iter() {
-        async_command(value).await?;
+    for (key, value) in ENVS.iter() {
+        set_env(key, value);
     }
     Ok(())
 }
