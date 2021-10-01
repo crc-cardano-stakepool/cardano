@@ -1,4 +1,7 @@
-use crate::{check_dir, check_env, check_home_dir, chownr, print, set_env, spinner, SPINNERS};
+use crate::{
+    check_dir, check_env, check_home_dir, chownr, print, set_env, spinner,
+    SPINNERS,
+};
 use anyhow::Result;
 use convert_case::{Case, Casing};
 use std::collections::HashMap;

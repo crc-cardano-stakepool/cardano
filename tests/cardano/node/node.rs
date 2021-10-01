@@ -6,9 +6,13 @@ use predicates::str::contains;
 pub fn test_cardano_node() -> Result<()> {
     let mut cmd = Command::cargo_bin(crate_name!())?;
     cmd.arg("node");
-    cmd.assert().failure().stderr(contains("Manage cardano nodes"));
+    cmd.assert()
+        .failure()
+        .stderr(contains("Manage cardano nodes"));
     cmd.arg("help");
-    cmd.assert().success().stdout(contains("Manage cardano nodes"));
+    cmd.assert()
+        .success()
+        .stdout(contains("Manage cardano nodes"));
     Ok(())
 }
 

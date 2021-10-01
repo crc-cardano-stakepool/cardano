@@ -15,7 +15,9 @@ impl UninstallCommand {
     pub async fn exec(cmd: UninstallCommand) -> Result<()> {
         match cmd {
             UninstallCommand::Node => NodeCommand::uninstall_node().await?,
-            UninstallCommand::Wallet => WalletCommand::uninstall_wallet().await?,
+            UninstallCommand::Wallet => {
+                WalletCommand::uninstall_wallet().await?
+            }
         }
         Ok(())
     }

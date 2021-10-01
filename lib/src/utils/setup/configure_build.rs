@@ -1,16 +1,15 @@
 use crate::{
-    async_command, async_user_command, check_cabal, check_env, check_ghc, export_shell_variables, file_exists,
-    get_component_path, get_project_file, print, update_project_file, PATHS,
+    async_command, async_user_command, check_dependencies, check_env,
+    export_shell_variables, file_exists, get_component_path, get_project_file,
+    print, update_project_file,
 };
 use anyhow::Result;
 
 pub async fn configure_build(component: &str, ghc_version: &str) -> Result<()> {
     print("", "Checking build dependencies")?;
-    check_ghc().await?;
-    check_cabal().await?;
+    check_dependencies().await?;
     let path = get_component_path(component).await?;
     let cabal = check_env("CABAL_BIN")?;
-    let ghc = check_env("GHC_BIN")?;
     let project_file = get_project_file(component).await?;
     if file_exists(&project_file) {
         let cmd = format!("rm {}", project_file);
@@ -21,6 +20,8 @@ pub async fn configure_build(component: &str, ghc_version: &str) -> Result<()> {
     async_user_command(&cmd).await?;
     print("green", "Updated Cabal successfully")?;
     export_shell_variables().await?;
+    print("", "Configuring build")?;
+    let ghc = check_env("GHC_BIN")?;
     let cmd = format!(
         "cd {} && {} configure --with-compiler={}-{}",
         path, cabal, ghc, ghc_version
@@ -31,22 +32,7 @@ pub async fn configure_build(component: &str, ghc_version: &str) -> Result<()> {
     update_project_file(component, &project_file).await?;
     let msg = format!("Building {}", component);
     print("", &msg)?;
-    let ld: String;
-    let pkg: String;
-    if let Some(lib_path) = PATHS.get("LD_LIBRARY_PATH") {
-        ld = String::from(lib_path);
-    } else {
-        ld = format!("export LD_LIBRARY_PATH={}", "\"/usr/local/lib:$LD_LIBRARY_PATH\"");
-    }
-    if let Some(pkg_path) = PATHS.get("PKG_CONFIG_PATH") {
-        pkg = String::from(pkg_path);
-    } else {
-        pkg = format!(
-            "export PKG_CONFIG_PATH={}",
-            "\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\""
-        );
-    }
-    let cmd = format!("{} && {} && cd {} && {} build all", ld, pkg, path, cabal);
+    let cmd = format!("cd {} && {} build all", path, cabal);
     async_user_command(&cmd).await?;
     Ok(())
 }
