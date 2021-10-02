@@ -70,17 +70,6 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }} --locked
-      - name: Cache Cabal
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cabal/packages
-            ~/.cabal/store
-            dist-newstyle
-          key: ${{ matrix.os }}-${{ matrix.ghc }}
-      - name: Build Cardano Node
-        run: target/${{matrix.target}}/release/cardano node install
-      
       - name: Package
         id: package
         run: |
