@@ -1,16 +1,10 @@
-use crate::{check_env, check_shell, match_shell, process_success};
+use crate::{get_shell_profile_file, process_success};
 use anyhow::Result;
 
 pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
-    let shell = check_shell().await?;
-    match_shell(&shell)?;
-    let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
+    let shell_profile_file = get_shell_profile_file().await?;
     let cmd = format!("grep -q {} {}", pattern, shell_profile_file);
-    if process_success(&cmd).await? {
-        Ok(true)
-    } else {
-        Ok(false)
-    }
+    process_success(&cmd).await
 }
 
 #[cfg(test)]

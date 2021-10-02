@@ -1,6 +1,7 @@
 use crate::{
-    build_component, check_install, check_installed_version, check_root,
-    check_version, copy_binary, prepare_build, print, print_emoji, proceed,
+    build_component, check_install, check_installed_version,
+    check_latest_version, check_root, copy_binary, is_bin_installed,
+    prepare_build, print, print_emoji, proceed, source_shell,
 };
 use anyhow::Result;
 use console::Emoji;
@@ -15,7 +16,7 @@ pub async fn install_component(component: &str) -> Result<()> {
             }
             Err(_) => print("", "Failed obtaining root privileges")?,
         }
-    } else if !check_version(component).await? {
+    } else if !is_bin_installed(component).await? {
         let msg =
             format!("Do you want to install the latest {} binary?", component);
         if proceed(&msg)? {
@@ -25,18 +26,44 @@ pub async fn install_component(component: &str) -> Result<()> {
             build_component(component).await?;
             copy_binary(component).await?;
             check_install(component).await?;
+            source_shell().await?;
         } else {
             let msg = format!("Aborted {} installation", component);
             print_emoji("red", &msg, Emoji("", ""))?;
         }
     } else {
-        let latest_version = check_installed_version(component).await?;
-        let msg = format!(
-            "Already installed latest {} (v{})",
-            component, latest_version
-        );
-        print_emoji("green", &msg, Emoji("🙌🎉", ""))?;
+        let installed_version = check_installed_version(component).await?;
+        let latest_version = check_latest_version(component).await?;
+        if installed_version.eq(&latest_version) {
+            let msg = format!(
+                "Already installed latest {} (v{})",
+                component, latest_version
+            );
+            print_emoji("green", &msg, Emoji("🙌🎉", ""))?;
+        } else {
+            let msg = format!(
+                "Currently {} (v{}) is installed, but the latest version is {}",
+                component, installed_version, latest_version
+            );
+            print_emoji("yellow", &msg, Emoji("⚠️", ""))?;
+            let msg = format!(
+                "Do you want to install the latest {} binary?",
+                component
+            );
+            if proceed(&msg)? {
+                let msg = format!("Installing latest {}", component);
+                print_emoji("white", &msg, Emoji("🤟", ""))?;
+                prepare_build().await?;
+                build_component(component).await?;
+                copy_binary(component).await?;
+                check_install(component).await?;
+            } else {
+                let msg = format!("Aborted {} installation", component);
+                print_emoji("red", &msg, Emoji("", ""))?;
+            }
+        }
     }
+
     Ok(())
 }
 

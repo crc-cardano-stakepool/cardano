@@ -1,7 +1,7 @@
 use super::RunConfig;
 use anyhow::Result;
 use console::Emoji;
-use lib::{check_version, print, print_emoji};
+use lib::{is_bin_installed, print, print_emoji};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -26,7 +26,7 @@ impl RunCommand {
         let output: String =
             format!("The config to run node in mainnet: {:#?}", config);
         print("white", &output)?;
-        if check_version("cardano-node").await? {
+        if is_bin_installed("cardano-node").await? {
             print_emoji(
                 "green",
                 "Proceeding to run node in mainnet",
@@ -40,7 +40,7 @@ impl RunCommand {
         let output: String =
             format!("The config to run node in testnet: {:#?}", config);
         print("white", &output)?;
-        if check_version("cardano-node").await? {
+        if is_bin_installed("cardano-node").await? {
             print_emoji(
                 "green",
                 "Proceeding to run node in testnet",
