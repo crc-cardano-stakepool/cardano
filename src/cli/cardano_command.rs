@@ -1,13 +1,11 @@
-use crate::cli::{InstallCommand, NodeCommand, UninstallCommand};
+use crate::cli::{NodeCommand, WalletCommand};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "cardano", about = "Manage cardano components")]
 pub enum CardanoCommand {
     Node(NodeCommand),
-    Install(InstallCommand),
-    Uninstall(UninstallCommand),
-    // Wallet(WalletCommand),
+    Wallet(WalletCommand),
     // Tx(TxCommand),
     // Mint(MintCommand),
     // Address(AddressCommand),

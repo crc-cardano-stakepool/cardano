@@ -9,8 +9,15 @@ use structopt::StructOpt;
 pub enum NodeCommand {
     Run(RunCommand),
     #[structopt(about = "Install the latest cardano-node binary")]
-    Install,
-    #[structopt(about = "Uninstalls the cardano-node")]
+    Install {
+        #[structopt(
+            short = "y",
+            long = "yes",
+            help = "Confirm prompts automatically"
+        )]
+        confirm: bool,
+    },
+    #[structopt(about = "Uninstalls the cardano-node binary")]
     Uninstall,
 }
 
@@ -18,15 +25,16 @@ impl NodeCommand {
     pub async fn exec(cmd: NodeCommand) -> Result<()> {
         match cmd {
             NodeCommand::Run(cmd) => RunCommand::exec(cmd).await?,
-            NodeCommand::Install => NodeCommand::install_node().await?,
+            NodeCommand::Install { confirm } => {
+                NodeCommand::install_node(confirm).await?
+            }
             NodeCommand::Uninstall => NodeCommand::uninstall_node().await?,
         }
         Ok(())
     }
 
-    pub async fn install_node() -> Result<()> {
-        install_component("cardano-node").await?;
-        Ok(())
+    pub async fn install_node(confirm: bool) -> Result<()> {
+        install_component("cardano-node", confirm).await
     }
 
     pub async fn uninstall_node() -> Result<()> {
