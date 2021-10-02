@@ -11,8 +11,7 @@ pub async fn change_shell_config() -> Result<()> {
             async_command(value).await?;
         }
     }
-    print("green", "Shell configured")?;
-    Ok(())
+    print("green", "Shell configured")
 }
 
 #[cfg(test)]

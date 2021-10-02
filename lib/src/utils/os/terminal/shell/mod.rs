@@ -14,3 +14,7 @@ pub mod write_shell_config;
 pub use write_shell_config::write_shell_config;
 pub mod export_shell_variables;
 pub use export_shell_variables::export_shell_variables;
+pub mod source_shell;
+pub use source_shell::source_shell;
+pub mod get_shell_profile_file;
+pub use get_shell_profile_file::get_shell_profile_file;

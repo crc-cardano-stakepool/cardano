@@ -9,7 +9,6 @@ lazy_static! {
             "PKG_CONFIG_PATH",
             "/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH",
         );
-        map.insert("PATH", "$HOME/.local/bin:$PATH");
         map
     };
 }
