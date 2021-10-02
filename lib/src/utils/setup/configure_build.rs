@@ -15,11 +15,11 @@ pub async fn configure_build(component: &str, ghc_version: &str) -> Result<()> {
         let cmd = format!("rm {}", project_file);
         async_command(&cmd).await?;
     }
+    export_shell_variables().await?;
     print("", "Updating Cabal")?;
     let cmd = format!("cd {} && {} update", path, cabal);
     async_user_command(&cmd).await?;
     print("green", "Updated Cabal successfully")?;
-    export_shell_variables().await?;
     print("", "Configuring build")?;
     let ghc = check_env("GHC_BIN")?;
     let cmd = format!(
