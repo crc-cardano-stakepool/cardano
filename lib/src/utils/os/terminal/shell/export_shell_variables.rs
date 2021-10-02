@@ -1,4 +1,4 @@
-use crate::{source_shell, print, set_env, ENVS};
+use crate::{print, set_env, source_shell, ENVS};
 use anyhow::Result;
 
 pub async fn export_shell_variables() -> Result<()> {
