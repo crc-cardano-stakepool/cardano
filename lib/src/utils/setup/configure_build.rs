@@ -1,9 +1,9 @@
 use crate::{
     async_command, async_user_command, check_dependencies, check_env,
     export_shell_variables, file_exists, get_component_path, get_project_file,
-    print, update_project_file,
+    print, process_success_inherit, update_project_file,
 };
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 pub async fn configure_build(component: &str, ghc_version: &str) -> Result<()> {
     print("", "Checking build dependencies")?;
@@ -34,7 +34,12 @@ pub async fn configure_build(component: &str, ghc_version: &str) -> Result<()> {
     print("", &msg)?;
     let cmd = format!("cd {} && {} build all", path, cabal);
     async_user_command(&cmd).await?;
-    Ok(())
+    if process_success_inherit(&cmd).await? {
+        let msg = format!("Successfully built {}", component);
+        print("green", &msg)
+    } else {
+        Err(anyhow!("Failed building {}", component))
+    }
 }
 
 #[cfg(test)]
