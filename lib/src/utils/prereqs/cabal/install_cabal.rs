@@ -9,7 +9,7 @@ pub async fn install_cabal() -> Result<()> {
     let ghcup = check_env("GHCUP_BIN")?;
     let cmd = format!("{} install cabal {}", ghcup, version);
     async_user_command(&cmd).await?;
-    let cmd = format!("{} set ghc {}", ghcup, version);
+    let cmd = format!("{} set cabal {}", ghcup, version);
     async_user_command(&cmd).await?;
     Ok(())
 }
