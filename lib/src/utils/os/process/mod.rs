@@ -10,3 +10,5 @@ pub mod process_success;
 pub use process_success::process_success;
 pub mod is_program_installed;
 pub use is_program_installed::is_program_installed;
+pub mod process_success_inherit;
+pub use process_success_inherit::process_success_inherit;

@@ -1,4 +1,4 @@
-use crate::{print, set_env, ENVS};
+use crate::{print, set_env, source_shell, ENVS};
 use anyhow::Result;
 
 pub async fn export_shell_variables() -> Result<()> {
@@ -6,6 +6,7 @@ pub async fn export_shell_variables() -> Result<()> {
     for (key, value) in ENVS.iter() {
         set_env(key, value);
     }
+    source_shell().await?;
     Ok(())
 }
 

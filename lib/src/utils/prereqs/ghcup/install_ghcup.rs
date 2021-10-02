@@ -1,12 +1,11 @@
 use crate::{
-    async_command, check_user, get_cabal_version, get_ghc_version,
+    async_user_command, get_cabal_version, get_ghc_version,
     get_ghcup_install_url, print,
 };
 use anyhow::Result;
 
 pub async fn install_ghcup() -> Result<()> {
     print("", "Installing GHCup")?;
-    let user = check_user().await?;
     let ghc_version = get_ghc_version();
     let cabal_version = get_cabal_version();
     let ghcup_install_url = get_ghcup_install_url();
@@ -18,10 +17,8 @@ pub async fn install_ghcup() -> Result<()> {
         "$(curl --proto '=https' --tlsv1.2 -sSf {})",
         ghcup_install_url
     );
-    let ghcup_script =
-        format!("\n{}\n{}\n{}\n{}", non_interactive, ghc, cabal, call);
-    let cmd = format!("su - {} -c \"eval {}\"", user, ghcup_script);
-    async_command(&cmd).await?;
+    let cmd = format!("\n{}\n{}\n{}\n{}", non_interactive, ghc, cabal, call);
+    async_user_command(&cmd).await?;
     Ok(())
 }
 

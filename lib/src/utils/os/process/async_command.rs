@@ -3,7 +3,7 @@ use std::process::Stdio;
 use tokio::process::Command;
 
 pub async fn async_command(command: &str) -> Result<String> {
-    let child = Command::new("bash")
+    let child = Command::new("sh")
         .arg("-c")
         .arg(command)
         .stdout(Stdio::inherit())

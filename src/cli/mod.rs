@@ -1,13 +1,9 @@
-pub mod install;
-pub use install::InstallCommand;
 pub mod update;
 pub use update::UpdateCommand;
 pub mod node;
 pub use node::NodeCommand;
 pub mod wallet;
 pub use wallet::WalletCommand;
-pub mod uninstall;
-pub use uninstall::UninstallCommand;
 pub mod cardano_command;
 pub use cardano_command::CardanoCommand;
 pub mod start_cli;

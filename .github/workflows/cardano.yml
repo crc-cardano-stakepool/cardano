@@ -16,30 +16,26 @@ jobs:
         shell: bash
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         include:
         - os: ubuntu-latest
           target: x86_64-unknown-linux-gnu
-        - os: macos-latest
-          target: x86_64-apple-darwin
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Cache
+      - name: Cache Cardano
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cabal/packages
+            ~/.cardano
+            ~/.cabal/store
+            dist-newstyle
+          key: ${{ matrix.target}}-${{ matrix.target.ghc }}
+      - name: Cache Rust
         uses: Swatinem/rust-cache@v1
-      - name: Install Prerequisites
-        run: |
-          case ${{ matrix.target }} in
-            *-unknown-linux-*)
-              sudo apt-get update -y
-              sudo apt-get install automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf -y
-              ;;
-            *-apple-darwin)
-              brew install automake
-              ;;
-          esac
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -70,6 +66,8 @@ jobs:
           use-cross: ${{ matrix.os.use-cross }}
           command: build
           args: --release --target ${{ matrix.target }} --locked
+      - name: Build cardano-node
+        run: target/${{matrix.target}}/release/cardano node install -y
       - name: Package
         id: package
         run: |

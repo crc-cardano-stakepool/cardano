@@ -1,6 +1,4 @@
-use crate::cli::{
-    CardanoCommand, InstallCommand, NodeCommand, UninstallCommand,
-};
+use crate::cli::{CardanoCommand, NodeCommand, WalletCommand};
 use anyhow::Result;
 use structopt::StructOpt;
 
@@ -15,13 +13,9 @@ impl Cli {
     pub async fn start(command: CardanoCommand) -> Result<()> {
         match command {
             CardanoCommand::Node(command) => NodeCommand::exec(command).await?,
-            CardanoCommand::Install(command) => {
-                InstallCommand::exec(command).await?
+            CardanoCommand::Wallet(command) => {
+                WalletCommand::exec(command).await?
             }
-            CardanoCommand::Uninstall(command) => {
-                UninstallCommand::exec(command).await?
-            }
-            // CardanoCommand::Wallet(command) => WalletCommand::exec(command).await,
             // CardanoCommand::Tx(command) => TxCommand::exec(command).await,
             // CardanoCommand::Mint(command) => MintCommand::exec(command).await,
             // CardanoCommand::Address(command) => AddressCommand::exec(command).await,
