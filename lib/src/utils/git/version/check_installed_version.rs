@@ -1,5 +1,5 @@
 use crate::{async_command_pipe, check_home_dir, file_exists};
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 pub async fn check_installed_version(component: &str) -> Result<String> {
     let home_dir = check_home_dir().await?;
@@ -14,7 +14,7 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
         let installed_version: String = String::from(version.trim());
         Ok(installed_version)
     } else {
-        Err(anyhow!("{} is not installed", component))
+        Ok(String::from("Not installed"))
     }
 }
 
