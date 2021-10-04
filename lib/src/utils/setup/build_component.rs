@@ -1,12 +1,10 @@
-use crate::{clone_component, configure_build, get_ghc_version, print};
+use crate::{clone_component, configure_build, get_ghc_version};
 use anyhow::Result;
 
 pub async fn build_component(component: &str) -> Result<()> {
     let ghc_version = get_ghc_version();
     clone_component(component).await?;
     configure_build(component, ghc_version).await?;
-    let msg = format!("Successfully built {}", component);
-    print("green", &msg)?;
     Ok(())
 }
 
