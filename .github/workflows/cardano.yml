@@ -29,10 +29,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.cabal/packages
             ~/.cardano
+            ~/.cabal/packages
             ~/.cabal/store
-          key: ${{ matrix.target}}-${{ matrix.target.ghc }}
+            dist-newstyle
+          key: ${{ matrix.target }}-cardano
       - name: Cache Rust
         uses: Swatinem/rust-cache@v1
       - name: Install Rust Toolchain
