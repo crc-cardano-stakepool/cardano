@@ -32,8 +32,7 @@ jobs:
             ~/.cardano
             ~/.cabal/packages
             ~/.cabal/store
-            dist-newstyle
-          key: ${{ matrix.target }}-cardano
+          key: ${{ matrix.os }}-${{ matrix.target }}
       - name: Cache Rust
         uses: Swatinem/rust-cache@v1
       - name: Install Rust Toolchain
