@@ -1,7 +1,4 @@
-use crate::{
-    check_dir, check_work_dir, install_build_dependencies, print,
-    setup_packages, setup_shell,
-};
+use crate::{check_dir, check_work_dir, install_build_dependencies, print, setup_packages, setup_shell};
 use anyhow::Result;
 
 pub async fn prepare_build() -> Result<()> {

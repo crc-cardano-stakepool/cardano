@@ -23,29 +23,19 @@ impl RunCommand {
     }
 
     async fn mainnet(config: RunConfig) -> Result<()> {
-        let output: String =
-            format!("The config to run node in mainnet: {:#?}", config);
+        let output: String = format!("The config to run node in mainnet: {:#?}", config);
         print("white", &output)?;
         if is_bin_installed("cardano-node").await? {
-            print_emoji(
-                "green",
-                "Proceeding to run node in mainnet",
-                Emoji("💪", ""),
-            )?;
+            print_emoji("green", "Proceeding to run node in mainnet", Emoji("💪", ""))?;
         }
         Ok(())
     }
 
     async fn testnet(config: RunConfig) -> Result<()> {
-        let output: String =
-            format!("The config to run node in testnet: {:#?}", config);
+        let output: String = format!("The config to run node in testnet: {:#?}", config);
         print("white", &output)?;
         if is_bin_installed("cardano-node").await? {
-            print_emoji(
-                "green",
-                "Proceeding to run node in testnet",
-                Emoji("🔍", ""),
-            )?;
+            print_emoji("green", "Proceeding to run node in testnet", Emoji("🔍", ""))?;
         }
         Ok(())
     }

@@ -10,7 +10,6 @@ use structopt::StructOpt;
 async fn main() -> Result<()> {
     setup_panic!();
     Cli::start(Cli::from_args().command).await?;
-    set_handler(|| println!("Initialize Ctrl-C handler"))
-        .expect("Error setting Ctrl-C handler");
+    set_handler(|| println!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
     Ok(())
 }

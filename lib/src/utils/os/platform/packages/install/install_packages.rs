@@ -4,10 +4,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use std::thread::sleep;
 use std::time::Duration;
 
-pub async fn install_packages(
-    package_manager: &str,
-    packages: &[&str],
-) -> Result<()> {
+pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
     let mut i = 1;
     let pkgs: u64 = packages.len() as u64;
     let pb = ProgressBar::new(pkgs);

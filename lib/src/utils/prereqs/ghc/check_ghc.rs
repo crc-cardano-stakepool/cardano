@@ -7,10 +7,7 @@ pub async fn check_ghc() -> Result<()> {
     if compare_ghc(&ghc) {
         print("green", "GHC is installed")
     } else {
-        let msg = format!(
-            "Currently GHC v{} is installed, installing correct version of GHC",
-            ghc
-        );
+        let msg = format!("Currently GHC v{} is installed, installing correct version of GHC", ghc);
         print("yellow", &msg)?;
         install_ghc().await
     }

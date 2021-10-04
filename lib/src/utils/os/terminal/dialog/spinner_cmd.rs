@@ -2,11 +2,7 @@ use crate::{async_command_pipe, print, SPINNERS};
 use anyhow::Result;
 use indicatif::{ProgressBar, ProgressStyle};
 
-pub async fn spinner_cmd(
-    cmd: &str,
-    exec_msg: &'static str,
-    finish_msg: &'static str,
-) -> Result<()> {
+pub async fn spinner_cmd(cmd: &str, exec_msg: &'static str, finish_msg: &'static str) -> Result<()> {
     if let Some(arrows) = SPINNERS.get("arrows") {
         let spinner = ProgressBar::new_spinner();
         let spinner_style = ProgressStyle::default_spinner()

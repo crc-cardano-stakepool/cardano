@@ -10,11 +10,7 @@ pub enum NodeCommand {
     Run(RunCommand),
     #[structopt(about = "Install the latest cardano-node binary")]
     Install {
-        #[structopt(
-            short = "y",
-            long = "yes",
-            help = "Confirm prompts automatically"
-        )]
+        #[structopt(short = "y", long = "yes", help = "Confirm prompts automatically")]
         confirm: bool,
     },
     #[structopt(about = "Uninstalls the cardano-node binary")]
@@ -25,9 +21,7 @@ impl NodeCommand {
     pub async fn exec(cmd: NodeCommand) -> Result<()> {
         match cmd {
             NodeCommand::Run(cmd) => RunCommand::exec(cmd).await?,
-            NodeCommand::Install { confirm } => {
-                NodeCommand::install_node(confirm).await?
-            }
+            NodeCommand::Install { confirm } => NodeCommand::install_node(confirm).await?,
             NodeCommand::Uninstall => NodeCommand::uninstall_node().await?,
         }
         Ok(())

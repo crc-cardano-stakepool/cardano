@@ -3,10 +3,7 @@ use anyhow::Result;
 
 pub async fn check_installed_version(component: &str) -> Result<String> {
     let component_bin_path = get_bin_path(component).await?;
-    let cmd = format!(
-        "{} --version | awk {} | head -n1",
-        component_bin_path, "'{print $2}'"
-    );
+    let cmd = format!("{} --version | awk {} | head -n1", component_bin_path, "'{print $2}'");
     let version = async_command(&cmd).await?;
     let installed_version: String = String::from(version.trim());
     Ok(installed_version)
