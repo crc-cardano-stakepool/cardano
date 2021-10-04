@@ -1,4 +1,4 @@
-use crate::{check_env};
+use crate::check_env;
 use anyhow::Result;
 
 pub async fn get_bin_path(bin: &str) -> Result<String> {
