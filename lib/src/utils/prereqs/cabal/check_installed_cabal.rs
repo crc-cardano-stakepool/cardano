@@ -1,6 +1,8 @@
-use crate::{async_command_pipe, check_env, file_exists};
-use anyhow::{anyhow, Result};
+use crate::{async_command_pipe, check_env, file_exists, install_cabal};
+use anyhow::Result;
+use async_recursion::async_recursion;
 
+#[async_recursion]
 pub async fn check_installed_cabal() -> Result<String> {
     let cabal = check_env("CABAL_BIN")?;
     if file_exists(&cabal) {
@@ -9,7 +11,8 @@ pub async fn check_installed_cabal() -> Result<String> {
         let installed_cabal = installed_cabal.trim().to_string();
         Ok(installed_cabal)
     } else {
-        Err(anyhow!("Cabal is not installed"))
+        install_cabal().await?;
+        check_installed_cabal().await
     }
 }
 
