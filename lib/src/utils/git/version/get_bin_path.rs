@@ -1,7 +1,8 @@
-use crate::async_command_pipe;
+use crate::{check_env};
 use anyhow::Result;
 
 pub async fn get_bin_path(bin: &str) -> Result<String> {
-    let cmd = format!("command -v {}", bin);
-    async_command_pipe(&cmd).await
+    let install_dir = check_env("INSTALL_DIR")?;
+    let path = format!("{}/{}", install_dir, bin);
+    Ok(path)
 }
