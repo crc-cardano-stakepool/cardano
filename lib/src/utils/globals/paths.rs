@@ -3,10 +3,7 @@ use std::collections::HashMap;
 
 lazy_static! {
     pub static ref PATHS: HashMap<&'static str, String> = {
-        let ld = format!(
-            "export LD_LIBRARY_PATH={}",
-            "\"/usr/local/lib:$LD_LIBRARY_PATH\""
-        );
+        let ld = format!("export LD_LIBRARY_PATH={}", "\"/usr/local/lib:$LD_LIBRARY_PATH\"");
         let pkg = format!(
             "export PKG_CONFIG_PATH={}",
             "\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\""

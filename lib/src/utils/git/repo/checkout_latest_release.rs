@@ -1,7 +1,4 @@
-use crate::{
-    async_command, check_latest_version, chownr, fetch_tags,
-    get_component_path, print,
-};
+use crate::{async_command, check_latest_version, chownr, fetch_tags, get_component_path, print};
 use anyhow::Result;
 
 pub async fn checkout_latest_release(component: &str) -> Result<()> {

@@ -1,7 +1,6 @@
 use crate::{
-    async_command, async_user_command, check_dependencies, check_env,
-    check_user, export_shell_variables, file_exists, get_component_path,
-    get_project_file, print, process_success_inherit, update_project_file,
+    async_command, async_user_command, check_dependencies, check_env, check_user, export_shell_variables, file_exists,
+    get_component_path, get_project_file, print, process_success_inherit, update_project_file,
 };
 use anyhow::{anyhow, Result};
 

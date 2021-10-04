@@ -8,11 +8,7 @@ use structopt::StructOpt;
 pub enum WalletCommand {
     #[structopt(about = "Install the latest cardano-wallet binary")]
     Install {
-        #[structopt(
-            short = "y",
-            long = "yes",
-            help = "Confirm prompts automatically"
-        )]
+        #[structopt(short = "y", long = "yes", help = "Confirm prompts automatically")]
         confirm: bool,
     },
     #[structopt(about = "Uninstalls the cardano-wallet binary")]
@@ -22,12 +18,8 @@ pub enum WalletCommand {
 impl WalletCommand {
     pub async fn exec(cmd: WalletCommand) -> Result<()> {
         match cmd {
-            WalletCommand::Install { confirm } => {
-                WalletCommand::install_wallet(confirm).await?
-            }
-            WalletCommand::Uninstall => {
-                WalletCommand::uninstall_wallet().await?
-            }
+            WalletCommand::Install { confirm } => WalletCommand::install_wallet(confirm).await?,
+            WalletCommand::Uninstall => WalletCommand::uninstall_wallet().await?,
         }
         Ok(())
     }

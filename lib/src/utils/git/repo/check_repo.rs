@@ -2,11 +2,7 @@ use crate::{async_command_pipe, clone_repo, print};
 use anyhow::Result;
 use std::path::Path;
 
-pub async fn check_repo(
-    url: &str,
-    absolute_path: &str,
-    repo_name: &str,
-) -> Result<()> {
+pub async fn check_repo(url: &str, absolute_path: &str, repo_name: &str) -> Result<()> {
     if Path::new(absolute_path).is_dir() {
         let repo_git_path = format!("{}/.git", absolute_path);
         if !Path::new(&repo_git_path).is_dir() {

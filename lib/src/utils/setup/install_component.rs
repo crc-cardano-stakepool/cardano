@@ -1,7 +1,6 @@
 use crate::{
-    build_component, check_confirm, check_install, check_installed_version,
-    check_latest_version, check_root, copy_binary, is_bin_installed,
-    prepare_build, print, print_emoji, proceed, source_shell,
+    build_component, check_confirm, check_install, check_installed_version, check_latest_version, check_root,
+    copy_binary, is_bin_installed, prepare_build, print, print_emoji, proceed, source_shell,
 };
 use anyhow::Result;
 use console::Emoji;
@@ -19,8 +18,7 @@ async fn install(component: &str) -> Result<()> {
 }
 
 async fn proceed_install(component: &str) -> Result<()> {
-    let msg =
-        format!("Do you want to install the latest {} binary?", component);
+    let msg = format!("Do you want to install the latest {} binary?", component);
     if proceed(&msg)? {
         install(component).await?
     } else {
@@ -50,10 +48,7 @@ pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
         let installed_version = check_installed_version(component).await?;
         let latest_version = check_latest_version(component).await?;
         if installed_version.eq(&latest_version) {
-            let msg = format!(
-                "Already installed latest {} (v{})",
-                component, latest_version
-            );
+            let msg = format!("Already installed latest {} (v{})", component, latest_version);
             print_emoji("green", &msg, Emoji("🙌🎉", ""))?;
         } else {
             let msg = format!(

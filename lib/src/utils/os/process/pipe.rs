@@ -17,9 +17,7 @@ pub async fn pipe(command: &str, pipe_command: &str) -> Result<String> {
             .spawn()?;
         let process = process.wait_with_output();
         match process {
-            Ok(output) => {
-                Ok(String::from(String::from_utf8_lossy(&output.stdout)))
-            }
+            Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
             Err(e) => Err(anyhow!("{}", e)),
         }
     } else {

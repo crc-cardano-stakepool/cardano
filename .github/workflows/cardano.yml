@@ -32,7 +32,6 @@ jobs:
             ~/.cabal/packages
             ~/.cardano
             ~/.cabal/store
-            dist-newstyle
           key: ${{ matrix.target}}-${{ matrix.target.ghc }}
       - name: Cache Rust
         uses: Swatinem/rust-cache@v1
