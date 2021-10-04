@@ -6,6 +6,8 @@ pub mod async_command_pipe;
 pub use async_command_pipe::async_command_pipe;
 pub mod pipe;
 pub use pipe::pipe;
+pub mod user_process_success;
+pub use user_process_success::user_process_success;
 pub mod process_success;
 pub use process_success::process_success;
 pub mod is_program_installed;
