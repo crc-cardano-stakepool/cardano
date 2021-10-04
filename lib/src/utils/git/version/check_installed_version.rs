@@ -1,4 +1,4 @@
-use crate::{async_command_pipe, print, get_bin_path};
+use crate::{async_command_pipe, get_bin_path, print};
 use anyhow::Result;
 
 pub async fn check_installed_version(component: &str) -> Result<String> {
