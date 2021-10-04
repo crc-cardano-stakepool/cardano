@@ -1,5 +1,4 @@
-use crate::os::process::async_command;
-use crate::os::terminal::stdout::print;
+use crate::{print, spinner_cmd};
 use anyhow::{anyhow, Result};
 
 pub async fn install_package(
@@ -9,7 +8,9 @@ pub async fn install_package(
     let msg = format!("{} is not installed", package);
     print("red", &msg)?;
     let cmd = format!("sudo {} install {} -y", package_manager, package);
-    let process = async_command(&cmd).await;
+    let exec_msg: &'static str = format!("Installing {}", package);
+    let finish_msg = format!("Finished installing {}", package);
+    let process = spinner_cmd(&cmd, &exec_msg, &finish_msg).await;
     match process {
         Ok(_) => Ok(()),
         Err(e) => {
