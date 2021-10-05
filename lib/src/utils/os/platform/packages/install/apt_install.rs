@@ -11,7 +11,7 @@ pub async fn apt_install(package: &str) -> Result<()> {
             Err(anyhow!("Failed installing {}", package))
         }
     } else {
-        Err(anyhow!("Failed installing {}", package))
+        Ok(())
     }
 }
 
