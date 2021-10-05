@@ -1,5 +1,3 @@
-pub mod install_build_dependencies;
-pub use install_build_dependencies::install_build_dependencies;
 pub mod prepare_build;
 pub use prepare_build::prepare_build;
 pub mod configure_build;
@@ -18,5 +16,5 @@ pub mod get_component_path;
 pub use get_component_path::get_component_path;
 pub mod get_project_file;
 pub use get_project_file::get_project_file;
-pub mod check_confirm;
-pub use check_confirm::check_confirm;
+pub mod set_confirm;
+pub use set_confirm::set_confirm;

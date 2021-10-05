@@ -2,10 +2,10 @@
 
 [![Top Language](https://img.shields.io/github/languages/top/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano)
 [![Release Version](https://img.shields.io/github/v/release/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/releases)
+[![Commits/month](https://img.shields.io/github/commit-activity/m/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/graphs/commit-activity)
 [![Last Commit](https://img.shields.io/github/last-commit/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/graphs/commit-activity)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/crc-cardano-stakepool/cardano/cardano?label=cardano&logo=github&style=flat)](https://github.com/crc-cardano-stakepool/cardano/actions?query=workflow:cardano)
 [![Last release date](https://img.shields.io/github/release-date/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/releases)
-[![Commits/month](https://img.shields.io/github/commit-activity/m/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/graphs/commit-activity)
 [![Github open PRs](https://img.shields.io/github/issues-pr-raw/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/pulls)
 [![Github closed PRs](https://img.shields.io/github/issues-pr-closed/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/pulls?q=is%3Apr+is%3Aclosed)
 [![Github Issues](https://img.shields.io/github/issues-raw/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/issues)

@@ -15,6 +15,7 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
         "Fedora" | "Hat" | "CentOs" => {
             let package_manager = "yum";
             if let Some(packages) = PACKAGES.get("non_debian_packages") {
+                update(package_manager).await?;
                 install_packages(package_manager, packages).await
             } else {
                 Err(anyhow!("Failed checking packages"))
