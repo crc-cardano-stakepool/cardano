@@ -12,10 +12,10 @@
 [![Github closed Issues](https://img.shields.io/github/issues-closed/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/issues?q=is%3Aissue+is%3Aclosed)
 [![Contributors](https://img.shields.io/github/contributors/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/graphs/contributors)
 [![Followers](https://img.shields.io/github/followers/crc-cardano-stakepool?style=flat)](https://github.com/crc-cardano-stakepool?tab=followers)
-[![Twitter Follow](https://img.shields.io/twitter/follow/clemenscodes?logo=twitter&style=flat)](https://twitter.com/clemenscodes)
 [![Forks](https://img.shields.io/github/forks/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/network/members)
 [![Stars](https://img.shields.io/github/stars/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/stargazers)
 [![Watchers](https://img.shields.io/github/watchers/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/watchers)
+[![Twitter Follow](https://img.shields.io/twitter/follow/clemenscodes?logo=twitter&style=flat)](https://twitter.com/clemenscodes)
 [![License](https://img.shields.io/github/license/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/blob/master/LICENSE)
 
 ## Installation
