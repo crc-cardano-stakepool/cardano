@@ -1,4 +1,4 @@
-use crate::{check_env, check_repo, checkout_latest_release, print, set_env, URLS};
+use crate::{check_env, check_repo, checkout_latest_release, set_env, URLS};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 
