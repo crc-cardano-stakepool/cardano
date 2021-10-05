@@ -1,10 +1,35 @@
 use crate::{
-    build_component, check_confirm, check_install, check_installed_version, check_latest_version, check_root,
-    copy_binary, is_bin_installed, prepare_build, print, print_emoji, proceed,
+    build_component, check_install, check_installed_version, check_latest_version, check_root, copy_binary,
+    is_bin_installed, prepare_build, print, print_emoji, proceed, set_confirm,
 };
 use anyhow::Result;
 use console::Emoji;
 use sudo::escalate_if_needed;
+
+pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
+    set_confirm(confirm);
+    if !check_root()? {
+        match escalate_if_needed() {
+            Ok(user) => {
+                let msg = format!("Running as {:#?}", user);
+                print("", &msg)
+            }
+            Err(_) => print("", "Failed obtaining root privileges"),
+        }
+    } else if !is_bin_installed(component).await? {
+        check_confirm(component, confirm).await
+    } else {
+        install_if_not_up_to_date(component, confirm).await
+    }
+}
+
+async fn check_confirm(component: &str, confirm: bool) -> Result<()> {
+    if confirm {
+        install(component).await
+    } else {
+        proceed_install(component).await
+    }
+}
 
 async fn install(component: &str) -> Result<()> {
     let msg = format!("Installing latest {}", component);
@@ -25,36 +50,19 @@ async fn proceed_install(component: &str) -> Result<()> {
     }
 }
 
-pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
-    check_confirm(confirm);
-    if let Ok(false) = check_root() {
-        match escalate_if_needed() {
-            Ok(user) => {
-                let msg = format!("Running as {:#?}", user);
-                print("", &msg)
-            }
-            Err(_) => print("", "Failed obtaining root privileges"),
-        }
-    } else if !is_bin_installed(component).await? {
-        if confirm {
-            install(component).await
-        } else {
-            proceed_install(component).await
-        }
+async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()> {
+    let installed_version = check_installed_version(component).await?;
+    let latest_version = check_latest_version(component).await?;
+    if installed_version.eq(&latest_version) {
+        let msg = format!("Already installed latest {} (v{})", component, latest_version);
+        print_emoji("green", &msg, Emoji("🙌🎉", ""))
     } else {
-        let installed_version = check_installed_version(component).await?;
-        let latest_version = check_latest_version(component).await?;
-        if installed_version.eq(&latest_version) {
-            let msg = format!("Already installed latest {} (v{})", component, latest_version);
-            print_emoji("green", &msg, Emoji("🙌🎉", ""))
-        } else {
-            let msg = format!(
-                "Currently {} (v{}) is installed, but the latest version is {}",
-                component, installed_version, latest_version
-            );
-            print_emoji("yellow", &msg, Emoji("⚠️", ""))?;
-            proceed_install(component).await
-        }
+        let msg = format!(
+            "Currently {} (v{}) is installed, but the latest version is {}",
+            component, installed_version, latest_version
+        );
+        print_emoji("yellow", &msg, Emoji("⚠️", ""))?;
+        check_confirm(component, confirm).await
     }
 }
 
