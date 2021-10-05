@@ -150,7 +150,7 @@ checksum = "c4872d67bab6358e59559027aa3b9157c53d9358c51423c17554809a8858e0f8"
 
 [[package]]
 name = "cardano"
-version = "0.1.2"
+version = "0.1.3-alpha"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -647,7 +647,7 @@ dependencies = [
 
 [[package]]
 name = "lib"
-version = "0.1.2"
+version = "0.1.3-alpha"
 dependencies = [
  "anyhow",
  "async-recursion",
@@ -999,9 +999,9 @@ dependencies = [
 
 [[package]]
 name = "pretty_assertions"
-version = "0.7.2"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cab0e7c02cf376875e9335e0ba1da535775beb5450d21e1dffca068818ed98b"
+checksum = "ec0cfe1b2403f172ba0f234e500906ee0a3e493fb81092dac23ebefe129301cc"
 dependencies = [
  "ansi_term 0.12.1",
  "ctor",
