@@ -20,11 +20,10 @@ pub enum NodeCommand {
 impl NodeCommand {
     pub async fn exec(cmd: NodeCommand) -> Result<()> {
         match cmd {
-            NodeCommand::Run(cmd) => RunCommand::exec(cmd).await?,
-            NodeCommand::Install { confirm } => NodeCommand::install_node(confirm).await?,
-            NodeCommand::Uninstall => NodeCommand::uninstall_node().await?,
+            NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
+            NodeCommand::Install { confirm } => NodeCommand::install_node(confirm).await,
+            NodeCommand::Uninstall => NodeCommand::uninstall_node().await,
         }
-        Ok(())
     }
 
     pub async fn install_node(confirm: bool) -> Result<()> {
@@ -32,8 +31,7 @@ impl NodeCommand {
     }
 
     pub async fn uninstall_node() -> Result<()> {
-        print_emoji("white", "Uninstalling cardano-node", Emoji("💔", ""))?;
-        Ok(())
+        print_emoji("white", "Uninstalling cardano-node", Emoji("💔", ""))
     }
 }
 

@@ -16,5 +16,3 @@ pub mod setup_work_dir;
 pub use setup_work_dir::setup_work_dir;
 pub mod copy_binary;
 pub use copy_binary::copy_binary;
-pub mod check_component;
-pub use check_component::check_component;

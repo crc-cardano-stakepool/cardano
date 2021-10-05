@@ -10,8 +10,7 @@ pub async fn check_libsodium() -> Result<()> {
     if !(file_exists(pc) && file_exists(so) && file_exists(la) && file_exists(a)) {
         install_libsodium().await?;
     }
-    print("green", "libsodium is installed")?;
-    Ok(())
+    print("green", "libsodium is installed")
 }
 
 #[cfg(test)]

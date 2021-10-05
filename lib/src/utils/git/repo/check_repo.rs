@@ -9,19 +9,18 @@ pub async fn check_repo(url: &str, absolute_path: &str, repo_name: &str) -> Resu
             let cmd = format!("$(ls -A {})", absolute_path);
             let directory_content = async_command_pipe(&cmd).await?;
             if directory_content.is_empty() {
-                clone_repo(url, absolute_path, repo_name).await?;
+                clone_repo(url, absolute_path, repo_name).await
             } else {
                 let msg = "Can't clone into directory, directory is not empty";
-                print("red", msg)?;
+                print("red", msg)
             }
         } else {
             let msg = format!("{} repository found", repo_name);
-            print("green", &msg)?;
+            print("green", &msg)
         }
     } else {
-        clone_repo(url, absolute_path, repo_name).await?;
+        clone_repo(url, absolute_path, repo_name).await
     }
-    Ok(())
 }
 
 #[cfg(test)]

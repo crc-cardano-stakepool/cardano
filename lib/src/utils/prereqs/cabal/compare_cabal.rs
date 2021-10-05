@@ -1,8 +1,8 @@
-use crate::{compare_version, get_cabal_version};
+use crate::get_cabal_version;
 
 pub fn compare_cabal(installed_cabal: &str) -> bool {
     let version = get_cabal_version();
-    compare_version(installed_cabal, version)
+    installed_cabal.eq(version)
 }
 
 #[cfg(test)]

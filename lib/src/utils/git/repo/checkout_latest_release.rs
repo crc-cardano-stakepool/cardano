@@ -9,8 +9,7 @@ pub async fn checkout_latest_release(component: &str) -> Result<()> {
     print("", &msg)?;
     fetch_tags(component).await?;
     async_command(&cmd).await?;
-    chownr(&path).await?;
-    Ok(())
+    chownr(&path).await
 }
 
 #[cfg(test)]

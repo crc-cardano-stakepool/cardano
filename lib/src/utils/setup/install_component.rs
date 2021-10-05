@@ -13,19 +13,17 @@ async fn install(component: &str) -> Result<()> {
     build_component(component).await?;
     copy_binary(component).await?;
     check_install(component).await?;
-    source_shell().await?;
-    Ok(())
+    source_shell().await
 }
 
 async fn proceed_install(component: &str) -> Result<()> {
     let msg = format!("Do you want to install the latest {} binary?", component);
     if proceed(&msg)? {
-        install(component).await?
+        install(component).await
     } else {
         let msg = format!("Aborted {} installation", component);
-        print_emoji("red", &msg, Emoji("", ""))?;
+        print_emoji("red", &msg, Emoji("", ""))
     }
-    Ok(())
 }
 
 pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
@@ -34,33 +32,31 @@ pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
         match escalate_if_needed() {
             Ok(user) => {
                 let msg = format!("Running as {:#?}", user);
-                print("", &msg)?
+                print("", &msg)
             }
-            Err(_) => print("", "Failed obtaining root privileges")?,
+            Err(_) => print("", "Failed obtaining root privileges"),
         }
     } else if !is_bin_installed(component).await? {
         if confirm {
-            install(component).await?
+            install(component).await
         } else {
-            proceed_install(component).await?
+            proceed_install(component).await
         }
     } else {
         let installed_version = check_installed_version(component).await?;
         let latest_version = check_latest_version(component).await?;
         if installed_version.eq(&latest_version) {
             let msg = format!("Already installed latest {} (v{})", component, latest_version);
-            print_emoji("green", &msg, Emoji("🙌🎉", ""))?;
+            print_emoji("green", &msg, Emoji("🙌🎉", ""))
         } else {
             let msg = format!(
                 "Currently {} (v{}) is installed, but the latest version is {}",
                 component, installed_version, latest_version
             );
             print_emoji("yellow", &msg, Emoji("⚠️", ""))?;
-            proceed_install(component).await?
+            proceed_install(component).await
         }
     }
-
-    Ok(())
 }
 
 #[cfg(test)]

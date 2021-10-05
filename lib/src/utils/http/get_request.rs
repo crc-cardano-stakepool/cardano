@@ -7,7 +7,7 @@ pub async fn get_request(url: &str) -> Result<Value> {
     let response = client.get(url).header("User-Agent", "Web 3").send().await?.json().await;
     match response {
         Ok(result) => Ok(result),
-        Err(e) => Err(anyhow!("Request failed with error: {}", e)),
+        Err(e) => Err(anyhow!("Request to {} failed with error: {}", url, e)),
     }
 }
 

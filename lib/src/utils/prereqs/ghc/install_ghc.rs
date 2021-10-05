@@ -10,7 +10,7 @@ pub async fn install_ghc() -> Result<()> {
     async_user_command(&cmd).await?;
     let cmd = format!("{} set ghc {}", ghcup, version);
     async_user_command(&cmd).await?;
-    Ok(())
+    print("green", "Successfully installed GHC")
 }
 
 #[cfg(test)]

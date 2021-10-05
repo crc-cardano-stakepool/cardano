@@ -1,5 +1,5 @@
 use crate::{check_env, file_exists, install_ghcup, is_dir, print};
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 pub async fn check_ghcup() -> Result<()> {
     print("", "Checking GHCup")?;
@@ -7,15 +7,14 @@ pub async fn check_ghcup() -> Result<()> {
     let ghcup_bin = check_env("GHCUP_BIN")?;
     if is_dir(&ghcup_dir) {
         if file_exists(&ghcup_bin) {
-            print("green", "GHCup is installed")?;
+            print("green", "GHCup is installed")
         } else {
-            print("red", "Failed installing GHCup")?;
+            Err(anyhow!("Failed installing GHCup"))
         }
     } else {
         print("red", "GHCup is not installed")?;
-        install_ghcup().await?;
+        install_ghcup().await
     }
-    Ok(())
 }
 
 #[cfg(test)]

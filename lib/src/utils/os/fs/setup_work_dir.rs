@@ -1,5 +1,5 @@
 use crate::{check_dir, check_env, check_home_dir, chownr, print, set_env, spinner, SPINNERS};
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::collections::HashMap;
 use std::thread::sleep;
@@ -36,9 +36,10 @@ pub async fn setup_work_dir() -> Result<()> {
         }
         chownr(&work_dir).await?;
         pb.finish_and_clear();
-        print("green", "Working directory is setup")?;
+        print("green", "Working directory is setup")
+    } else {
+        Err(anyhow!("Failed setting up working directory"))
     }
-    Ok(())
 }
 
 #[cfg(test)]

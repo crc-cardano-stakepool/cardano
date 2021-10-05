@@ -1,12 +1,12 @@
 use crate::{change_shell_config, check_env, export_shell_variables, print, proceed};
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 pub async fn ask_shell_config() -> Result<()> {
     let shell = check_env("MY_SHELL")?;
     let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
     let confirm = check_env("CONFIRM")?;
     if shell.is_empty() || shell_profile_file.is_empty() {
-        panic!("No shell found")
+        return Err(anyhow!("No shell found"));
     }
     let msg = format!("Detected {}", shell);
     print("green", &msg)?;
@@ -20,12 +20,11 @@ pub async fn ask_shell_config() -> Result<()> {
             shell, shell_profile_file
         );
         print("magenta", &msg)?;
-        change_shell_config().await?;
+        change_shell_config().await
     } else {
-        print("yellow", "Skipped adding path variables, setting at runtime manually")?;
         export_shell_variables().await?;
+        print("yellow", "Skipped adding path variables")
     }
-    Ok(())
 }
 
 #[cfg(test)]

@@ -1,13 +1,17 @@
-use crate::{async_command, check_user};
-use anyhow::Result;
+use crate::{async_command, check_user, print};
+use anyhow::{anyhow, Result};
 
 // TODO: Use standard library instead
 pub async fn chownr(absolute_path: &str) -> Result<()> {
     let user = check_user().await?;
     let user = user.trim();
     let cmd = format!("chown -R {}:{} {}", user, user, absolute_path);
-    async_command(&cmd).await?;
-    Ok(())
+    if async_command(&cmd).await.is_ok() {
+        let msg = format!("Adjusted permissions of {}", absolute_path);
+        print("green", &msg)
+    } else {
+        Err(anyhow!("Failed adjusting permissions of {}", absolute_path))
+    }
 }
 
 #[cfg(test)]

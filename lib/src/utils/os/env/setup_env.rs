@@ -17,7 +17,7 @@ pub async fn setup_env() -> Result<()> {
     for (key, value) in map {
         set_env(key, value);
     }
-    Ok(())
+    print("green", "Environment is ready")
 }
 
 #[cfg(test)]

@@ -6,8 +6,7 @@ pub async fn prepare_build() -> Result<()> {
     check_dir(&check_work_dir().await?).await?;
     setup_packages().await?;
     setup_shell().await?;
-    install_build_dependencies().await?;
-    Ok(())
+    install_build_dependencies().await
 }
 
 #[cfg(test)]

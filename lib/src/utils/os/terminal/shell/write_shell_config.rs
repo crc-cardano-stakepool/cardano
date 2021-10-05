@@ -6,9 +6,8 @@ pub async fn write_shell_config(value: &str) -> Result<()> {
     let append_string = format!("$(cat << 'EOF'\n{}\nEOF\n)", value);
     let cmd = format!("echo \"{}\" >> {}", append_string, shell_profile_file);
     let msg = format!("Added line to {}: {}", shell_profile_file, value);
-    print("green", &msg)?;
     async_command(&cmd).await?;
-    Ok(())
+    print("green", &msg)
 }
 
 #[cfg(test)]

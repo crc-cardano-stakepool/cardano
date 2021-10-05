@@ -16,28 +16,29 @@ pub enum RunCommand {
 impl RunCommand {
     pub async fn exec(cmd: RunCommand) -> Result<()> {
         match cmd {
-            RunCommand::Mainnet(config) => RunCommand::mainnet(config).await?,
-            RunCommand::Testnet(config) => RunCommand::testnet(config).await?,
+            RunCommand::Mainnet(config) => RunCommand::mainnet(config).await,
+            RunCommand::Testnet(config) => RunCommand::testnet(config).await,
         }
-        Ok(())
     }
 
     async fn mainnet(config: RunConfig) -> Result<()> {
         let output: String = format!("The config to run node in mainnet: {:#?}", config);
         print("white", &output)?;
         if is_bin_installed("cardano-node").await? {
-            print_emoji("green", "Proceeding to run node in mainnet", Emoji("💪", ""))?;
+            print_emoji("green", "Proceeding to run node in mainnet", Emoji("💪", ""))
+        } else {
+            print("red", "cardano-node is not installed")
         }
-        Ok(())
     }
 
     async fn testnet(config: RunConfig) -> Result<()> {
         let output: String = format!("The config to run node in testnet: {:#?}", config);
         print("white", &output)?;
         if is_bin_installed("cardano-node").await? {
-            print_emoji("green", "Proceeding to run node in testnet", Emoji("🔍", ""))?;
+            print_emoji("green", "Proceeding to run node in testnet", Emoji("🔍", ""))
+        } else {
+            print("red", "cardano-node is not installed")
         }
-        Ok(())
     }
 }
 

@@ -15,7 +15,7 @@ pub async fn check_distro() -> Result<String> {
                 check_distro_result(Ok(distro))
             }
         }
-        Err(e) => Err(anyhow!("{}", e)),
+        Err(e) => Err(anyhow!("Failed checking distro with error: {}", e)),
     }
 }
 

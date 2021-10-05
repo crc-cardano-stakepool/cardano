@@ -5,8 +5,7 @@ pub async fn setup_shell() -> Result<()> {
     let shell = check_shell().await?;
     match_shell(&shell)?;
     ask_shell_config().await?;
-    setup_env().await?;
-    Ok(())
+    setup_env().await
 }
 
 #[cfg(test)]

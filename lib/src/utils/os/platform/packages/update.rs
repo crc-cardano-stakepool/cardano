@@ -6,8 +6,7 @@ pub async fn update(package_manager: &str) -> Result<()> {
         "sudo {} update -y && sudo {} upgrade -y",
         package_manager, package_manager
     );
-    spinner_cmd(&cmd, "Updating", "Finished updating").await?;
-    Ok(())
+    spinner_cmd(&cmd, "Updating", "Finished updating").await
 }
 
 #[cfg(test)]

@@ -1,5 +1,5 @@
-use crate::{check_distro, check_platform, install_distro_packages, install_mac_packages, print};
-use anyhow::Result;
+use crate::{check_distro, check_platform, install_distro_packages, print};
+use anyhow::{anyhow, Result};
 
 pub async fn setup_packages() -> Result<()> {
     let output = check_platform().await?;
@@ -9,15 +9,14 @@ pub async fn setup_packages() -> Result<()> {
             print("green", "Detected linux")?;
             let output = check_distro().await?;
             let distro = output.as_str().trim();
-            install_distro_packages(distro).await?;
+            install_distro_packages(distro).await
         }
         "darwin" | "Darwin" => {
-            print("green", "Detected macOS")?;
-            install_mac_packages().await?
+            print("red", "Detected macOS")?;
+            Err(anyhow!("macOS is currently unsupported"))
         }
-        _ => panic!("Unsupported platform: {}", platform),
+        _ => Err(anyhow!("Unsupported platform: {}", platform)),
     }
-    Ok(())
 }
 
 #[cfg(test)]
