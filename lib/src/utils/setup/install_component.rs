@@ -1,6 +1,6 @@
 use crate::{
     build_component, check_confirm, check_install, check_installed_version, check_latest_version, check_root,
-    copy_binary, is_bin_installed, prepare_build, print, print_emoji, proceed, source_shell,
+    copy_binary, is_bin_installed, prepare_build, print, print_emoji, proceed,
 };
 use anyhow::Result;
 use console::Emoji;
@@ -12,8 +12,7 @@ async fn install(component: &str) -> Result<()> {
     prepare_build().await?;
     build_component(component).await?;
     copy_binary(component).await?;
-    check_install(component).await?;
-    source_shell().await
+    check_install(component).await
 }
 
 async fn proceed_install(component: &str) -> Result<()> {
