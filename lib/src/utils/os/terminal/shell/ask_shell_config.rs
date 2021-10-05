@@ -19,10 +19,7 @@ async fn check_ask_shell_confirm(shell: &str, shell_file: &str) -> Result<()> {
         shell_file
     );
     if confirm == "false" && proceed(&msg)? {
-        let msg = format!(
-            "Proceeding to add path variables for {} to {}",
-            shell, shell_file
-        );
+        let msg = format!("Proceeding to add path variables for {} to {}", shell, shell_file);
         print("magenta", &msg)?;
         change_shell_config().await
     } else {
