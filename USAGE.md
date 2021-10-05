@@ -16,3 +16,7 @@
 ## Install latest cardano-node release
 
     cardano node install
+
+## Install latest cardano-node release without interaction
+
+    cardano node install -y
