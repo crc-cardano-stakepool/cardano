@@ -1,4 +1,4 @@
-use crate::{check_dir, check_work_dir, install_build_dependencies, print, setup_packages, setup_shell};
+use crate::{check_dependencies, check_dir, check_work_dir, print, setup_packages, setup_shell, setup_work_dir};
 use anyhow::Result;
 
 pub async fn prepare_build() -> Result<()> {
@@ -6,7 +6,8 @@ pub async fn prepare_build() -> Result<()> {
     check_dir(&check_work_dir().await?).await?;
     setup_packages().await?;
     setup_shell().await?;
-    install_build_dependencies().await
+    setup_work_dir().await?;
+    check_dependencies().await
 }
 
 #[cfg(test)]
