@@ -8,10 +8,10 @@ pub async fn apt_install(package: &str) -> Result<()> {
         if result.trim().is_empty() {
             install_package("apt", package).await
         } else {
-            Err(anyhow!("Failed installing {}", package))
+            Ok(())
         }
     } else {
-        Ok(())
+        Err(anyhow!("Failed installing {}", package))
     }
 }
 
