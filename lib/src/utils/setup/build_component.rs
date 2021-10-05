@@ -6,10 +6,10 @@ use anyhow::{anyhow, Result};
 
 pub async fn build_component(component: &str) -> Result<()> {
     let ghc_version = get_ghc_version();
-    let path = get_component_path(component).await?;
     let cabal = check_env("CABAL_BIN")?;
     let project_file = get_project_file(component).await?;
     clone_component(component).await?;
+    let path = get_component_path(component).await?;
     update_cabal(&path, &cabal).await?;
     check_project_file(&project_file).await?;
     configure_build(component, ghc_version, &path, &cabal).await?;
