@@ -11,7 +11,7 @@ pub async fn install_cabal() -> Result<()> {
     async_user_command(&cmd).await?;
     let cmd = format!("{} set cabal {}", ghcup, version);
     async_user_command(&cmd).await?;
-    Ok(())
+    print("green", "Successfully installed Cabal")
 }
 
 #[cfg(test)]

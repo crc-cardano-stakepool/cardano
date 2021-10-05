@@ -10,8 +10,7 @@ pub async fn check_install(component: &str) -> Result<()> {
     }
     check_installed_version(component).await?;
     let msg = format!("Successfully installed {}", component);
-    print_emoji("green", &msg, Emoji("🙌🎉", ""))?;
-    Ok(())
+    print_emoji("green", &msg, Emoji("🙌🎉", ""))
 }
 
 #[cfg(test)]

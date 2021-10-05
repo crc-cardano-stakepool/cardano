@@ -6,8 +6,7 @@ pub async fn export_shell_variables() -> Result<()> {
     for (key, value) in ENVS.iter() {
         set_env(key, value);
     }
-    source_shell().await?;
-    Ok(())
+    source_shell().await
 }
 
 #[cfg(test)]

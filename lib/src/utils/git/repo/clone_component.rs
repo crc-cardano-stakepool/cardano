@@ -10,11 +10,9 @@ pub async fn clone_component(component: &str) -> Result<()> {
         let converted = env_name.to_case(Case::UpperSnake);
         set_env(&converted, &cardano_component_dir);
         check_repo(url, &cardano_component_dir, "cardano-node").await?;
-        checkout_latest_release(component).await?;
-        Ok(())
+        checkout_latest_release(component).await
     } else {
-        let msg = format!("Failed cloning {} repository", component);
-        Err(anyhow!(msg))
+        Err(anyhow!("Failed cloning {} repository", component))
     }
 }
 

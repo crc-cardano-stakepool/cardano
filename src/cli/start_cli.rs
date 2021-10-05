@@ -12,10 +12,8 @@ pub struct Cli {
 impl Cli {
     pub async fn start(command: CardanoCommand) -> Result<()> {
         match command {
-            CardanoCommand::Node(command) => NodeCommand::exec(command).await?,
-            CardanoCommand::Wallet(command) => {
-                WalletCommand::exec(command).await?
-            }
+            CardanoCommand::Node(command) => NodeCommand::exec(command).await,
+            CardanoCommand::Wallet(command) => WalletCommand::exec(command).await
             // CardanoCommand::Tx(command) => TxCommand::exec(command).await,
             // CardanoCommand::Mint(command) => MintCommand::exec(command).await,
             // CardanoCommand::Address(command) => AddressCommand::exec(command).await,
@@ -29,6 +27,5 @@ impl Cli {
             // CardanoCommand::Smash(command) => SmashCommand::exec(command).await,
             // CardanoCommand::Update(command) => UpdateCommand::exec(command).await,
         }
-        Ok(())
     }
 }

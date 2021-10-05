@@ -8,8 +8,7 @@ pub async fn update_project_file(component: &str, file_path: &str) -> Result<()>
     async_command(&libsodium_flag).await?;
     let msg = format!("Updated project file of {}", component);
     chownr(file_path).await?;
-    print("green", &msg)?;
-    Ok(())
+    print("green", &msg)
 }
 
 #[cfg(test)]

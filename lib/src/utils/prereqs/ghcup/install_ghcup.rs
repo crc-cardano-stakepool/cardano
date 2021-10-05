@@ -12,7 +12,7 @@ pub async fn install_ghcup() -> Result<()> {
     let call = format!("$(curl --proto '=https' --tlsv1.2 -sSf {})", ghcup_install_url);
     let cmd = format!("\n{}\n{}\n{}\n{}", non_interactive, ghc, cabal, call);
     async_user_command(&cmd).await?;
-    Ok(())
+    print("green", "Successfully installed GHCup")
 }
 
 #[cfg(test)]

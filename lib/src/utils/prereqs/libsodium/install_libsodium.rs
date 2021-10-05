@@ -17,7 +17,7 @@ pub async fn install_libsodium() -> Result<()> {
     async_command(&cmd).await?;
     chownr(&libsodium_path).await?;
     export_shell_variables().await?;
-    Ok(())
+    print("green", "Successfully installed libsodium")
 }
 
 #[cfg(test)]

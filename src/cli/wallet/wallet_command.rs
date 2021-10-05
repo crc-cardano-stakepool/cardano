@@ -18,10 +18,9 @@ pub enum WalletCommand {
 impl WalletCommand {
     pub async fn exec(cmd: WalletCommand) -> Result<()> {
         match cmd {
-            WalletCommand::Install { confirm } => WalletCommand::install_wallet(confirm).await?,
-            WalletCommand::Uninstall => WalletCommand::uninstall_wallet().await?,
+            WalletCommand::Install { confirm } => WalletCommand::install_wallet(confirm).await,
+            WalletCommand::Uninstall => WalletCommand::uninstall_wallet().await,
         }
-        Ok(())
     }
 
     pub async fn install_wallet(confirm: bool) -> Result<()> {
@@ -29,7 +28,6 @@ impl WalletCommand {
     }
 
     pub async fn uninstall_wallet() -> Result<()> {
-        print_emoji("white", "Uninstalling cardano-wallet", Emoji("💔", ""))?;
-        Ok(())
+        print_emoji("white", "Uninstalling cardano-wallet", Emoji("💔", ""))
     }
 }

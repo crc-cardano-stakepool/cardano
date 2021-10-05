@@ -1,5 +1,5 @@
 use crate::{async_command_pipe, print, SPINNERS};
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use indicatif::{ProgressBar, ProgressStyle};
 
 pub async fn spinner_cmd(cmd: &str, exec_msg: &'static str, finish_msg: &'static str) -> Result<()> {
@@ -13,9 +13,10 @@ pub async fn spinner_cmd(cmd: &str, exec_msg: &'static str, finish_msg: &'static
         spinner.set_message(exec_msg);
         async_command_pipe(cmd).await?;
         spinner.finish_and_clear();
-        print("green", finish_msg)?;
+        print("green", finish_msg)
+    } else {
+        Err(anyhow!("Failed executing command: {}", cmd))
     }
-    Ok(())
 }
 
 #[cfg(test)]

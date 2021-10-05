@@ -20,8 +20,7 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
         i += 1;
     }
     pb.finish_and_clear();
-    print("green", "Successfully installed packages")?;
-    Ok(())
+    print("green", "Successfully installed packages")
 }
 
 #[cfg(test)]

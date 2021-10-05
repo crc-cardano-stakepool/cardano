@@ -1,10 +1,15 @@
-use crate::async_command;
+use crate::{async_command, print};
 use anyhow::Result;
 
 pub async fn change_dir(absolute_path: &str) -> Result<()> {
     let cmd = format!("cd {}", absolute_path);
-    async_command(&cmd).await?;
-    Ok(())
+    if async_command(&cmd).await.is_ok() {
+        let msg = format!("Changed directory to {}", absolute_path);
+        print("green", &msg)
+    } else {
+        let msg = format!("Failed directory to {}", absolute_path);
+        print("red", &msg)
+    }
 }
 
 #[cfg(test)]

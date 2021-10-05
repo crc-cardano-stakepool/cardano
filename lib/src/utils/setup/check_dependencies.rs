@@ -6,8 +6,7 @@ pub async fn check_dependencies() -> Result<()> {
     check_ghcup().await?;
     check_ghc().await?;
     check_cabal().await?;
-    check_libsodium().await?;
-    Ok(())
+    check_libsodium().await
 }
 
 #[cfg(test)]

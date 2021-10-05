@@ -4,8 +4,7 @@ use anyhow::Result;
 pub async fn build_component(component: &str) -> Result<()> {
     let ghc_version = get_ghc_version();
     clone_component(component).await?;
-    configure_build(component, ghc_version).await?;
-    Ok(())
+    configure_build(component, ghc_version).await
 }
 
 #[cfg(test)]

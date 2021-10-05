@@ -9,7 +9,7 @@ pub fn check_distro_result(distro: Result<String>) -> Result<String> {
             print("green", &msg)?;
             Ok(result)
         }
-        Err(e) => Err(anyhow!("{}", e)),
+        Err(e) => Err(anyhow!("Failed checking distribution with error: {}", e)),
     }
 }
 

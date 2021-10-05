@@ -1,8 +1,8 @@
-use crate::{compare_version, get_ghc_version};
+use crate::get_ghc_version;
 
 pub fn compare_ghc(installed_ghc: &str) -> bool {
     let version = get_ghc_version();
-    compare_version(installed_ghc, version)
+    installed_ghc.eq(version)
 }
 
 #[cfg(test)]
