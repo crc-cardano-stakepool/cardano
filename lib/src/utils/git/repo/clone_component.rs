@@ -8,11 +8,6 @@ pub async fn clone_component(component: &str) -> Result<()> {
         let cardano_component_dir = format!("{}/{}", work_dir, component);
         let env_name = format!("{}-dir", component);
         let converted = env_name.to_case(Case::UpperSnake);
-        let msg = format!(
-            "Setting environment variable: {}={}",
-            &converted, &cardano_component_dir
-        );
-        print("", &msg)?;
         set_env(&converted, &cardano_component_dir);
         check_repo(url, &cardano_component_dir, "cardano-node").await?;
         checkout_latest_release(component).await
