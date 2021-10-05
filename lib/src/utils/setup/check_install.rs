@@ -1,4 +1,4 @@
-use crate::{check_installed_version, print, print_emoji};
+use crate::{check_installed_version, print, source_shell, print_emoji};
 use anyhow::Result;
 use console::Emoji;
 
@@ -9,6 +9,7 @@ pub async fn check_install(component: &str) -> Result<()> {
         check_installed_version("cardano-cli").await?;
     }
     check_installed_version(component).await?;
+    source_shell().await?;
     let msg = format!("Successfully installed {}", component);
     print_emoji("green", &msg, Emoji("🙌🎉", ""))
 }
