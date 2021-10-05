@@ -7,7 +7,7 @@ pub async fn change_dir(absolute_path: &str) -> Result<()> {
         let msg = format!("Changed directory to {}", absolute_path);
         print("green", &msg)
     } else {
-        let msg = format!("Failed directory to {}", absolute_path);
+        let msg = format!("Failed changing directory to {}", absolute_path);
         print("red", &msg)
     }
 }
