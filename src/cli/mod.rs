@@ -1,7 +1,7 @@
+pub mod node;
+pub use node::*;
 pub mod update;
 pub use update::UpdateCommand;
-pub mod node;
-pub use node::NodeCommand;
 pub mod wallet;
 pub use wallet::WalletCommand;
 pub mod cardano_command;

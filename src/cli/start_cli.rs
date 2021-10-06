@@ -1,4 +1,4 @@
-use crate::cli::{CardanoCommand, NodeCommand, WalletCommand};
+use crate::{CardanoCommand, NodeCommand, WalletCommand};
 use anyhow::Result;
 use structopt::StructOpt;
 

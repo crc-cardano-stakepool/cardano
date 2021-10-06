@@ -18,6 +18,31 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/clemenscodes?logo=twitter&style=flat)](https://twitter.com/clemenscodes)
 [![License](https://img.shields.io/github/license/crc-cardano-stakepool/cardano?style=flat)](https://github.com/crc-cardano-stakepool/cardano/blob/master/LICENSE)
 
+## About
+
+Cardano Rust CLI is a tool to interact with cardano components more easily.
+
+As of now, interactions with cardano components is a bit clunky and relies on lots of shell scripts.
+
+To improve this experience, this tool will do the heavy lifting by utilizing the components under the hood and asking for what you want to do.
+
+Whether you are a beginner in the Cardano ecosystem, an SPO or a builder, you can use this tool to have a nicer experience and build more tools for Cardano.
+
+## Available features
+
+- Checking the correct build dependencies for each component
+- Building the desired components from scratch
+- Updating them to the latest version if out of date
+
+## Future features
+
+- Manage wallets
+- Creating transactions
+- Minting assets
+- SPO utilities
+- Setup a plutus development environment
+- Explore the blockchain
+
 ## Installation
 
 See [installation guide](INSTALL.md)
