@@ -1,4 +1,4 @@
-use crate::cli::{NodeCommand, WalletCommand};
+use crate::{NodeCommand, WalletCommand};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]

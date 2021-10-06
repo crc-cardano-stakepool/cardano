@@ -1,7 +1,7 @@
 extern crate lib;
-mod cli;
+pub mod cli;
 use anyhow::Result;
-use cli::Cli;
+pub use cli::*;
 use ctrlc::set_handler;
 use human_panic::setup_panic;
 use structopt::StructOpt;

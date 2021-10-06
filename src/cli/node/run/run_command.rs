@@ -1,4 +1,4 @@
-use super::RunConfig;
+use crate::RunConfig;
 use anyhow::Result;
 use console::Emoji;
 use lib::{is_bin_installed, print, print_emoji};

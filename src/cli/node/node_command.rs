@@ -1,4 +1,4 @@
-use super::run::RunCommand;
+use crate::RunCommand;
 use anyhow::Result;
 use console::Emoji;
 use lib::{install_component, print_emoji};
