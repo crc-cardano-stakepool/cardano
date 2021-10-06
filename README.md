@@ -22,7 +22,7 @@
 
 Cardano Rust CLI is a tool to interact with cardano components more easily.
 
-As of now, interaction with cardano components is a bit clunky and relies on lots of shell scripts.
+As of now, interacting with cardano components is a bit clunky and relies on lots of shell scripts.
 
 To improve this experience, this tool will do the heavy lifting by utilizing the components under the hood and asking for what you want to do.
 
