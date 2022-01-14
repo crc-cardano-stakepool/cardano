@@ -8,3 +8,5 @@ pub mod get_ghc_version;
 pub use get_ghc_version::get_ghc_version;
 pub mod compare_ghc;
 pub use compare_ghc::compare_ghc;
+pub mod get_ghc_version_url;
+pub use get_ghc_version_url::get_ghc_version_url;

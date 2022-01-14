@@ -7,6 +7,10 @@ lazy_static! {
         map.insert("cardano-node", "https://github.com/input-output-hk/cardano-node.git");
         map.insert("libsodium", "https://github.com/input-output-hk/libsodium.git");
         map.insert("ghcup", "https://get-ghcup.haskell.org");
+        map.insert(
+            "ghc-version",
+            "https://developers.cardano.org/docs/get-started/installing-cardano-node",
+        );
         map
     };
 }

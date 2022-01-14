@@ -3,7 +3,7 @@ use anyhow::Result;
 
 pub async fn install_ghcup() -> Result<()> {
     print("", "Installing GHCup")?;
-    let ghc_version = get_ghc_version();
+    let ghc_version = get_ghc_version().await?;
     let cabal_version = get_cabal_version();
     let ghcup_install_url = get_ghcup_install_url();
     let non_interactive = "export BOOTSTRAP_HASKELL_NONINTERACTIVE=1";

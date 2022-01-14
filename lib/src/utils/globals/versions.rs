@@ -4,7 +4,7 @@ use std::collections::HashMap;
 lazy_static! {
     pub static ref VERSIONS: HashMap<&'static str, &'static str> = {
         let mut map = HashMap::new();
-        map.insert("ghc", "8.10.4");
+        // map.insert("ghc", "8.10.7");
         map.insert("cabal", "3.4.0.0");
         map
     };
