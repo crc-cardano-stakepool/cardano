@@ -2,7 +2,7 @@ use crate::{async_user_command, check_env, get_ghc_version, print};
 use anyhow::Result;
 
 pub async fn install_ghc() -> Result<()> {
-    let version = get_ghc_version();
+    let version = get_ghc_version().await?;
     let msg = format!("Installing GHC v{}", version);
     print("", &msg)?;
     let ghcup = check_env("GHCUP_BIN")?;

@@ -1,8 +1,9 @@
 use crate::get_ghc_version;
+use anyhow::Result;
 
-pub fn compare_ghc(installed_ghc: &str) -> bool {
-    let version = get_ghc_version();
-    installed_ghc.eq(version)
+pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
+    let version = get_ghc_version().await?;
+    Ok(installed_ghc.eq(&version))
 }
 
 #[cfg(test)]
