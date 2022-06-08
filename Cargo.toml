@@ -2,7 +2,7 @@
 
 [package]
 name = "cardano"
-version = "0.1.4"
+version = "0.0.1"
 authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 edition = "2021"
 license = "MIT"
@@ -12,17 +12,15 @@ description = "CLI for managing cardano components"
 
 [dependencies]
 lib = { path = "lib" }
-structopt = "0.3.23"
+structopt = "0.3.26"
 sudo = "0.6.0"
 human-panic = "1.0.3"
-ctrlc = "3.2.0"
-anyhow = "1.0.42"
-tokio = { version = "1.9.0", features = ["full"] }
-console = "0.14.1"
-clap-verbosity-flag = "0.3.2"
+ctrlc = "3.2.2"
+anyhow = "1.0.57"
+tokio = { version = "1.19.2", features = ["full"] }
+console = "0.15.0"
 
 [dev-dependencies]
-assert_cmd = "2.0.0"
-predicates = "2.0.1"
-serde_test = "1.0.127"
+assert_cmd = "2.0.4"
+predicates = "2.1.1"
 pretty_assertions = "1.0.0"
