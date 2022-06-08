@@ -1,6 +1,17 @@
-use crate::{check_home_dir, print, set_env};
-use anyhow::Result;
-use std::collections::HashMap;
+use crate::{check_home_dir, print};
+use std::{collections::HashMap, env::{var, set_var}};
+use anyhow::{anyhow, Result};
+
+pub fn check_env(key: &str) -> Result<String> {
+    match var(key) {
+        Ok(val) => Ok(val),
+        Err(e) => Err(anyhow!("couldn't interpret {}: {}", key, e)),
+    }
+}
+
+pub fn set_env(key: &str, value: &str) {
+    set_var(key, value);
+}
 
 pub async fn setup_env() -> Result<()> {
     print("", "Setting up environment")?;
@@ -26,6 +37,16 @@ mod test {
     #[tokio::test]
     #[ignore]
     async fn test_setup_env() {
+        unimplemented!();
+    }
+    #[test]
+    #[ignore]
+    fn test_set_env() {
+        unimplemented!();
+    }
+    #[test]
+    #[ignore]
+    fn test_check_env() {
         unimplemented!();
     }
 }
