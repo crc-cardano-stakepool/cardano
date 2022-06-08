@@ -1,6 +1,6 @@
 use crate::{async_command_pipe, print, SPINNERS};
-use dialoguer::{theme::ColorfulTheme, Confirm};
 use anyhow::{anyhow, Result};
+use dialoguer::{theme::ColorfulTheme, Confirm};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::io::Result as IOResult;
 
