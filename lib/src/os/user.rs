@@ -1,6 +1,6 @@
 use crate::{async_command_pipe, set_env};
-use sudo::{check, RunningAs};
 use anyhow::Result;
+use sudo::{check, RunningAs};
 
 pub fn check_root() -> Result<bool> {
     if let RunningAs::Root = check() {

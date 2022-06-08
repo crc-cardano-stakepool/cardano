@@ -1,6 +1,9 @@
 use crate::{check_home_dir, print};
-use std::{collections::HashMap, env::{var, set_var}};
 use anyhow::{anyhow, Result};
+use std::{
+    collections::HashMap,
+    env::{set_var, var},
+};
 
 pub fn check_env(key: &str) -> Result<String> {
     match var(key) {
