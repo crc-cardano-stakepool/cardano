@@ -1,8 +1,9 @@
 use crate::get_cabal_version;
+use anyhow::Result;
 
-pub fn compare_cabal(installed_cabal: &str) -> bool {
-    let version = get_cabal_version();
-    installed_cabal.eq(version)
+pub async fn compare_cabal(installed_cabal: &str) -> Result<bool> {
+    let version = get_cabal_version().await?;
+    Ok(installed_cabal.eq(&version))
 }
 
 #[cfg(test)]
