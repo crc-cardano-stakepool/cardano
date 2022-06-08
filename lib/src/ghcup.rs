@@ -42,16 +42,19 @@ pub async fn install_ghcup() -> Result<()> {
 #[cfg(test)]
 mod test {
     // use super::*;
+
     #[tokio::test]
     #[ignore]
     async fn test_install_ghcup() {
         unimplemented!();
     }
+
     #[test]
     #[ignore]
     fn test_get_ghcup_install_url() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_check_ghcup() {

@@ -77,27 +77,32 @@ pub async fn get_cabal_version() -> Result<String> {
 #[cfg(test)]
 mod test {
     use super::*;
+
     #[tokio::test]
     #[ignore]
     async fn test_check_cabal() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_check_installed_cabal() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_compare_cabal() {
         unimplemented!();
     }
+
     #[tokio::test]
     async fn test_get_cabal_version() -> Result<()> {
         let version = get_cabal_version().await?;
         assert_eq!(version, "3.6.2.0");
         Ok(())
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_install_cabal() {

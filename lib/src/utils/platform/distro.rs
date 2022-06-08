@@ -57,17 +57,20 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
 
 #[cfg(test)]
 mod test {
-    // use crate::install_distro_packages;
+    // use super::*;
+
     #[tokio::test]
     #[ignore]
     async fn test_install_distro_packages() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_check_distro() {
         unimplemented!();
     }
+
     #[test]
     #[ignore]
     fn test_check_distro_result() {

@@ -106,26 +106,31 @@ lazy_static! {
 #[cfg(test)]
 mod test {
     // use super::*;
+    
     #[test]
     #[ignore]
     fn test_versions() {
         unimplemented!();
     }
+
     #[test]
     #[ignore]
     fn test_urls() {
         unimplemented!();
     }
+
     #[test]
     #[ignore]
     fn test_spinners() {
         unimplemented!();
     }
+
     #[test]
     #[ignore]
     fn test_paths() {
         unimplemented!();
     }
+
     #[test]
     #[ignore]
     fn test_packages() {

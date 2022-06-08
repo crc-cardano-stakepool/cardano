@@ -120,36 +120,43 @@ pub async fn write_shell_config(value: &str) -> Result<()> {
 #[cfg(test)]
 mod test {
     // use super::*;
+    //
     #[tokio::test]
     #[ignore]
     async fn test_write_shell_config() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_setup_shell() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_match_shell() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_change_shell_config() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_check_shell() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_check_shell_config_env() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_ask_shell_config() {

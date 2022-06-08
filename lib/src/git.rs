@@ -105,7 +105,6 @@ pub async fn is_bin_installed(bin: &str) -> Result<bool> {
 
 #[cfg(test)]
 mod test {
-    // use crate::fetch_tags;
     use super::*;
     #[tokio::test]
     #[ignore]

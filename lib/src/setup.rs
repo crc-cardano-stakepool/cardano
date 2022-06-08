@@ -188,41 +188,49 @@ pub async fn update_project_file(component: &str, file_path: &str) -> Result<()>
 #[cfg(test)]
 mod test {
     // use super::*;
+
     #[tokio::test]
     #[ignore]
     async fn test_update_project_file() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_prepare_build() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_install_component() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_check_project_file() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_get_component_path() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_configure_build() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_check_install() {
         unimplemented!();
     }
+    
     #[tokio::test]
     #[ignore]
     async fn test_check_dependencies() {

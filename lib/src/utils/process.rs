@@ -95,26 +95,31 @@ pub async fn user_process_success(command: &str) -> Result<bool> {
 #[cfg(test)]
 mod test {
     use super::*;
+
     #[tokio::test]
     #[ignore]
     async fn test_process_success() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_pipe() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_install_ghc() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_async_command() {
         unimplemented!();
     }
+
     #[tokio::test]
     pub async fn test_async_command_pipe() {
         match async_command_pipe("find ../target/ -type f -name cardano | tail -n1").await {

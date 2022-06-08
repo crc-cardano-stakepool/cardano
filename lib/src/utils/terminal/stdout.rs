@@ -102,16 +102,19 @@ pub fn to_color(color: &str) -> Color {
 #[cfg(test)]
 mod test {
     // use super::*;
+    //
     #[tokio::test]
     #[ignore]
     async fn test_to_color() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_print() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_print_emoji() {

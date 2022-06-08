@@ -59,21 +59,25 @@ pub async fn yum_install(package: &str) -> Result<()> {
 #[cfg(test)]
 mod test {
     // use super::*;
+
     #[tokio::test]
     #[ignore]
     async fn test_yum_install() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_install_packages() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_install_package() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_apt_install() {

@@ -41,16 +41,19 @@ pub fn spinner(exec_msg: &'static str, tick_strings: &[&str]) -> ProgressBar {
 #[cfg(test)]
 mod test {
     // use super::*;
+    //
     #[tokio::test]
     #[ignore]
     async fn test_spinner() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_spinner_cmd() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_proceed() {

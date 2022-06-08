@@ -48,21 +48,25 @@ pub async fn update(package_manager: &str) -> Result<()> {
 #[cfg(test)]
 mod test {
     // use super::*;
+
     #[tokio::test]
     #[ignore]
     async fn test_check_platform() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_update() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_check_package() {
         unimplemented!();
     }
+
     #[tokio::test]
     #[ignore]
     async fn test_setup_packages() {
