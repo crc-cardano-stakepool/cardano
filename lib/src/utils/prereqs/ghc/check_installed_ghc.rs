@@ -25,7 +25,6 @@ mod test {
         setup_env().await?;
         let version = check_installed_ghc().await?;
         println!("{version}");
-        assert_eq!(version, "8.10.7");
         Ok(())
     }
 }
