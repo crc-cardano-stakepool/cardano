@@ -6,7 +6,5 @@ pub mod os;
 pub use os::*;
 pub mod prereqs;
 pub use prereqs::*;
-pub mod http;
-pub use http::*;
 pub mod setup;
 pub use setup::*;
