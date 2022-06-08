@@ -18,10 +18,14 @@ pub async fn check_installed_ghc() -> Result<String> {
 
 #[cfg(test)]
 mod test {
-    // use crate::check_installed_ghc;
+    use super::*;
+    use crate::setup_env;
     #[tokio::test]
-    #[ignore]
-    async fn test_check_installed_ghc() {
-        unimplemented!();
+    async fn test_check_installed_ghc() -> Result<()> {
+        setup_env().await?;
+        let version = check_installed_ghc().await?;
+        println!("{version}");
+        assert_eq!(version, "8.10.7");
+        Ok(())
     }
 }

@@ -1,7 +1,7 @@
 use crate::URLS;
 
 pub fn get_ghc_version_url() -> &'static str {
-    if let Some(url) = URLS.get("ghc-version") {
+    if let Some(url) = URLS.get("versions") {
         url
     } else {
         "https://developers.cardano.org/docs/get-started/installing-cardano-node"
