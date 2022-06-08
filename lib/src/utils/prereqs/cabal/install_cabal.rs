@@ -3,7 +3,7 @@ use anyhow::Result;
 
 pub async fn install_cabal() -> Result<()> {
     print("", "Installing Cabal")?;
-    let version = get_cabal_version();
+    let version = get_cabal_version().await?;
     let msg = format!("Installing Cabal v{}", version);
     print("", &msg)?;
     let ghcup = check_env("GHCUP_BIN")?;

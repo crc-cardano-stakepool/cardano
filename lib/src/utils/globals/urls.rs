@@ -8,7 +8,7 @@ lazy_static! {
         map.insert("libsodium", "https://github.com/input-output-hk/libsodium.git");
         map.insert("ghcup", "https://get-ghcup.haskell.org");
         map.insert(
-            "ghc-version",
+            "versions",
             "https://developers.cardano.org/docs/get-started/installing-cardano-node",
         );
         map

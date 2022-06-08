@@ -4,7 +4,7 @@
 name = "cardano"
 version = "0.1.4"
 authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
-edition = "2018"
+edition = "2021"
 license = "MIT"
 description = "CLI for managing cardano components"
 
