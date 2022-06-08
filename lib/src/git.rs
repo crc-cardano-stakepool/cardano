@@ -1,6 +1,6 @@
 use crate::{
     async_command, async_command_pipe, change_dir, check_env, check_user, chownr, file_exists, get_component_path,
-    print, set_env, URLS,
+    print, set_env, CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -59,13 +59,17 @@ pub async fn checkout_latest_release(component: &str) -> Result<()> {
 }
 
 pub async fn clone_component(component: &str) -> Result<()> {
-    if let Some(url) = URLS.get(component) {
+    let url = match component {
+        "cardano-node" => Ok(CARDANO_NODE_URL),
+        _ => Err(anyhow!("Unknown component {}", component)),
+    };
+    if let Ok(url) = url {
         let work_dir = check_env("WORK_DIR")?;
         let cardano_component_dir = format!("{}/{}", work_dir, component);
         let env_name = format!("{}-dir", component);
         let converted = env_name.to_case(Case::UpperSnake);
         set_env(&converted, &cardano_component_dir);
-        check_repo(url, &cardano_component_dir, "cardano-node").await?;
+        check_repo(url, &cardano_component_dir, component).await?;
         checkout_latest_release(component).await
     } else {
         Err(anyhow!("Failed cloning {} repository", component))

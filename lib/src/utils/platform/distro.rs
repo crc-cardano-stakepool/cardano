@@ -1,4 +1,4 @@
-use crate::{async_command_pipe, install_packages, print, update, PACKAGES};
+use crate::{async_command_pipe, install_packages, print, update, DEBIAN_PACKAGES, NON_DEBIAN_PACKAGES};
 use anyhow::{anyhow, Result};
 
 // TODO: Use lib sysinfo for this
@@ -35,21 +35,13 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
     match distro {
         "ubuntu" | "debian" => {
             let package_manager = "apt";
-            if let Some(packages) = PACKAGES.get("debian_packages") {
-                update(package_manager).await?;
-                install_packages(package_manager, packages).await
-            } else {
-                Err(anyhow!("Failed checking packages"))
-            }
+            update(package_manager).await?;
+            install_packages(package_manager, &DEBIAN_PACKAGES).await
         }
         "Fedora" | "Hat" | "CentOs" => {
             let package_manager = "yum";
-            if let Some(packages) = PACKAGES.get("non_debian_packages") {
-                update(package_manager).await?;
-                install_packages(package_manager, packages).await
-            } else {
-                Err(anyhow!("Failed checking packages"))
-            }
+            update(package_manager).await?;
+            install_packages(package_manager, &NON_DEBIAN_PACKAGES).await
         }
         _ => Err(anyhow!("Unsupported distro: {}", distro)),
     }

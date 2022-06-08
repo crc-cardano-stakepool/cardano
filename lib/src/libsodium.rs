@@ -1,10 +1,9 @@
-use crate::URLS;
-use crate::{async_command, check_env, check_repo, chownr, export_shell_variables, file_exists, print};
+use crate::{async_command, check_env, check_repo, chownr, export_shell_variables, file_exists, print, LIBSODIUM_URL};
 use anyhow::Result;
 
 pub async fn install_libsodium() -> Result<()> {
     let libsodium_path = check_env("LIBSODIUM_DIR")?;
-    let url = get_libsodium_url();
+    let url = LIBSODIUM_URL;
     check_repo(url, &libsodium_path, "libsodium").await?;
     let cd = format!("cd {}", libsodium_path);
     let checkout = "git checkout 66f017f1";
@@ -17,14 +16,6 @@ pub async fn install_libsodium() -> Result<()> {
     chownr(&libsodium_path).await?;
     export_shell_variables().await?;
     print("green", "Successfully installed libsodium")
-}
-
-pub fn get_libsodium_url() -> &'static str {
-    if let Some(url) = URLS.get("libsodium") {
-        url
-    } else {
-        "https://github.com/input-output-hk/libsodium.git"
-    }
 }
 
 pub async fn check_libsodium() -> Result<()> {
@@ -54,7 +45,7 @@ mod test {
     fn test_get_ghcup_install_url() {
         unimplemented!();
     }
-    
+
     #[tokio::test]
     #[ignore]
     async fn test_check_libsodium() {

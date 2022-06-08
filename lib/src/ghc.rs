@@ -1,4 +1,4 @@
-use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, URLS};
+use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, VERSIONS_URL};
 use anyhow::Result;
 use async_recursion::async_recursion;
 
@@ -33,18 +33,11 @@ pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
     Ok(installed_ghc.eq(&version))
 }
 
-pub fn get_ghc_version_url() -> &'static str {
-    if let Some(url) = URLS.get("versions") {
-        url
-    } else {
-        "https://developers.cardano.org/docs/get-started/installing-cardano-node"
-    }
-}
 pub async fn get_ghc_version() -> Result<String> {
     let cmd = format!(
         "{} {} | {} | {} | {} | {} | {}",
         "curl -s",
-        get_ghc_version_url(),
+        VERSIONS_URL,
         "fold -w100",
         "grep '<code>ghc '",
         "sed 's/^.*ghc //'",

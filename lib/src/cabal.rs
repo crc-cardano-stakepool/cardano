@@ -1,4 +1,4 @@
-use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, URLS};
+use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, VERSIONS_URL};
 use anyhow::Result;
 use async_recursion::async_recursion;
 
@@ -31,14 +31,6 @@ pub async fn check_cabal() -> Result<()> {
     }
 }
 
-pub fn get_cabal_version_url() -> &'static str {
-    if let Some(url) = URLS.get("versions") {
-        url
-    } else {
-        "https://developers.cardano.org/docs/get-started/installing-cardano-node"
-    }
-}
-
 pub async fn compare_cabal(installed_cabal: &str) -> Result<bool> {
     let version = get_cabal_version().await?;
     Ok(installed_cabal.eq(&version))
@@ -61,7 +53,7 @@ pub async fn get_cabal_version() -> Result<String> {
     let cmd = format!(
         "{} {} | {} | {} | {} | {} | {}",
         "curl -s",
-        get_cabal_version_url(),
+        VERSIONS_URL,
         "fold -w100",
         "grep '<code>cabal '",
         "sed 's/^.*cabal //'",

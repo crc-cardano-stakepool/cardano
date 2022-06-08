@@ -230,7 +230,7 @@ mod test {
     async fn test_check_install() {
         unimplemented!();
     }
-    
+
     #[tokio::test]
     #[ignore]
     async fn test_check_dependencies() {

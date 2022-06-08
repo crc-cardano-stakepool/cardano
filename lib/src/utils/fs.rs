@@ -77,40 +77,36 @@ pub fn is_dir(absolute_path: &str) -> bool {
 }
 
 pub async fn setup_work_dir() -> Result<()> {
-    if let Some(arrows) = SPINNERS.get("arrows") {
-        let pb = spinner("Setting up working directory", arrows);
-        let home_dir = check_home_dir().await?;
-        let work_dir = check_env("WORK_DIR")?;
-        let ipc_dir = format!("{}/ipc", work_dir);
-        let config_dir = format!("{}/config", work_dir);
-        let data_dir = format!("{}/data", work_dir);
-        let libsodium_dir = format!("{}/libsodium", work_dir);
-        let mainnet_data_dir = format!("{}/mainnet", data_dir);
-        let testnet_data_dir = format!("{}/testnet", data_dir);
-        let install_dir = format!("{}/.local/bin", home_dir);
-        let mut map: HashMap<&str, &str> = HashMap::new();
-        map.insert("working", &work_dir);
-        map.insert("ipc", &ipc_dir);
-        map.insert("config", &config_dir);
-        map.insert("data", &data_dir);
-        map.insert("mainnet", &mainnet_data_dir);
-        map.insert("testnet", &testnet_data_dir);
-        map.insert("install", &install_dir);
-        map.insert("libsodium", &libsodium_dir);
-        for (key, value) in map.iter() {
-            sleep(Duration::from_millis(300));
-            check_dir(value).await?;
-            let mut env_key = format!("{}-dir", key);
-            env_key = env_key.to_case(Case::UpperSnake);
-            set_env(&env_key, value);
-            pb.set_message(format!("{} directory checked", key));
-        }
-        chownr(&work_dir).await?;
-        pb.finish_and_clear();
-        print("green", "Working directory is setup")
-    } else {
-        Err(anyhow!("Failed setting up working directory"))
+    let pb = spinner("Setting up working directory", &SPINNERS);
+    let home_dir = check_home_dir().await?;
+    let work_dir = check_env("WORK_DIR")?;
+    let ipc_dir = format!("{}/ipc", work_dir);
+    let config_dir = format!("{}/config", work_dir);
+    let data_dir = format!("{}/data", work_dir);
+    let libsodium_dir = format!("{}/libsodium", work_dir);
+    let mainnet_data_dir = format!("{}/mainnet", data_dir);
+    let testnet_data_dir = format!("{}/testnet", data_dir);
+    let install_dir = format!("{}/.local/bin", home_dir);
+    let mut map: HashMap<&str, &str> = HashMap::new();
+    map.insert("working", &work_dir);
+    map.insert("ipc", &ipc_dir);
+    map.insert("config", &config_dir);
+    map.insert("data", &data_dir);
+    map.insert("mainnet", &mainnet_data_dir);
+    map.insert("testnet", &testnet_data_dir);
+    map.insert("install", &install_dir);
+    map.insert("libsodium", &libsodium_dir);
+    for (key, value) in map.iter() {
+        sleep(Duration::from_millis(300));
+        check_dir(value).await?;
+        let mut env_key = format!("{}-dir", key);
+        env_key = env_key.to_case(Case::UpperSnake);
+        set_env(&env_key, value);
+        pb.set_message(format!("{} directory checked", key));
     }
+    chownr(&work_dir).await?;
+    pb.finish_and_clear();
+    print("green", "Working directory is setup")
 }
 
 // TODO: Use standard library instead
@@ -140,7 +136,7 @@ mod test {
     async fn test_is_dir() {
         unimplemented!();
     }
-    
+
     #[tokio::test]
     #[ignore]
     async fn test_file_exists() {
@@ -170,7 +166,7 @@ mod test {
     async fn test_check_home_dir() {
         unimplemented!();
     }
-    
+
     #[tokio::test]
     #[ignore]
     async fn test_check_dir() {

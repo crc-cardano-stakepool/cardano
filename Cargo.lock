@@ -352,7 +352,6 @@ dependencies = [
  "convert_case",
  "dialoguer",
  "indicatif",
- "lazy_static",
  "sudo",
  "tokio",
 ]

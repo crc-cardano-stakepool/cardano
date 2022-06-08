@@ -1,7 +1,9 @@
 use crate::{
-    async_command, async_command_pipe, check_env, print, proceed, process_success, set_env, setup_env, ENVS, PATHS,
+    async_command, async_command_pipe, check_env, print, proceed, process_success, set_env, setup_env, LD_LIBRARY_PATH,
+    PKG_CONFIG_PATH,
 };
 use anyhow::{anyhow, Result};
+use std::collections::HashMap;
 
 pub async fn ask_shell_config() -> Result<()> {
     let shell = check_env("MY_SHELL")?;
@@ -32,7 +34,30 @@ async fn check_ask_shell_confirm(shell: &str, shell_file: &str) -> Result<()> {
 
 pub async fn change_shell_config() -> Result<()> {
     print("", "Checking for shell configuration")?;
-    for (key, value) in PATHS.iter() {
+    let paths = HashMap::from([
+        (
+            "LD_LIBRARY_PATH",
+            format!("export LD_LIBRARY_PATH={}", "\"/usr/local/lib:$LD_LIBRARY_PATH\""),
+        ),
+        (
+            "PKG_CONFIG_PATH",
+            format!(
+                "export PKG_CONFIG_PATH={}",
+                "\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\""
+            ),
+        ),
+        (
+            "CARDANO_NODE_SOCKET_PATH",
+            format!(
+                "export CARDANO_NODE_SOCKET_PATH={}",
+                "\"$HOME/.cardano/ipc/node.socket\""
+            ),
+        ),
+        (".local/bin", format!("export PATH={}", "\"$HOME/.local/bin:$PATH\"")),
+        (".cabal/bin", format!("export PATH={}", "\"$HOME/.cabal/bin:$PATH\"")),
+        (".ghcup/bin", format!("export PATH={}", "\"$HOME/.ghcup/bin:$PATH\"")),
+    ]);
+    for (key, value) in paths.iter() {
         if !check_shell_config_env(key).await? {
             write_shell_config(value).await?;
         }
@@ -52,7 +77,11 @@ pub async fn check_shell() -> Result<String> {
 
 pub async fn export_shell_variables() -> Result<()> {
     print("", "Exporting shell variables")?;
-    for (key, value) in ENVS.iter() {
+    let envs = HashMap::from([
+        ("LD_LIBRARY_PATH", LD_LIBRARY_PATH),
+        ("PKG_CONFIG_PATH", PKG_CONFIG_PATH),
+    ]);
+    for (key, value) in envs.iter() {
         set_env(key, value);
     }
     source_shell().await
