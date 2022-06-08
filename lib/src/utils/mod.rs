@@ -10,5 +10,3 @@ pub mod terminal;
 pub use terminal::*;
 pub mod user;
 pub use user::*;
-pub mod permissions;
-pub use permissions::*;
