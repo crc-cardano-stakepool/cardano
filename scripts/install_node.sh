@@ -2,4 +2,4 @@
 
 cargo install --path .
 
-cardano node install
+cardano node install -y
