@@ -1,5 +1,5 @@
 use crate::{
-    async_command, async_command_pipe, change_dir, check_env, check_user, chownr, file_exists, get_component_path,
+    async_user_command, async_command, async_command_pipe, change_dir, check_env, check_user, chownr, file_exists, get_component_path,
     print, set_env, CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
@@ -48,13 +48,13 @@ pub async fn check_repo(url: &str, absolute_path: &str, repo_name: &str) -> Resu
 }
 
 pub async fn checkout_latest_release(component: &str) -> Result<()> {
-    let msg = format!("Checking out latest {} release", component);
     let version = check_latest_version(component).await?;
+    let msg = format!("Checking out latest {} release ({})", component, version);
     let path = get_component_path(component).await?;
     let cmd = format!("cd {} && git checkout tags/{}", path, version);
-    print("", &msg)?;
     fetch_tags(component).await?;
-    async_command(&cmd).await?;
+    print("", &msg)?;
+    async_user_command(&cmd).await?;
     chownr(&path).await
 }
 
@@ -91,7 +91,7 @@ pub async fn clone_repo(url: &str, destination_path: &str, repo_name: &str) -> R
 pub async fn fetch_tags(component: &str) -> Result<()> {
     let path = get_component_path(component).await?;
     let cmd = format!("cd {} && git fetch --all --recurse-submodules --tags", path);
-    async_command(&cmd).await?;
+    async_user_command(&cmd).await?;
     print("green", "Successfully fetched tags")
 }
 

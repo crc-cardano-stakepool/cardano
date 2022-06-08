@@ -149,7 +149,8 @@ async fn install(component: &str) -> Result<()> {
 }
 
 async fn proceed_install(component: &str) -> Result<()> {
-    let msg = format!("Do you want to install the latest {} binary?", component);
+    let latest = check_latest_version(component).await?;
+    let msg = format!("Do you want to install the latest {} binary (v{})?", component, latest);
     if proceed(&msg)? {
         install(component).await
     } else {

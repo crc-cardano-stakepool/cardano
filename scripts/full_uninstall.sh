@@ -1,8 +1,7 @@
 #!/bin/sh
 
-BIN="/usr/bin/cardano"
-GHC="/usr/bin/ghc"
 NODE="$HOME/.local/bin/cardano-node"
+CLI="$HOME/.local/bin/cardano-cli"
 GHCUP="$HOME/.ghcup"
 CABAL="$HOME/.cabal"
 CARDANO="$HOME/.cardano"
@@ -15,9 +14,8 @@ LIBSODIUM_PC="/usr/local/lib/pkgconfig/libsodium.pc"
 
 cargo uninstall cardano
 
-sudo rm $BIN
-sudo rm $GHC
 rm "$NODE"
+rm "$CLI"
 rm -rf "$GHCUP"
 rm -rf "$CABAL"
 rm -rf "$CARDANO"
