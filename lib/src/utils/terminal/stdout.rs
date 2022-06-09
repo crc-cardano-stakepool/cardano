@@ -102,7 +102,7 @@ pub fn to_color(color: &str) -> Color {
 #[cfg(test)]
 mod test {
     // use super::*;
-    //
+
     #[tokio::test]
     #[ignore]
     async fn test_to_color() {

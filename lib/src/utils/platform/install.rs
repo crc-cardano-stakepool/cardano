@@ -13,18 +13,18 @@ pub async fn apt_install(package: &str) -> Result<()> {
             Ok(())
         }
     } else {
-        Err(anyhow!("Failed installing {}", package))
+        Err(anyhow!("Failed installing {package}"))
     }
 }
 
 pub async fn install_package(package_manager: &str, package: &str) -> Result<()> {
-    let msg = format!("{} is not installed", package);
+    let msg = format!("{package} is not installed");
     print("red", &msg)?;
-    let cmd = format!("sudo {} install {} -y", package_manager, package);
+    let cmd = format!("sudo {package_manager} install {package} -y");
     let process = spinner_cmd(&cmd, "Installing package", "Finished installing package").await;
     match process {
         Ok(_) => Ok(()),
-        Err(e) => Err(anyhow!("Failed installing {} with error: {}", package, e)),
+        Err(e) => Err(anyhow!("Failed installing {package} with error: {e}")),
     }
 }
 
@@ -39,7 +39,7 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
     for package in packages {
         sleep(Duration::from_millis(80));
         check_package(package_manager, package).await?;
-        pb.set_message(format!("{} is installed\n[{}/{}]", package, i, pkgs));
+        pb.set_message(format!("{package} is installed\n[{i}/{pkgs}]"));
         pb.inc(1);
         i += 1;
     }
@@ -48,7 +48,7 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
 }
 
 pub async fn yum_install(package: &str) -> Result<()> {
-    let cmd = format!("rpm -q {}", package);
+    let cmd = format!("rpm -q {package}");
     if !process_success(&cmd).await? {
         install_package("yum", package).await
     } else {

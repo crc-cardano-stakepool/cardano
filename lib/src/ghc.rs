@@ -6,7 +6,7 @@ use async_recursion::async_recursion;
 pub async fn check_installed_ghc() -> Result<String> {
     let ghc = check_env("GHC_BIN")?;
     if file_exists(&ghc) {
-        let cmd = format!("{} -V | awk {}", ghc, "'{print $8}'");
+        let cmd = format!("{ghc} -V | awk {}", "'{print $8}'");
         let installed_ghc = async_command_pipe(&cmd).await?;
         let installed_ghc = installed_ghc.trim().to_string();
         Ok(installed_ghc)
@@ -22,7 +22,7 @@ pub async fn check_ghc() -> Result<()> {
     if compare_ghc(&ghc).await? {
         print("green", "GHC is installed")
     } else {
-        let msg = format!("Currently GHC v{} is installed, installing correct version of GHC", ghc);
+        let msg = format!("Currently GHC v{ghc} is installed, installing correct version of GHC");
         print("yellow", &msg)?;
         install_ghc().await
     }
@@ -35,14 +35,8 @@ pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
 
 pub async fn get_ghc_version() -> Result<String> {
     let cmd = format!(
-        "{} {} | {} | {} | {} | {} | {}",
-        "curl -s",
-        VERSIONS_URL,
-        "fold -w100",
-        "grep '<code>ghc '",
-        "sed 's/^.*ghc //'",
-        "awk -F '<' '{print $1}'",
-        "tail -n1"
+        "curl -s {VERSIONS_URL} | fold -w100 | grep '<code>ghc ' | sed 's/^.*ghc //' | {} | {}",
+        "awk -F '<' '{print $1}'", "tail -n1"
     );
     let ghc_version = async_command_pipe(&cmd).await?;
     let ghc_version = ghc_version.trim();
@@ -52,12 +46,12 @@ pub async fn get_ghc_version() -> Result<String> {
 
 pub async fn install_ghc() -> Result<()> {
     let version = get_ghc_version().await?;
-    let msg = format!("Installing GHC v{}", version);
+    let msg = format!("Installing GHC v{version}",);
     print("", &msg)?;
     let ghcup = check_env("GHCUP_BIN")?;
-    let cmd = format!("{} install ghc {}", ghcup, version);
+    let cmd = format!("{ghcup} install ghc {version}");
     async_user_command(&cmd).await?;
-    let cmd = format!("{} set ghc {}", ghcup, version);
+    let cmd = format!("{ghcup} set ghc {version}");
     async_user_command(&cmd).await?;
     print("green", "Successfully installed GHC")
 }

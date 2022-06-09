@@ -9,12 +9,12 @@ pub async fn install_libsodium() -> Result<()> {
     let url = LIBSODIUM_URL;
     check_repo(url, &libsodium_path, "libsodium").await?;
     let checkout = "git checkout 66f017f1";
-    let cd = format!("cd {}\n{}", libsodium_path, checkout);
     let autogen = "./autogen.sh";
     let configure = "./configure";
     let make = "make";
+    let cd = format!("cd {libsodium_path}\n{checkout}\n{autogen}\n{configure}\n{make}\n");
     let sudo = "sudo make install";
-    let cmd = format!("{}\n{}\n{}\n{}\n{}", cd, autogen, configure, make, sudo);
+    let cmd = format!("cd {libsodium_path}\n{sudo}");
     async_user_command(&cd).await?;
     async_command(&cmd).await?;
     chownr(&libsodium_path).await?;

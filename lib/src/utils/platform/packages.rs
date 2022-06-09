@@ -6,7 +6,7 @@ pub async fn check_platform() -> Result<String> {
     let platform = async_command_pipe("uname").await;
     match platform {
         Ok(platform) => Ok(platform),
-        Err(e) => Err(anyhow!("{}", e)),
+        Err(e) => Err(anyhow!("{e}")),
     }
 }
 
@@ -24,7 +24,7 @@ pub async fn setup_packages() -> Result<()> {
             print("red", "Detected macOS")?;
             Err(anyhow!("macOS is currently unsupported"))
         }
-        _ => Err(anyhow!("Unsupported platform: {}", platform)),
+        _ => Err(anyhow!("Unsupported platform: {platform}")),
     }
 }
 
@@ -32,16 +32,13 @@ pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
     match package_manager {
         "apt" => apt_install(package).await,
         "yum" => yum_install(package).await,
-        _ => Err(anyhow!("Failed checking {}", package)),
+        _ => Err(anyhow!("Failed checking {package}")),
     }
 }
 use crate::spinner_cmd;
 
 pub async fn update(package_manager: &str) -> Result<()> {
-    let cmd = format!(
-        "sudo {} update -y && sudo {} upgrade -y",
-        package_manager, package_manager
-    );
+    let cmd = format!("sudo {package_manager} update -y && sudo {package_manager} upgrade -y");
     spinner_cmd(&cmd, "Updating", "Finished updating").await
 }
 

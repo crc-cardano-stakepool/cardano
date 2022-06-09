@@ -6,7 +6,7 @@ use async_recursion::async_recursion;
 pub async fn check_installed_cabal() -> Result<String> {
     let cabal = check_env("CABAL_BIN")?;
     if file_exists(&cabal) {
-        let cmd = format!("{} -V | head -n1 | awk {}", cabal, "'{print $3}'");
+        let cmd = format!("{cabal} -V | head -n1 | awk {}", "'{print $3}'");
         let installed_cabal = async_command_pipe(&cmd).await?;
         let installed_cabal = installed_cabal.trim().to_string();
         Ok(installed_cabal)
@@ -22,10 +22,7 @@ pub async fn check_cabal() -> Result<()> {
     if compare_cabal(&cabal).await? {
         print("green", "Cabal is installed")
     } else {
-        let msg = format!(
-            "Currently Cabal v{} is installed, installing correct version of Cabal",
-            cabal
-        );
+        let msg = format!("Currently Cabal v{cabal} is installed, installing correct version of Cabal");
         print("yellow", &msg)?;
         install_cabal().await
     }
@@ -39,26 +36,20 @@ pub async fn compare_cabal(installed_cabal: &str) -> Result<bool> {
 pub async fn install_cabal() -> Result<()> {
     print("", "Installing Cabal")?;
     let version = get_cabal_version().await?;
-    let msg = format!("Installing Cabal v{}", version);
+    let msg = format!("Installing Cabal v{version}");
     print("", &msg)?;
     let ghcup = check_env("GHCUP_BIN")?;
-    let cmd = format!("{} install cabal {}", ghcup, version);
+    let cmd = format!("{ghcup} install cabal {version}");
     async_user_command(&cmd).await?;
-    let cmd = format!("{} set cabal {}", ghcup, version);
+    let cmd = format!("{ghcup} set cabal {version}");
     async_user_command(&cmd).await?;
     print("green", "Successfully installed Cabal")
 }
 
 pub async fn get_cabal_version() -> Result<String> {
     let cmd = format!(
-        "{} {} | {} | {} | {} | {} | {}",
-        "curl -s",
-        VERSIONS_URL,
-        "fold -w100",
-        "grep '<code>cabal '",
-        "sed 's/^.*cabal //'",
-        "awk -F '<' '{print $1}'",
-        "tail -n1"
+        "curl -s {VERSIONS_URL} | fold -w100 | grep '<code>cabal ' | sed 's/^.*cabal //' | {} | {}",
+        "awk -F '<' '{print $1}'", "tail -n1"
     );
     let cabal_version = async_command_pipe(&cmd).await?;
     let cabal_version = cabal_version.trim();
