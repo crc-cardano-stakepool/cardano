@@ -135,7 +135,8 @@ async fn check_confirm(component: &str, confirm: bool) -> Result<()> {
     if confirm {
         install(component).await
     } else {
-        proceed_install(component).await
+        let latest = check_latest_version(component).await?;
+        proceed_install(component, &latest).await
     }
 }
 
@@ -148,8 +149,7 @@ async fn install(component: &str) -> Result<()> {
     check_install(component).await
 }
 
-async fn proceed_install(component: &str) -> Result<()> {
-    let latest = check_latest_version(component).await?;
+async fn proceed_install(component: &str, latest: &str) -> Result<()> {
     let msg = format!("Do you want to install the latest {} binary (v{})?", component, latest);
     if proceed(&msg)? {
         install(component).await
