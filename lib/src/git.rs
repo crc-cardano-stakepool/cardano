@@ -82,7 +82,7 @@ pub async fn clone_repo(url: &str, destination_path: &str, repo_name: &str) -> R
     let msg = format!("Cloning {} repository to {}", repo_name, destination_path);
     print("", &msg)?;
     let cmd = format!("git clone {} {}", url, destination_path);
-    async_command(&cmd).await?;
+    async_user_command(&cmd).await?;
     let msg = format!("Successfully cloned {} repository to {}", repo_name, destination_path);
     chownr(destination_path).await?;
     print("green", &msg)
