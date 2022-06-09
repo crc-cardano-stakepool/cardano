@@ -11,19 +11,16 @@ pub async fn ask_shell_config() -> Result<()> {
     if shell.is_empty() || shell_file.is_empty() {
         return Err(anyhow!("No shell found"));
     }
-    let msg = format!("Detected {}", shell);
+    let msg = format!("Detected {shell}");
     print("green", &msg)?;
     check_ask_shell_confirm(&shell, &shell_file).await
 }
 
 async fn check_ask_shell_confirm(shell: &str, shell_file: &str) -> Result<()> {
     let confirm = check_env("CONFIRM")?;
-    let msg = format!(
-        "Do you want to automatically add the required PATH variables to {}",
-        shell_file
-    );
+    let msg = format!("Do you want to automatically add the required PATH variables to {shell_file}");
     if confirm == "false" && proceed(&msg)? {
-        let msg = format!("Proceeding to add path variables for {} to {}", shell, shell_file);
+        let msg = format!("Proceeding to add path variables for {shell} to {shell_file}");
         print("magenta", &msg)?;
         change_shell_config().await
     } else {
@@ -67,7 +64,7 @@ pub async fn change_shell_config() -> Result<()> {
 
 pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
     let shell_profile_file = get_shell_profile_file().await?;
-    let cmd = format!("grep -q {} {}", pattern, shell_profile_file);
+    let cmd = format!("grep -q {pattern} {shell_profile_file}");
     process_success(&cmd).await
 }
 
@@ -95,23 +92,23 @@ pub async fn get_shell_profile_file() -> Result<String> {
 pub fn match_shell(shell: &str) -> Result<()> {
     let home = check_env("RUNNER_HOME")?;
     if shell.contains("/zsh") {
-        let shell_profile_file = format!("{}/.zshrc", home);
+        let shell_profile_file = format!("{home}/.zshrc");
         set_env("SHELL_PROFILE_FILE", &shell_profile_file);
         set_env("MY_SHELL", "zsh");
         Ok(())
     } else if shell.contains("/bash") {
-        let shell_profile_file = format!("{}/.bashrc", home);
+        let shell_profile_file = format!("{home}/.bashrc");
         set_env("SHELL_PROFILE_FILE", &shell_profile_file);
         set_env("MY_SHELL", "bash");
         Ok(())
     } else if shell.contains("/sh") {
         if !check_env("BASH")?.is_empty() {
-            let shell_profile_file = format!("{}/.bashrc", home);
+            let shell_profile_file = format!("{home}/.bashrc");
             set_env("SHELL_PROFILE_FILE", &shell_profile_file);
             set_env("MY_SHELL", "bash");
             print("green", "Detected bash")
         } else if !check_env("ZSH_VERSION")?.is_empty() {
-            let shell_profile_file = format!("{}/.zshrc", home);
+            let shell_profile_file = format!("{home}/.zshrc");
             set_env("SHELL_PROFILE_FILE", &shell_profile_file);
             set_env("MY_SHELL", "zsh");
             print("green", "Detected zsh")
@@ -132,16 +129,16 @@ pub async fn setup_shell() -> Result<()> {
 
 pub async fn source_shell() -> Result<()> {
     let shell_file = get_shell_profile_file().await?;
-    let cmd = format!("source {}", shell_file);
+    let cmd = format!("source {shell_file}");
     async_command_pipe(&cmd).await?;
     print("green", "Sourced shell")
 }
 
 pub async fn write_shell_config(value: &str) -> Result<()> {
     let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
-    let append_string = format!("$(cat << 'EOF'\n{}\nEOF\n)", value);
-    let cmd = format!("echo \"{}\" >> {}", append_string, shell_profile_file);
-    let msg = format!("Added line to {}: {}", shell_profile_file, value);
+    let append_string = format!("$(cat << 'EOF'\n{value}\nEOF\n)");
+    let cmd = format!("echo \"{append_string}\" >> {shell_profile_file}");
+    let msg = format!("Added line to {shell_profile_file}: {value}");
     async_command(&cmd).await?;
     print("green", &msg)
 }
@@ -149,7 +146,7 @@ pub async fn write_shell_config(value: &str) -> Result<()> {
 #[cfg(test)]
 mod test {
     // use super::*;
-    //
+
     #[tokio::test]
     #[ignore]
     async fn test_write_shell_config() {

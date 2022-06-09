@@ -23,7 +23,7 @@ pub async fn build_component(component: &str) -> Result<()> {
 }
 
 async fn update_cabal(path: &str, cabal_path: &str) -> Result<()> {
-    let cmd = format!("cd {} && {} update", path, cabal_path);
+    let cmd = format!("cd {path} && {cabal_path} update");
     print("", "Updating Cabal")?;
     async_user_command(&cmd).await?;
     print("green", "Updated Cabal successfully")
@@ -31,7 +31,7 @@ async fn update_cabal(path: &str, cabal_path: &str) -> Result<()> {
 
 async fn check_project_file(project_file: &str) -> Result<()> {
     if file_exists(project_file) {
-        let cmd = format!("rm {}", project_file);
+        let cmd = format!("rm {project_file}");
         async_command(&cmd).await?;
         print("", "Removed project file")
     } else {
@@ -41,15 +41,15 @@ async fn check_project_file(project_file: &str) -> Result<()> {
 
 async fn build(component: &str, path: &str, cabal: &str) -> Result<()> {
     let user = check_user().await?;
-    let cmd = format!("cd {} && {} build all", path, cabal);
-    let cmd = format!("su - {} -c \"eval {}\"", user, cmd);
-    let msg = format!("Building {}", component);
+    let cmd = format!("cd {path} && {cabal} build all");
+    let cmd = format!("su - {user} -c \"eval {cmd}\"");
+    let msg = format!("Building {component}");
     print("", &msg)?;
     if process_success_inherit(&cmd).await? {
-        let msg = format!("Successfully built {}", component);
+        let msg = format!("Successfully built {component}");
         print("green", &msg)
     } else {
-        Err(anyhow!("Failed building {}", component))
+        Err(anyhow!("Failed building {component}"))
     }
 }
 
@@ -62,31 +62,28 @@ pub async fn check_dependencies() -> Result<()> {
 }
 
 pub async fn check_install(component: &str) -> Result<()> {
-    let msg = format!("Checking successful {} installation", component);
+    let msg = format!("Checking successful {component} installation");
     print("", &msg)?;
     if let "cardano-node" = component {
         check_installed_version("cardano-cli").await?;
     }
     check_installed_version(component).await?;
     source_shell().await?;
-    let msg = format!("Successfully installed {}", component);
+    let msg = format!("Successfully installed {component}");
     print_emoji("green", &msg, Emoji("🙌🎉", ""))
 }
 
 pub async fn configure_build(component: &str, ghc_version: &str, path: &str, cabal: &str) -> Result<()> {
     print("", "Configuring build")?;
     let ghc = check_env("GHC_BIN")?;
-    let cmd = format!(
-        "cd {} && {} configure --with-compiler={}-{}",
-        path, cabal, ghc, ghc_version
-    );
+    let cmd = format!("cd {path} && {cabal} configure --with-compiler={ghc}-{ghc_version}");
     async_user_command(&cmd).await?;
-    let msg = format!("Configured build of {} successfully", component);
+    let msg = format!("Configured build of {component} successfully");
     print("green", &msg)
 }
 
 pub async fn get_component_path(component: &str) -> Result<String> {
-    let env = format!("{}-dir", component);
+    let env = format!("{component}-dir");
     let converted = env.to_case(Case::UpperSnake);
     let path = check_env(&converted)?;
     Ok(path)
@@ -94,7 +91,7 @@ pub async fn get_component_path(component: &str) -> Result<String> {
 
 pub async fn get_project_file(component: &str) -> Result<String> {
     let path = get_component_path(component).await?;
-    let project_file = format!("{}/cabal.project.local", path);
+    let project_file = format!("{path}/cabal.project.local");
     Ok(project_file)
 }
 
@@ -119,13 +116,10 @@ async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()>
     let installed = check_installed_version(component).await?;
     let latest = check_latest_version(component).await?;
     if installed.eq(&latest) {
-        let msg = format!("Already installed latest {} (v{})", component, latest);
+        let msg = format!("Already installed latest {component} (v{latest})");
         print_emoji("green", &msg, Emoji("🙌🎉", ""))
     } else {
-        let msg = format!(
-            "Currently {} (v{}) is installed, but the latest version is {}",
-            component, installed, latest
-        );
+        let msg = format!("Currently {component} (v{installed}) is installed, but the latest version is {latest}");
         print_emoji("yellow", &msg, Emoji("⚠️", ""))?;
         check_confirm(component, confirm).await
     }
@@ -141,7 +135,7 @@ async fn check_confirm(component: &str, confirm: bool) -> Result<()> {
 }
 
 async fn install(component: &str) -> Result<()> {
-    let msg = format!("Installing latest {}", component);
+    let msg = format!("Installing latest {component}");
     print_emoji("white", &msg, Emoji("🤟", ""))?;
     prepare_build().await?;
     build_component(component).await?;
@@ -150,11 +144,11 @@ async fn install(component: &str) -> Result<()> {
 }
 
 async fn proceed_install(component: &str, latest: &str) -> Result<()> {
-    let msg = format!("Do you want to install the latest {} binary (v{})?", component, latest);
+    let msg = format!("Do you want to install the latest {component} binary (v{latest})?");
     if proceed(&msg)? {
         install(component).await
     } else {
-        let msg = format!("Aborted {} installation", component);
+        let msg = format!("Aborted {component} installation");
         print_emoji("red", &msg, Emoji("", ""))
     }
 }
@@ -177,11 +171,11 @@ pub fn set_confirm(confirm: bool) {
 }
 
 pub async fn update_project_file(component: &str, file_path: &str) -> Result<()> {
-    let package = format!("echo \"package cardano-crypto-praos\" >> {}", file_path);
-    let libsodium_flag = format!("echo \"  flags: -external-libsodium-vrf\" >> {}", file_path);
+    let package = format!("echo \"package cardano-crypto-praos\" >> {file_path}");
+    let libsodium_flag = format!("echo \"  flags: -external-libsodium-vrf\" >> {file_path}");
     async_command(&package).await?;
     async_command(&libsodium_flag).await?;
-    let msg = format!("Updated project file of {}", component);
+    let msg = format!("Updated project file of {component}");
     chownr(file_path).await?;
     print("green", &msg)
 }

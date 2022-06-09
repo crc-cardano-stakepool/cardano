@@ -9,7 +9,7 @@ pub fn check_distro_result(distro: Result<String>) -> Result<String> {
             print("green", &msg)?;
             Ok(result)
         }
-        Err(e) => Err(anyhow!("Failed checking distribution with error: {}", e)),
+        Err(e) => Err(anyhow!("Failed checking distribution with error: {e}")),
     }
 }
 
@@ -27,7 +27,7 @@ pub async fn check_distro() -> Result<String> {
                 check_distro_result(Ok(distro))
             }
         }
-        Err(e) => Err(anyhow!("Failed checking distro with error: {}", e)),
+        Err(e) => Err(anyhow!("Failed checking distro with error: {e}")),
     }
 }
 
@@ -43,7 +43,7 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
             update(package_manager).await?;
             install_packages(package_manager, &NON_DEBIAN_PACKAGES).await
         }
-        _ => Err(anyhow!("Unsupported distro: {}", distro)),
+        _ => Err(anyhow!("Unsupported distro: {distro}")),
     }
 }
 
