@@ -3,19 +3,6 @@ use anyhow::{anyhow, Result};
 use std::process::{Command as Cmd, Stdio};
 use tokio::process::Command;
 
-pub async fn async_command_pipe(command: &str) -> Result<String> {
-    let process = Command::new("sh")
-        .arg("-c")
-        .arg(command)
-        .stdout(Stdio::piped())
-        .output()
-        .await;
-    match process {
-        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
-        Err(e) => Err(anyhow!("{e}")),
-    }
-}
-
 pub async fn async_command(command: &str) -> Result<String> {
     let child = Command::new("sh")
         .arg("-c")
@@ -25,6 +12,19 @@ pub async fn async_command(command: &str) -> Result<String> {
         .wait_with_output()
         .await;
     match child {
+        Ok(output) => Ok(String::from_utf8(output.stdout).unwrap()),
+        Err(e) => Err(anyhow!("{e}")),
+    }
+}
+
+pub async fn async_command_pipe(command: &str) -> Result<String> {
+    let process = Command::new("sh")
+        .arg("-c")
+        .arg(command)
+        .stdout(Stdio::piped())
+        .output()
+        .await;
+    match process {
         Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
         Err(e) => Err(anyhow!("{e}")),
     }
@@ -55,8 +55,8 @@ pub async fn pipe(command: &str, pipe_command: &str) -> Result<String> {
             .arg(pipe_command)
             .stdin(output)
             .stdout(Stdio::piped())
-            .spawn()?;
-        let process = process.wait_with_output();
+            .spawn()?
+            .wait_with_output();
         match process {
             Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
             Err(e) => Err(anyhow!("{e}")),
@@ -97,6 +97,39 @@ mod test {
     use super::*;
 
     #[tokio::test]
+    async fn test_async_command() -> Result<()> {
+        let output = async_command("echo 'expected to be printed on console'").await?;
+        assert_eq!(output, "");
+        Ok(())
+    }
+
+    #[tokio::test]
+    pub async fn test_async_command_pipe() -> Result<()> {
+        let expected = "not expected to be printed on console\n";
+        let cmd = format!("echo {expected}");
+        let output = async_command_pipe(&cmd).await?;
+        assert_eq!(output, expected);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_is_program_installed() -> Result<()> {
+        let result = is_program_installed("totally_not_an_installed_program").await?;
+        assert!(!result);
+        let result = is_program_installed("ls").await?;
+        assert!(result);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_async_user_command() -> Result<()> {
+        let user = check_user().await?;
+        println!("{user}");
+        // async_user_command("touch test").await?;
+        Ok(())
+    }
+
+    #[tokio::test]
     #[ignore]
     async fn test_process_success() {
         unimplemented!();
@@ -106,32 +139,5 @@ mod test {
     #[ignore]
     async fn test_pipe() {
         unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_install_ghc() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_async_command() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    pub async fn test_async_command_pipe() {
-        match async_command_pipe("find ../target/ -type f -name cardano | tail -n1").await {
-            Ok(bin) => {
-                let helper_string = "'{print $3}'";
-                let cmd = format!("file {} | awk {}", bin.trim(), helper_string);
-                match async_command_pipe(&cmd).await {
-                    Ok(result) => assert_eq!("64-bit\n", result),
-                    Err(e) => panic!("{}", e),
-                }
-            }
-            Err(e) => panic!("{}", e),
-        }
     }
 }
