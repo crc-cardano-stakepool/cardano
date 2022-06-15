@@ -98,7 +98,7 @@ mod test {
 
     #[tokio::test]
     async fn test_async_command() -> Result<()> {
-        let output = async_command("echo 'expected to be printed on console'").await?;
+        let output = async_command("echo 'expected to be printed on console' >/dev/null").await?;
         assert_eq!(output, "");
         Ok(())
     }
@@ -123,8 +123,7 @@ mod test {
 
     #[tokio::test]
     async fn test_async_user_command() -> Result<()> {
-        let user = check_user().await?;
-        println!("{user}");
+        // let user = check_user().await?;
         // async_user_command("touch test").await?;
         Ok(())
     }
@@ -141,10 +140,10 @@ mod test {
     #[tokio::test]
     async fn test_process_success_inherit() -> Result<()> {
         let expected = "expected";
-        let cmd = format!("echo {expected}");
+        let cmd = format!("echo {expected} >/dev/null");
         let result = process_success_inherit(&cmd).await?;
         assert!(result);
-        let cmd = format!("echo {expected} && false");
+        let cmd = format!("echo {expected} >/dev/null && false");
         let result = process_success_inherit(&cmd).await?;
         assert!(!result);
         Ok(())
