@@ -19,17 +19,21 @@ pub async fn check_user() -> Result<String> {
 
 #[cfg(test)]
 mod test {
-    // use super::*;
+    use super::*;
+    use crate::check_env;
 
     #[tokio::test]
-    #[ignore]
-    async fn test_check_user() {
-        unimplemented!();
+    async fn test_check_root() -> Result<()> {
+        let root = check_root()?;
+        assert!(!root);
+        Ok(())
     }
 
     #[tokio::test]
-    #[ignore]
-    async fn test_check_root() {
-        unimplemented!();
+    async fn test_check_user() -> Result<()> {
+        let user = check_user().await?;
+        let user_env = check_env("RUNNER")?;
+        assert_eq!(user, user_env);
+        Ok(())
     }
 }

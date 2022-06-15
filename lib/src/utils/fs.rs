@@ -4,17 +4,6 @@ use convert_case::{Case, Casing};
 use std::{collections::HashMap, path::Path, thread::sleep, time::Duration};
 use tokio::fs::create_dir_all;
 
-pub async fn change_dir(absolute_path: &str) -> Result<()> {
-    let cmd = format!("cd {absolute_path}");
-    if async_command(&cmd).await.is_ok() {
-        let msg = format!("Changed directory to {absolute_path}");
-        print("green", &msg)
-    } else {
-        let msg = format!("Failed changing directory to {absolute_path}");
-        print("red", &msg)
-    }
-}
-
 pub async fn check_dir(absolute_path: &str) -> Result<()> {
     if !Path::new(absolute_path).is_dir() {
         create_dir(absolute_path).await

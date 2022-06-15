@@ -4,7 +4,7 @@
 
     sudo apt update
     sudo apt upgrade
-    sudo apt install git curl wget
+    sudo apt install git curl wget jq
 
 ## Install latest precompiled binary globally
 

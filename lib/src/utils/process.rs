@@ -130,14 +130,32 @@ mod test {
     }
 
     #[tokio::test]
-    #[ignore]
-    async fn test_process_success() {
-        unimplemented!();
+    async fn test_process_success() -> Result<()> {
+        let result = process_success("true").await?;
+        assert!(result);
+        let result = process_success("false").await?;
+        assert!(!result);
+        Ok(())
     }
 
     #[tokio::test]
-    #[ignore]
-    async fn test_pipe() {
-        unimplemented!();
+    async fn test_process_success_inherit() -> Result<()> {
+        let expected = "expected";
+        let cmd = format!("echo {expected}");
+        let result = process_success_inherit(&cmd).await?;
+        assert!(result);
+        let cmd = format!("echo {expected} && false");
+        let result = process_success_inherit(&cmd).await?;
+        assert!(!result);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_pipe() -> Result<()> {
+        let output = pipe("echo test", "grep test").await?;
+        assert_eq!(output, "test\n");
+        let output = pipe("echo test", "grep fails").await?;
+        assert_ne!(output, "test\n");
+        Ok(())
     }
 }
