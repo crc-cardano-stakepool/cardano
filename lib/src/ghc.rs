@@ -1,8 +1,6 @@
 use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, VERSIONS_URL};
-use anyhow::Result;
-use async_recursion::async_recursion;
+use anyhow::{anyhow, Result};
 
-#[async_recursion]
 pub async fn check_installed_ghc() -> Result<String> {
     let ghc = check_env("GHC_BIN")?;
     if file_exists(&ghc) {
@@ -11,20 +9,24 @@ pub async fn check_installed_ghc() -> Result<String> {
         let installed_ghc = installed_ghc.trim().to_string();
         Ok(installed_ghc)
     } else {
-        install_ghc().await?;
-        check_installed_ghc().await
+        Err(anyhow!("GHC is not installed"))
     }
 }
 
 pub async fn check_ghc() -> Result<()> {
     print("", "Checking GHC")?;
-    let ghc = check_installed_ghc().await?;
-    if compare_ghc(&ghc).await? {
-        print("green", "GHC is installed")
-    } else {
-        let msg = format!("Currently GHC v{ghc} is installed, installing correct version of GHC");
-        print("yellow", &msg)?;
-        install_ghc().await
+    let ghc = check_installed_ghc().await;
+    match ghc {
+        Ok(ghc) => {
+            if compare_ghc(&ghc).await? {
+                print("green", "GHC is installed")
+            } else {
+                let msg = format!("Currently GHC v{ghc} is installed, installing correct version of GHC");
+                print("yellow", &msg)?;
+                install_ghc().await
+            }
+        }
+        Err(_) => install_ghc().await,
     }
 }
 
@@ -40,7 +42,6 @@ pub async fn get_ghc_version() -> Result<String> {
     );
     let ghc_version = async_command_pipe(&cmd).await?;
     let ghc_version = ghc_version.trim();
-    println!("{ghc_version}");
     Ok(String::from(ghc_version))
 }
 
@@ -89,8 +90,11 @@ mod test {
     #[tokio::test]
     async fn test_check_installed_ghc() -> Result<()> {
         setup_env().await?;
-        let version = check_installed_ghc().await?;
-        println!("{version}");
+        let version = check_installed_ghc().await;
+        match version {
+            Ok(version) => println!("{version}"),
+            Err(err) => assert_eq!(err.to_string(), "GHC is not installed"),
+        }
         Ok(())
     }
 

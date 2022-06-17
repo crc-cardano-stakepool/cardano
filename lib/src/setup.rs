@@ -1,13 +1,12 @@
 use crate::{
     async_command, async_user_command, check_cabal, check_dir, check_env, check_ghc, check_ghcup,
-    check_installed_version, check_latest_version, check_libsodium, check_root, check_user, check_work_dir, chownr,
+    check_installed_version, check_latest_version, check_libsodium, check_user, check_work_dir, chownr,
     clone_component, copy_binary, file_exists, get_ghc_version, is_bin_installed, print, print_emoji, proceed,
     process_success_inherit, set_env, setup_packages, setup_shell, setup_work_dir, source_shell,
 };
 use anyhow::{anyhow, Result};
 use console::Emoji;
 use convert_case::{Case, Casing};
-use sudo::escalate_if_needed;
 
 pub async fn build_component(component: &str) -> Result<()> {
     clone_component(component).await?;
@@ -42,7 +41,7 @@ async fn check_project_file(project_file: &str) -> Result<()> {
 async fn build(component: &str, path: &str, cabal: &str) -> Result<()> {
     let user = check_user().await?;
     let cmd = format!("cd {path} && {cabal} build all");
-    let cmd = format!("su - {user} -c \"eval {cmd}\"");
+    let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
     let msg = format!("Building {component}");
     print("", &msg)?;
     if process_success_inherit(&cmd).await? {
@@ -97,15 +96,7 @@ pub async fn get_project_file(component: &str) -> Result<String> {
 
 pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
     set_confirm(confirm);
-    if !check_root()? {
-        match escalate_if_needed() {
-            Ok(user) => {
-                let msg = format!("Running as {:#?}", user);
-                print("", &msg)
-            }
-            Err(_) => print("", "Failed obtaining root privileges"),
-        }
-    } else if !is_bin_installed(component).await? {
+    if !is_bin_installed(component).await? {
         check_confirm(component, confirm).await
     } else {
         install_if_not_up_to_date(component, confirm).await

@@ -32,7 +32,7 @@ pub async fn async_command_pipe(command: &str) -> Result<String> {
 
 pub async fn async_user_command(command: &str) -> Result<()> {
     let user = check_user().await?;
-    let cmd = format!("su - {user} -c \"eval {command}\"");
+    let cmd = format!("sudo su - {user} -c \"eval {command}\"");
     async_command(&cmd).await?;
     Ok(())
 }
@@ -81,13 +81,6 @@ pub async fn process_success_inherit(cmd: &str) -> Result<bool> {
 }
 
 pub async fn process_success(cmd: &str) -> Result<bool> {
-    let output = Command::new("sh").arg("-c").arg(&cmd).output().await?;
-    Ok(output.status.success())
-}
-
-pub async fn user_process_success(command: &str) -> Result<bool> {
-    let user = check_user().await?;
-    let cmd = format!("su - {user} -c \"eval {command}\"");
     let output = Command::new("sh").arg("-c").arg(&cmd).output().await?;
     Ok(output.status.success())
 }

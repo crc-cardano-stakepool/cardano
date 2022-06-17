@@ -38,6 +38,7 @@ pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
 }
 
 pub async fn update(package_manager: &str) -> Result<()> {
+    print("", "Updating")?;
     let cmd = format!("sudo {package_manager} update -y && sudo {package_manager} upgrade -y");
     async_command(&cmd).await?;
     Ok(())

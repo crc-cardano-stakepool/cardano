@@ -1,8 +1,6 @@
 use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, VERSIONS_URL};
-use anyhow::Result;
-use async_recursion::async_recursion;
+use anyhow::{anyhow, Result};
 
-#[async_recursion]
 pub async fn check_installed_cabal() -> Result<String> {
     let cabal = check_env("CABAL_BIN")?;
     if file_exists(&cabal) {
@@ -11,20 +9,25 @@ pub async fn check_installed_cabal() -> Result<String> {
         let installed_cabal = installed_cabal.trim().to_string();
         Ok(installed_cabal)
     } else {
-        install_cabal().await?;
-        check_installed_cabal().await
+        Err(anyhow!("Cabal is not installed"))
     }
 }
 
 pub async fn check_cabal() -> Result<()> {
     print("", "Checking Cabal")?;
-    let cabal = check_installed_cabal().await?;
-    if compare_cabal(&cabal).await? {
-        print("green", "Cabal is installed")
-    } else {
-        let msg = format!("Currently Cabal v{cabal} is installed, installing correct version of Cabal");
-        print("yellow", &msg)?;
-        install_cabal().await
+    install_cabal().await?;
+    let cabal = check_installed_cabal().await;
+    match cabal {
+        Ok(cabal) => {
+            if compare_cabal(&cabal).await? {
+                print("green", "Cabal is installed")
+            } else {
+                let msg = format!("Currently Cabal v{cabal} is installed, installing correct version of Cabal");
+                print("yellow", &msg)?;
+                install_cabal().await
+            }
+        }
+        Err(_) => install_cabal().await,
     }
 }
 
@@ -53,7 +56,6 @@ pub async fn get_cabal_version() -> Result<String> {
     );
     let cabal_version = async_command_pipe(&cmd).await?;
     let cabal_version = cabal_version.trim();
-    println!("{cabal_version}");
     Ok(String::from(cabal_version))
 }
 
