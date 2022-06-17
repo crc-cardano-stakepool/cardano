@@ -38,11 +38,10 @@ pub async fn setup_env() -> Result<()> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::check_user;
 
     #[tokio::test]
     async fn test_check_env() -> Result<()> {
-        let user = check_user().await?;
+        let user = crate::check_user().await?;
         let checked_env_user = check_env("USER")?;
         assert_eq!(user, checked_env_user);
         Ok(())

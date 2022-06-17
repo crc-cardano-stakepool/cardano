@@ -1,7 +1,7 @@
-use crate::{async_command, check_env, check_user, get_component_path, print, set_env, spinner, SPINNERS};
+use crate::{async_command, check_env, check_user, get_component_path, print, set_env};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
-use std::{collections::HashMap, path::Path, thread::sleep, time::Duration};
+use std::{collections::HashMap, path::Path};
 use tokio::fs::create_dir_all;
 
 pub async fn check_dir(absolute_path: &str) -> Result<()> {
@@ -66,7 +66,6 @@ pub fn is_dir(absolute_path: &str) -> bool {
 }
 
 pub async fn setup_work_dir() -> Result<()> {
-    let pb = spinner("Setting up working directory", &SPINNERS);
     let home_dir = check_home_dir().await?;
     let work_dir = check_env("WORK_DIR")?;
     let ipc_dir = format!("{work_dir}/ipc");
@@ -87,15 +86,12 @@ pub async fn setup_work_dir() -> Result<()> {
         ("libsodium", &libsodium_dir),
     ]);
     for (key, value) in map.iter() {
-        sleep(Duration::from_millis(300));
         check_dir(value).await?;
         let mut env_key = format!("{key}-dir");
         env_key = env_key.to_case(Case::UpperSnake);
         set_env(&env_key, value);
-        pb.set_message(format!("{key} directory checked"));
     }
     chownr(&work_dir).await?;
-    pb.finish_and_clear();
     print("green", "Working directory is setup")
 }
 
