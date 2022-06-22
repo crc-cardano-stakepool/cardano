@@ -37,8 +37,8 @@ pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
 
 pub async fn get_ghc_version() -> Result<String> {
     let cmd = format!(
-        "curl -s {VERSIONS_URL} | fold -w100 | grep '<code>ghc ' | sed 's/^.*ghc //' | {} | {}",
-        "awk -F '<' '{print $1}'", "tail -n1"
+        "curl -s {VERSIONS_URL} | tidy -i | grep '<code>ghc ' | {} | {} | {}",
+        "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"
     );
     let ghc_version = async_command_pipe(&cmd).await?;
     let ghc_version = ghc_version.trim();
@@ -60,7 +60,7 @@ pub async fn install_ghc() -> Result<()> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::setup_env;
+    use crate::{set_env, check_home_dir};
 
     #[tokio::test]
     #[ignore]
@@ -89,7 +89,9 @@ mod test {
 
     #[tokio::test]
     async fn test_check_installed_ghc() -> Result<()> {
-        setup_env().await?;
+        let home_dir = check_home_dir().await?;
+        let ghc_bin = format!("{home_dir}/.ghcup/bin/ghc");
+        set_env("GHC_BIN", &ghc_bin);
         let version = check_installed_ghc().await;
         match version {
             Ok(version) => println!("{version}"),
