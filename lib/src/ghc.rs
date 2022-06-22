@@ -60,7 +60,7 @@ pub async fn install_ghc() -> Result<()> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{set_env, check_home_dir};
+    use crate::{check_home_dir, set_env};
 
     #[tokio::test]
     #[ignore]

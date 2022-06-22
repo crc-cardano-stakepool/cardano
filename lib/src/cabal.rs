@@ -51,7 +51,8 @@ pub async fn install_cabal() -> Result<()> {
 
 pub async fn get_cabal_version() -> Result<String> {
     let cmd = format!(
-        "curl -s {VERSIONS_URL} | tidy -i | grep '<code>cabal ' | {} | {} | {}", "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"
+        "curl -s {VERSIONS_URL} | tidy -i | grep '<code>cabal ' | {} | {} | {}",
+        "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"
     );
     println!("{cmd}");
     let cabal_version = async_command_pipe(&cmd).await?;
