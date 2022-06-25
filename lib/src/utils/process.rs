@@ -115,13 +115,6 @@ mod test {
     }
 
     #[tokio::test]
-    async fn test_async_user_command() -> Result<()> {
-        // let user = check_user().await?;
-        // async_user_command("touch test").await?;
-        Ok(())
-    }
-
-    #[tokio::test]
     async fn test_process_success() -> Result<()> {
         let result = process_success("true").await?;
         assert!(result);

@@ -15,7 +15,6 @@ pub async fn check_installed_cabal() -> Result<String> {
 
 pub async fn check_cabal() -> Result<()> {
     print("", "Checking Cabal")?;
-    install_cabal().await?;
     let cabal = check_installed_cabal().await;
     match cabal {
         Ok(cabal) => {
@@ -54,7 +53,6 @@ pub async fn get_cabal_version() -> Result<String> {
         "curl -s {VERSIONS_URL} | tidy -i | grep '<code>cabal ' | {} | {} | {}",
         "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"
     );
-    println!("{cmd}");
     let cabal_version = async_command_pipe(&cmd).await?;
     let cabal_version = cabal_version.trim();
     Ok(String::from(cabal_version))

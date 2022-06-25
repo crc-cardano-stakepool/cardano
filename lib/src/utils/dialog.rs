@@ -6,14 +6,3 @@ pub fn proceed(prompt: &str) -> Result<bool> {
     let dialog = String::from(prompt);
     Confirm::with_theme(color_theme).with_prompt(dialog).interact()
 }
-
-#[cfg(test)]
-mod test {
-    // use super::*;
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_proceed() {
-        unimplemented!();
-    }
-}

@@ -7,7 +7,7 @@ pub const LIBSODIUM_URL: &str = "https://github.com/input-output-hk/libsodium.gi
 pub const GHCUP_URL: &str = "https://get-ghcup.haskell.org";
 pub const VERSIONS_URL: &str = "https://developers.cardano.org/docs/get-started/installing-cardano-node";
 pub const SPINNERS: [&str; 6] = ["▹▹▹▹▹", "▸▹▹▹▹", "▹▸▹▹▹", "▹▹▸▹▹", "▹▹▹▸▹", "▹▹▹▹▸"];
-pub const DEBIAN_PACKAGES: [&str; 19] = [
+pub const DEBIAN_PACKAGES: [&str; 20] = [
     "curl",
     "automake",
     "build-essential",
@@ -18,6 +18,7 @@ pub const DEBIAN_PACKAGES: [&str; 19] = [
     "libtinfo-dev",
     "libsystemd-dev",
     "zlib1g-dev",
+    "libsodium-dev",
     "make",
     "g++",
     "tmux",
