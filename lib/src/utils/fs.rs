@@ -91,7 +91,6 @@ pub async fn setup_work_dir() -> Result<()> {
         check_dir(value).await?;
         let mut env_key = format!("{key}-dir");
         env_key = env_key.to_case(Case::UpperSnake);
-        println!("{env_key}");
         set_env(&env_key, value);
     }
     chownr(&work_dir).await?;

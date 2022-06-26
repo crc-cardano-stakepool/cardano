@@ -4,24 +4,6 @@ use crate::{
 };
 use anyhow::Result;
 
-pub async fn install_libsodium() -> Result<()> {
-    let libsodium_path = check_env("LIBSODIUM_DIR")?;
-    let url = LIBSODIUM_URL;
-    check_repo(url, &libsodium_path, "libsodium").await?;
-    let checkout = "git checkout 66f017f1";
-    let autogen = "./autogen.sh";
-    let configure = "./configure";
-    let make = "make";
-    let cd = format!("cd {libsodium_path}\n{checkout}\n{autogen}\n{configure}\n{make}\n");
-    let sudo = "sudo make install";
-    let cmd = format!("cd {libsodium_path}\n{sudo}");
-    async_user_command(&cd).await?;
-    async_command(&cmd).await?;
-    chownr(&libsodium_path).await?;
-    export_shell_variables().await?;
-    print("green", "Successfully installed libsodium")
-}
-
 pub async fn check_libsodium() -> Result<()> {
     print("", "Checking libsodium")?;
     let pc = "/usr/local/lib/pkgconfig/libsodium.pc";
@@ -40,6 +22,24 @@ pub async fn check_libsodium() -> Result<()> {
         install_libsodium().await?;
     }
     print("green", "libsodium is installed")
+}
+
+pub async fn install_libsodium() -> Result<()> {
+    let libsodium_path = check_env("LIBSODIUM_DIR")?;
+    let url = LIBSODIUM_URL;
+    check_repo(url, &libsodium_path, "libsodium").await?;
+    let checkout = "git checkout 66f017f1";
+    let autogen = "./autogen.sh";
+    let configure = "./configure";
+    let make = "make";
+    let cd = format!("cd {libsodium_path}\n{checkout}\n{autogen}\n{configure}\n{make}\n");
+    let sudo = "sudo make install";
+    let cmd = format!("cd {libsodium_path}\n{sudo}");
+    async_user_command(&cd).await?;
+    async_command(&cmd).await?;
+    chownr(&libsodium_path).await?;
+    export_shell_variables().await?;
+    print("green", "Successfully installed libsodium")
 }
 
 #[cfg(test)]

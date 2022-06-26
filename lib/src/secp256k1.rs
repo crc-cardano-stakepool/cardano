@@ -4,24 +4,6 @@ use crate::{
 };
 use anyhow::Result;
 
-pub async fn install_secp256k1() -> Result<()> {
-    let secp256k1_path = check_env("SECP_256_K_1_DIR")?;
-    let url = SECP256K1_URL;
-    check_repo(url, &secp256k1_path, "secp256k1").await?;
-    let checkout = "git checkout ac83be33";
-    let autogen = "./autogen.sh";
-    let configure = "./configure";
-    let make = "make";
-    let cd = format!("cd {secp256k1_path}\n{checkout}\n{autogen}\n{configure}\n{make}\n");
-    let sudo = "sudo make install";
-    let cmd = format!("cd {secp256k1_path}\n{sudo}");
-    async_user_command(&cd).await?;
-    async_command(&cmd).await?;
-    chownr(&secp256k1_path).await?;
-    export_shell_variables().await?;
-    print("green", "Successfully installed secp256k1")
-}
-
 pub async fn check_secp256k1() -> Result<()> {
     print("", "Checking secp256k1")?;
     let pc = "/usr/local/lib/pkgconfig/libsecp256k1.pc";
@@ -40,6 +22,26 @@ pub async fn check_secp256k1() -> Result<()> {
         install_secp256k1().await?;
     }
     print("green", "libsecp256k1 is installed")
+}
+
+pub async fn install_secp256k1() -> Result<()> {
+    let secp256k1_path = check_env("SECP_256_K_1_DIR")?;
+    let url = SECP256K1_URL;
+    check_repo(url, &secp256k1_path, "secp256k1").await?;
+    let checkout = "git checkout ac83be33";
+    let autogen = "./autogen.sh";
+    let configure = "./configure";
+    let make = "make";
+    let cd = format!("cd {secp256k1_path}\n{checkout}\n{autogen}\n{configure}\n{make}\n");
+    let sudo = "sudo make install";
+    let cmd = format!("cd {secp256k1_path}\n{sudo}");
+    async_user_command(&cd).await?;
+    async_command(&cmd).await?;
+    let cmd = format!("sudo ldconfig");
+    async_command(&cmd).await?;
+    chownr(&secp256k1_path).await?;
+    export_shell_variables().await?;
+    print("green", "Successfully installed secp256k1")
 }
 
 #[cfg(test)]
