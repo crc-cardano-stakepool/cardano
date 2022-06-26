@@ -67,9 +67,9 @@ async fn install(component: &str) -> Result<()> {
 
 pub async fn prepare_build() -> Result<()> {
     print("", "Preparing build")?;
+    setup_work_dir().await?;
     setup_packages().await?;
     setup_shell().await?;
-    setup_work_dir().await?;
     check_dependencies().await
 }
 
