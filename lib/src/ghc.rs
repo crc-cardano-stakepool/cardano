@@ -31,8 +31,9 @@ pub async fn check_ghc() -> Result<()> {
 }
 
 pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
-    let version = get_ghc_version().await?;
-    Ok(installed_ghc.eq(&version))
+    let required = get_ghc_version().await?;
+    let installed = installed_ghc.trim().to_string();
+    Ok(installed.eq(&required))
 }
 
 pub async fn get_ghc_version() -> Result<String> {
@@ -41,8 +42,8 @@ pub async fn get_ghc_version() -> Result<String> {
         "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"
     );
     let ghc_version = async_command_pipe(&cmd).await?;
-    let ghc_version = ghc_version.trim();
-    Ok(String::from(ghc_version))
+    let ghc_version = ghc_version.trim().to_string();
+    Ok(ghc_version)
 }
 
 pub async fn install_ghc() -> Result<()> {
@@ -83,8 +84,9 @@ mod test {
 
     #[tokio::test]
     #[ignore]
-    async fn test_compare_ghc() {
-        unimplemented!();
+    async fn test_compare_ghc() -> Result<()> {
+        compare_ghc("8.10.7").await?;
+        Ok(())
     }
 
     #[tokio::test]

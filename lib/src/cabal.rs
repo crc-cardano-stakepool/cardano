@@ -31,12 +31,12 @@ pub async fn check_cabal() -> Result<()> {
 }
 
 pub async fn compare_cabal(installed_cabal: &str) -> Result<bool> {
-    let version = get_cabal_version().await?;
-    Ok(installed_cabal.eq(&version))
+    let required = get_cabal_version().await?;
+    let installed = installed_cabal.trim().to_string();
+    Ok(installed.eq(&required))
 }
 
 pub async fn install_cabal() -> Result<()> {
-    print("", "Installing Cabal")?;
     let version = get_cabal_version().await?;
     let msg = format!("Installing Cabal v{version}");
     print("", &msg)?;
