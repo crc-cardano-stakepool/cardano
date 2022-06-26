@@ -5,7 +5,7 @@ use crate::{
 use anyhow::Result;
 
 pub async fn install_secp256k1() -> Result<()> {
-    let secp256k1_path = check_env("SECP256K1_DIR")?;
+    let secp256k1_path = check_env("SECP256K1-DIR")?;
     let url = LIBSODIUM_URL;
     check_repo(url, &secp256k1_path, "secp256k1").await?;
     let checkout = "git checkout ac83be33";
