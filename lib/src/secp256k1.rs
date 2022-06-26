@@ -21,7 +21,7 @@ pub async fn check_secp256k1() -> Result<()> {
     {
         install_secp256k1().await?;
     }
-    print("green", "libsecp256k1 is installed")
+    print("green", "secp256k1 is installed")
 }
 
 pub async fn install_secp256k1() -> Result<()> {
@@ -30,7 +30,7 @@ pub async fn install_secp256k1() -> Result<()> {
     check_repo(url, &secp256k1_path, "secp256k1").await?;
     let checkout = "git checkout ac83be33";
     let autogen = "./autogen.sh";
-    let configure = "./configure";
+    let configure = "./configure --enable-module-schnorrsig --enable-experimental";
     let make = "make";
     let cd = format!("cd {secp256k1_path}\n{checkout}\n{autogen}\n{configure}\n{make}\n");
     let sudo = "sudo make install";
