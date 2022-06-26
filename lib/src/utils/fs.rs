@@ -19,8 +19,7 @@ pub async fn check_home_dir() -> Result<String> {
     Ok(home_directory)
 }
 
-pub async fn check_work_dir() -> Result<String> {
-    let home = check_home_dir().await?;
+pub async fn check_work_dir(home: &str) -> Result<String> {
     let install_directory = format!("{home}/.cardano");
     set_env("WORK_DIR", &install_directory);
     Ok(install_directory)
@@ -67,6 +66,7 @@ pub fn is_dir(absolute_path: &str) -> bool {
 
 pub async fn setup_work_dir() -> Result<()> {
     let home_dir = check_home_dir().await?;
+    check_work_dir(&home_dir).await?;
     let work_dir = check_env("WORK_DIR")?;
     let ipc_dir = format!("{work_dir}/ipc");
     let config_dir = format!("{work_dir}/config");
@@ -91,6 +91,7 @@ pub async fn setup_work_dir() -> Result<()> {
         check_dir(value).await?;
         let mut env_key = format!("{key}-dir");
         env_key = env_key.to_case(Case::UpperSnake);
+        println!("{env_key}");
         set_env(&env_key, value);
     }
     chownr(&work_dir).await?;
@@ -111,12 +112,12 @@ pub async fn chownr(absolute_path: &str) -> Result<()> {
 
 #[cfg(test)]
 mod test {
-    // use super::*;
+    use super::*;
 
     #[tokio::test]
-    #[ignore]
-    async fn test_setup_work_dir() {
-        unimplemented!();
+    async fn test_setup_work_dir() -> Result<()> {
+        setup_work_dir().await?;
+        Ok(())
     }
 
     #[tokio::test]
@@ -144,15 +145,20 @@ mod test {
     }
 
     #[tokio::test]
-    #[ignore]
-    async fn test_check_work_dir() {
-        unimplemented!();
+    async fn test_check_work_dir() -> Result<()> {
+        let home = check_home_dir().await?;
+        let work_dir = check_work_dir(&home).await?;
+        let result = check_env("WORK_DIR")?;
+        assert_eq!(work_dir, result);
+        Ok(())
     }
 
     #[tokio::test]
-    #[ignore]
-    async fn test_check_home_dir() {
-        unimplemented!();
+    async fn test_check_home_dir() -> Result<()> {
+        let home = check_home_dir().await?;
+        let result = check_env("RUNNER_HOME")?;
+        assert_eq!(home, result);
+        Ok(())
     }
 
     #[tokio::test]

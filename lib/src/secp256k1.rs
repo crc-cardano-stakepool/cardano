@@ -1,12 +1,12 @@
 use crate::{
     async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists, print,
-    LIBSODIUM_URL,
+    SECP256K1_URL,
 };
 use anyhow::Result;
 
 pub async fn install_secp256k1() -> Result<()> {
-    let secp256k1_path = check_env("SECP256K1-DIR")?;
-    let url = LIBSODIUM_URL;
+    let secp256k1_path = check_env("SECP_256_K_1_DIR")?;
+    let url = SECP256K1_URL;
     check_repo(url, &secp256k1_path, "secp256k1").await?;
     let checkout = "git checkout ac83be33";
     let autogen = "./autogen.sh";

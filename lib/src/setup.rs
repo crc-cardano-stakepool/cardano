@@ -1,8 +1,8 @@
 use crate::{
-    async_command, async_user_command, check_cabal, check_dir, check_env, check_ghc, check_ghcup,
-    check_installed_version, check_latest_version, check_libsodium, check_secp256k1, check_user, check_work_dir,
-    chownr, clone_component, copy_binary, file_exists, get_ghc_version, is_bin_installed, print, print_emoji, proceed,
-    process_success_inherit, set_env, setup_packages, setup_shell, setup_work_dir, source_shell,
+    async_command, async_user_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
+    check_latest_version, check_libsodium, check_secp256k1, check_user, chownr, clone_component, copy_binary,
+    file_exists, get_ghc_version, is_bin_installed, print, print_emoji, proceed, process_success_inherit, set_env,
+    setup_packages, setup_shell, setup_work_dir, source_shell,
 };
 use anyhow::{anyhow, Result};
 use console::Emoji;
@@ -32,7 +32,6 @@ async fn check_confirm(component: &str, confirm: bool) -> Result<()> {
         let latest = check_latest_version(component).await?;
         proceed_install(component, &latest).await
     }
-
 }
 async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()> {
     let installed = check_installed_version(component).await?;
@@ -68,7 +67,6 @@ async fn install(component: &str) -> Result<()> {
 
 pub async fn prepare_build() -> Result<()> {
     print("", "Preparing build")?;
-    check_dir(&check_work_dir().await?).await?;
     setup_packages().await?;
     setup_shell().await?;
     setup_work_dir().await?;
