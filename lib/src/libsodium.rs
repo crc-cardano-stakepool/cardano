@@ -26,9 +26,17 @@ pub async fn check_libsodium() -> Result<()> {
     print("", "Checking libsodium")?;
     let pc = "/usr/local/lib/pkgconfig/libsodium.pc";
     let so = "/usr/local/lib/libsodium.so";
+    let so_23 = "/usr/local/lib/libsodium.so.23";
+    let so_23_3_0 = "/usr/local/lib/libsodium.so.23.3.0";
     let la = "/usr/local/lib/libsodium.la";
     let a = "/usr/local/lib/libsodium.a";
-    if !(file_exists(pc) && file_exists(so) && file_exists(la) && file_exists(a)) {
+    if !(file_exists(pc)
+        && file_exists(so)
+        && file_exists(la)
+        && file_exists(so_23_3_0)
+        && file_exists(so_23)
+        && file_exists(a))
+    {
         install_libsodium().await?;
     }
     print("green", "libsodium is installed")

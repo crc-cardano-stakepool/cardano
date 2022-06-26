@@ -72,6 +72,7 @@ pub async fn setup_work_dir() -> Result<()> {
     let config_dir = format!("{work_dir}/config");
     let data_dir = format!("{work_dir}/data");
     let libsodium_dir = format!("{work_dir}/libsodium");
+    let secp256k1_dir = format!("{work_dir}/secp256k1");
     let mainnet_data_dir = format!("{data_dir}/mainnet");
     let testnet_data_dir = format!("{data_dir}/testnet");
     let install_dir = format!("{home_dir}/.local/bin");
@@ -84,6 +85,7 @@ pub async fn setup_work_dir() -> Result<()> {
         ("testnet", &testnet_data_dir),
         ("install", &install_dir),
         ("libsodium", &libsodium_dir),
+        ("secp256k1", &secp256k1_dir),
     ]);
     for (key, value) in map.iter() {
         check_dir(value).await?;
