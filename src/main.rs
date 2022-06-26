@@ -12,3 +12,4 @@ async fn main() -> Result<()> {
     set_handler(|| println!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
     Cli::start(Cli::from_args().command).await
 }
+
