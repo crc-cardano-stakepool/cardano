@@ -7,10 +7,23 @@ use crate::{
 use anyhow::{anyhow, Result};
 use console::Emoji;
 use convert_case::{Case, Casing};
+use sudo::{check, escalate_if_needed, RunningAs};
+
+pub fn check_root() -> bool {
+    matches!(check(), RunningAs::Root)
+}
 
 pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
     set_confirm(confirm);
-    if !is_bin_installed(component).await? {
+    if !check_root() {
+        match escalate_if_needed() {
+            Ok(user) => {
+                let msg = format!("Running as {:#?}", user);
+                print("", &msg)
+            }
+            Err(_) => print("", "Failed obtaining root privileges"),
+        }
+    } else if !is_bin_installed(component).await? {
         check_confirm(component, confirm).await
     } else {
         install_if_not_up_to_date(component, confirm).await
