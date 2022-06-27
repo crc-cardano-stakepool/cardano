@@ -1,8 +1,6 @@
 use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, VERSIONS_URL};
-use anyhow::Result;
-use async_recursion::async_recursion;
+use anyhow::{anyhow, Result};
 
-#[async_recursion]
 pub async fn check_installed_ghc() -> Result<String> {
     let ghc = check_env("GHC_BIN")?;
     if file_exists(&ghc) {
@@ -11,37 +9,41 @@ pub async fn check_installed_ghc() -> Result<String> {
         let installed_ghc = installed_ghc.trim().to_string();
         Ok(installed_ghc)
     } else {
-        install_ghc().await?;
-        check_installed_ghc().await
+        Err(anyhow!("GHC is not installed"))
     }
 }
 
 pub async fn check_ghc() -> Result<()> {
     print("", "Checking GHC")?;
-    let ghc = check_installed_ghc().await?;
-    if compare_ghc(&ghc).await? {
-        print("green", "GHC is installed")
-    } else {
-        let msg = format!("Currently GHC v{ghc} is installed, installing correct version of GHC");
-        print("yellow", &msg)?;
-        install_ghc().await
+    let ghc = check_installed_ghc().await;
+    match ghc {
+        Ok(ghc) => {
+            if compare_ghc(&ghc).await? {
+                print("green", "GHC is installed")
+            } else {
+                let msg = format!("Currently GHC v{ghc} is installed, installing correct version of GHC");
+                print("yellow", &msg)?;
+                install_ghc().await
+            }
+        }
+        Err(_) => install_ghc().await,
     }
 }
 
 pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
-    let version = get_ghc_version().await?;
-    Ok(installed_ghc.eq(&version))
+    let required = get_ghc_version().await?;
+    let installed = installed_ghc.trim().to_string();
+    Ok(installed.eq(&required))
 }
 
 pub async fn get_ghc_version() -> Result<String> {
     let cmd = format!(
-        "curl -s {VERSIONS_URL} | fold -w100 | grep '<code>ghc ' | sed 's/^.*ghc //' | {} | {}",
-        "awk -F '<' '{print $1}'", "tail -n1"
+        "curl -s {VERSIONS_URL} | tidy -i | grep '<code>ghc ' | {} | {} | {}",
+        "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"
     );
     let ghc_version = async_command_pipe(&cmd).await?;
-    let ghc_version = ghc_version.trim();
-    println!("{ghc_version}");
-    Ok(String::from(ghc_version))
+    let ghc_version = ghc_version.trim().to_string();
+    Ok(ghc_version)
 }
 
 pub async fn install_ghc() -> Result<()> {
@@ -59,7 +61,7 @@ pub async fn install_ghc() -> Result<()> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::setup_env;
+    use crate::{check_home_dir, set_env};
 
     #[tokio::test]
     #[ignore]
@@ -82,15 +84,21 @@ mod test {
 
     #[tokio::test]
     #[ignore]
-    async fn test_compare_ghc() {
-        unimplemented!();
+    async fn test_compare_ghc() -> Result<()> {
+        compare_ghc("8.10.7").await?;
+        Ok(())
     }
 
     #[tokio::test]
     async fn test_check_installed_ghc() -> Result<()> {
-        setup_env().await?;
-        let version = check_installed_ghc().await?;
-        println!("{version}");
+        let home_dir = check_home_dir().await?;
+        let ghc_bin = format!("{home_dir}/.ghcup/bin/ghc");
+        set_env("GHC_BIN", &ghc_bin);
+        let version = check_installed_ghc().await;
+        match version {
+            Ok(version) => println!("{version}"),
+            Err(err) => assert_eq!(err.to_string(), "GHC is not installed"),
+        }
         Ok(())
     }
 

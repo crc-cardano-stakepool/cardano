@@ -1,25 +1,32 @@
-use crate::RunCommand;
+use crate::{Run, RunCommand};
 use anyhow::Result;
+use clap::{Args, Subcommand};
 use console::Emoji;
 use lib::{install_component, print_emoji};
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(about = "Manage cardano nodes")]
+#[derive(Debug, Args)]
+pub struct NodeArgs {
+    #[clap(subcommand)]
+    command: NodeCommand,
+}
+
+#[derive(Debug, Subcommand)]
 pub enum NodeCommand {
-    Run(RunCommand),
-    #[structopt(about = "Install the latest cardano-node binary")]
+    /// Run cardano-node
+    Run(Run),
+    /// Install the latest cardano-node binary
     Install {
-        #[structopt(short = "y", long = "yes", help = "Confirm prompts automatically")]
+        /// Confirm prompts automatically
+        #[clap(short = 'y', long = "yes", value_parser, action)]
         confirm: bool,
     },
-    #[structopt(about = "Uninstalls the cardano-node binary")]
+    /// Uninstall cardano-node
     Uninstall,
 }
 
 impl NodeCommand {
-    pub async fn exec(cmd: NodeCommand) -> Result<()> {
-        match cmd {
+    pub async fn exec(cmd: NodeArgs) -> Result<()> {
+        match cmd.command {
             NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
             NodeCommand::Install { confirm } => NodeCommand::install_node(confirm).await,
             NodeCommand::Uninstall => NodeCommand::uninstall_node().await,

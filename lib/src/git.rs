@@ -1,6 +1,6 @@
 use crate::{
-    async_command_pipe, async_user_command, change_dir, check_env, check_user, chownr, file_exists, get_component_path,
-    print, set_env, CARDANO_NODE_URL,
+    async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, file_exists,
+    get_component_path, print, set_env, CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -74,12 +74,10 @@ pub async fn clone_component(component: &str) -> Result<()> {
 }
 
 pub async fn clone_repo(url: &str, destination_path: &str, repo_name: &str) -> Result<()> {
-    let work_dir = check_env("WORK_DIR")?;
-    change_dir(&work_dir).await?;
     let msg = format!("Cloning {repo_name} repository to {destination_path}");
     print("", &msg)?;
     let cmd = format!("git clone {url} {destination_path}");
-    async_user_command(&cmd).await?;
+    async_command(&cmd).await?;
     let msg = format!("Successfully cloned {repo_name} repository to {destination_path}");
     chownr(destination_path).await?;
     print("green", &msg)

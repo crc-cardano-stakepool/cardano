@@ -1,21 +1,26 @@
 use crate::RunConfig;
 use anyhow::Result;
+use clap::{Args, Subcommand};
 use console::Emoji;
 use lib::{is_bin_installed, print, print_emoji};
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(about = "Run cardano node")]
+#[derive(Debug, Args)]
+pub struct Run {
+    #[clap(subcommand)]
+    command: RunCommand,
+}
+
+#[derive(Debug, Subcommand)]
 pub enum RunCommand {
-    #[structopt(about = "Run cardano node in mainnet")]
+    /// Run cardano-node in mainnet
     Mainnet(RunConfig),
-    #[structopt(about = "Run cardano node in testnet")]
+    /// Run cardano-node in testnet
     Testnet(RunConfig),
 }
 
 impl RunCommand {
-    pub async fn exec(cmd: RunCommand) -> Result<()> {
-        match cmd {
+    pub async fn exec(cmd: Run) -> Result<()> {
+        match cmd.command {
             RunCommand::Mainnet(config) => RunCommand::mainnet(config).await,
             RunCommand::Testnet(config) => RunCommand::testnet(config).await,
         }

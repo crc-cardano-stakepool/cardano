@@ -45,11 +45,61 @@ Whether you are a beginner in the Cardano ecosystem, an SPO or a builder, you ca
 
 ## Installation
 
-See [installation guide](INSTALL.md)
+Currently supported operating systems
+
+- Debian
+- Ubuntu
+
+## Install latest precompiled binary globally
+
+    sudo apt update
+    sudo apt upgrade
+    sudo apt install git curl wget jq tidy
+    git clone https://github.com/crc-cardano-stakepool/cardano.git
+    cd cardano
+    ./install.sh
+
+## Install from source
+
+### Install Rust Toolchain
+
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    source $HOME/.cargo/env
+
+### Compile
+
+    sudo apt update
+    sudo apt upgrade
+    sudo apt install build-essential
+    git clone https://github.com/crc-cardano-stakepool/cardano.git
+    cd cardano
+    cargo install --path .
 
 ## Usage
 
-See [usage guide](USAGE.md)
+    cardano <SUBCOMMAND>
+
+## Flags
+
+        --generate <GENERATOR>    If provided, outputs the completion file for given shell [possible
+                                  values: bash, elvish, fish, powershell, zsh]
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+## Subcommands
+
+    help      Prints this message or the help of the given subcommand(s)
+    node      Manage cardano nodes
+    update    Updates the CLI
+    wallet    Manage cardano wallets
+
+## Install latest cardano-node release
+
+    cardano node install
+
+## Install latest cardano-node release without interaction
+
+    cardano node install -y
 
 ## Documentation
 

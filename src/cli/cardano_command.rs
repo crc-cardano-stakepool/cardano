@@ -1,11 +1,14 @@
-use crate::{NodeCommand, WalletCommand};
-use structopt::StructOpt;
+use crate::{NodeArgs, WalletArgs};
+use clap::Subcommand;
 
-#[derive(Debug, StructOpt)]
-#[structopt(name = "cardano", about = "Manage cardano components")]
+#[derive(Debug, Subcommand)]
 pub enum CardanoCommand {
-    Node(NodeCommand),
-    Wallet(WalletCommand),
+    /// Manage cardano nodes
+    Node(NodeArgs),
+    /// Manage cardano wallets
+    Wallet(WalletArgs),
+    /// Updates the CLI
+    Update,
     // Tx(TxCommand),
     // Mint(MintCommand),
     // Address(AddressCommand),
@@ -17,6 +20,5 @@ pub enum CardanoCommand {
     // Marlowe(MarloweCommand),
     // Explorer(ExplorerCommand),
     // Smash(SmashCommand),
-    // Update(UpdateCommand),
     // Config(ConfigCommand),
 }

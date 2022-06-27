@@ -1,5 +1,6 @@
-use crate::async_command_pipe;
-use crate::{apt_install, check_distro, install_distro_packages, print, yum_install};
+use crate::{
+    apt_install, async_command, async_command_pipe, check_distro, install_distro_packages, print, yum_install,
+};
 use anyhow::{anyhow, Result};
 
 pub async fn check_platform() -> Result<String> {
@@ -35,11 +36,12 @@ pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
         _ => Err(anyhow!("Failed checking {package}")),
     }
 }
-use crate::spinner_cmd;
 
 pub async fn update(package_manager: &str) -> Result<()> {
+    print("", "Updating")?;
     let cmd = format!("sudo {package_manager} update -y && sudo {package_manager} upgrade -y");
-    spinner_cmd(&cmd, "Updating", "Finished updating").await
+    async_command(&cmd).await?;
+    Ok(())
 }
 
 #[cfg(test)]

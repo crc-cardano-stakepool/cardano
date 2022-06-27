@@ -4,10 +4,29 @@ use crate::{
 };
 use anyhow::Result;
 
+pub async fn check_libsodium() -> Result<()> {
+    print("", "Checking libsodium")?;
+    let pc = "/usr/local/lib/pkgconfig/libsodium.pc";
+    let so = "/usr/local/lib/libsodium.so";
+    let so_23 = "/usr/local/lib/libsodium.so.23";
+    let so_23_3_0 = "/usr/local/lib/libsodium.so.23.3.0";
+    let la = "/usr/local/lib/libsodium.la";
+    let a = "/usr/local/lib/libsodium.a";
+    if !(file_exists(pc)
+        && file_exists(so)
+        && file_exists(la)
+        && file_exists(so_23_3_0)
+        && file_exists(so_23)
+        && file_exists(a))
+    {
+        install_libsodium().await?;
+    }
+    print("green", "libsodium is installed")
+}
+
 pub async fn install_libsodium() -> Result<()> {
     let libsodium_path = check_env("LIBSODIUM_DIR")?;
-    let url = LIBSODIUM_URL;
-    check_repo(url, &libsodium_path, "libsodium").await?;
+    check_repo(LIBSODIUM_URL, &libsodium_path, "libsodium").await?;
     let checkout = "git checkout 66f017f1";
     let autogen = "./autogen.sh";
     let configure = "./configure";
@@ -20,18 +39,6 @@ pub async fn install_libsodium() -> Result<()> {
     chownr(&libsodium_path).await?;
     export_shell_variables().await?;
     print("green", "Successfully installed libsodium")
-}
-
-pub async fn check_libsodium() -> Result<()> {
-    print("", "Checking libsodium")?;
-    let pc = "/usr/local/lib/pkgconfig/libsodium.pc";
-    let so = "/usr/local/lib/libsodium.so";
-    let la = "/usr/local/lib/libsodium.la";
-    let a = "/usr/local/lib/libsodium.a";
-    if !(file_exists(pc) && file_exists(so) && file_exists(la) && file_exists(a)) {
-        install_libsodium().await?;
-    }
-    print("green", "libsodium is installed")
 }
 
 #[cfg(test)]
