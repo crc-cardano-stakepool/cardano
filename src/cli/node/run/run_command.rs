@@ -12,7 +12,9 @@ pub struct Run {
 
 #[derive(Debug, Subcommand)]
 pub enum RunCommand {
+    /// Run cardano-node in mainnet
     Mainnet(RunConfig),
+    /// Run cardano-node in testnet
     Testnet(RunConfig),
 }
 

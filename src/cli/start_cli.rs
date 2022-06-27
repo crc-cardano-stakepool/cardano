@@ -4,7 +4,7 @@ use clap::Parser;
 use clap_complete::Shell;
 
 #[derive(Debug, Parser)]
-#[clap(about, version, long_about = None)]
+#[clap(about = "Manage cardano components", version, long_about = None)]
 pub struct Cli {
     /// If provided, outputs the completion file for given shell
     #[clap(long = "generate", arg_enum, value_parser)]

@@ -17,12 +17,10 @@ async fn main() -> Result<()> {
         eprintln!("Generating completion file for {:?}...", generator);
         print_completions(generator, &mut cmd);
         Ok(())
+    } else if let Some(command) = cli.command {
+        Cli::start(command).await
     } else {
-        if let Some(command) = cli.command {
-            Cli::start(command).await
-        } else {
-            Ok(())
-        }
+        Ok(())
     }
 }
 

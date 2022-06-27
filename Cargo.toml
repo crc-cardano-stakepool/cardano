@@ -7,7 +7,6 @@ authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 edition = "2021"
 license = "MIT"
 description = "CLI for managing cardano components"
-about = "A tool to manage cardano components"
 
 [dependencies]
 lib = { path = "lib" }
