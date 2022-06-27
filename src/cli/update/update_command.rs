@@ -1,4 +1,11 @@
-use structopt::StructOpt;
+use anyhow::Result;
 
-#[derive(Debug, StructOpt)]
+#[derive(Debug)]
 pub enum UpdateCommand {}
+
+impl UpdateCommand {
+    pub async fn update() -> Result<()> {
+        println!("Updating the CLI");
+        Ok(())
+    }
+}

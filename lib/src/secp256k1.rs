@@ -37,8 +37,7 @@ pub async fn install_secp256k1() -> Result<()> {
     let cmd = format!("cd {secp256k1_path}\n{sudo}");
     async_user_command(&cd).await?;
     async_command(&cmd).await?;
-    let cmd = format!("sudo ldconfig");
-    async_command(&cmd).await?;
+    async_command("sudo ldconfig").await?;
     chownr(&secp256k1_path).await?;
     export_shell_variables().await?;
     print("green", "Successfully installed secp256k1")

@@ -1,28 +1,20 @@
+use clap::Args;
 use std::net::IpAddr;
 use std::path::PathBuf;
-use structopt::StructOpt;
 
 #[allow(dead_code)]
-#[derive(Debug, StructOpt)]
+#[derive(Debug, Args)]
 pub struct RunConfig {
-    #[structopt(short, default_value = "3001", about = "The port the node runs on")]
+    #[clap(value_parser)]
     port: u16,
-    #[structopt(short, parse(from_os_str), about = "The path to the blockchain")]
+    #[clap(value_parser)]
     db: PathBuf,
-    #[structopt(short, default_value = "127.0.0.1", about = "The IP on which the node runs")]
+    #[clap(value_parser)]
     host: IpAddr,
-    #[structopt(
-        short,
-        parse(from_os_str),
-        about = "The path to the networking topology configurtion file between nodes and relays"
-    )]
+    #[clap(value_parser)]
     topology: PathBuf,
-    #[structopt(
-        short,
-        parse(from_os_str),
-        about = "The path to the socket for inter-process-communication between cardano components"
-    )]
+    #[clap(value_parser)]
     socket: PathBuf,
-    #[structopt(short, parse(from_os_str), about = "The path to the configuration file for the node")]
+    #[clap(value_parser)]
     config: PathBuf,
 }

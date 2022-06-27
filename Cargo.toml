@@ -7,12 +7,12 @@ authors = ["Clemens Horn <clemens.horn@mni.thm.de>"]
 edition = "2021"
 license = "MIT"
 description = "CLI for managing cardano components"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+about = "A tool to manage cardano components"
 
 [dependencies]
 lib = { path = "lib" }
-structopt = "0.3.26"
+clap = { version = "3.2.6", features = ["derive"] }
+clap_complete = "3.2.2"
 human-panic = "1.0.3"
 ctrlc = "3.2.2"
 anyhow = "1.0.57"

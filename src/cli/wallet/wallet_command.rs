@@ -1,23 +1,23 @@
 use anyhow::Result;
+use clap::{Args, Subcommand};
 use console::Emoji;
 use lib::{install_component, print_emoji};
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(about = "Manage cardano wallets")]
+#[derive(Debug, Args)]
+pub struct WalletArgs {
+    #[clap(subcommand)]
+    command: WalletCommand,
+}
+
+#[derive(Debug, Subcommand)]
 pub enum WalletCommand {
-    #[structopt(about = "Install the latest cardano-wallet binary")]
-    Install {
-        #[structopt(short = "y", long = "yes", help = "Confirm prompts automatically")]
-        confirm: bool,
-    },
-    #[structopt(about = "Uninstalls the cardano-wallet binary")]
+    Install { confirm: bool },
     Uninstall,
 }
 
 impl WalletCommand {
-    pub async fn exec(cmd: WalletCommand) -> Result<()> {
-        match cmd {
+    pub async fn exec(cmd: WalletArgs) -> Result<()> {
+        match cmd.command {
             WalletCommand::Install { confirm } => WalletCommand::install_wallet(confirm).await,
             WalletCommand::Uninstall => WalletCommand::uninstall_wallet().await,
         }
