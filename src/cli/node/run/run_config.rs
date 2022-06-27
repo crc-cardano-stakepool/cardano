@@ -11,18 +11,10 @@ pub struct RunConfig {
     db: PathBuf,
     #[clap(long, value_parser, default_value_t = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)))]
     host: IpAddr,
-    #[clap(
-        long,
-        value_parser,
-        default_value = "$CONFIG_DIR/$NETWORK/$NETWORK-topology.json"
-    )]
+    #[clap(long, value_parser, default_value = "$CONFIG_DIR/$NETWORK/$NETWORK-topology.json")]
     topology: PathBuf,
     #[clap(long, value_parser, default_value = "$IPC_DIR/node.socket")]
     socket: PathBuf,
-    #[clap(
-        long,
-        value_parser,
-        default_value = "$CONFIG_DIR/$NETWORK/$NETWORK-config.json"
-    )]
+    #[clap(long, value_parser, default_value = "$CONFIG_DIR/$NETWORK/$NETWORK-config.json")]
     config: PathBuf,
 }

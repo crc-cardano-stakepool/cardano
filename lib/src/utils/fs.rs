@@ -69,6 +69,7 @@ pub async fn setup_work_dir() -> Result<()> {
     check_work_dir(&home_dir).await?;
     let work_dir = check_env("WORK_DIR")?;
     let ipc_dir = format!("{work_dir}/ipc");
+    let cardano_dir = format!("{work_dir}/cardano");
     let config_dir = format!("{work_dir}/config");
     let data_dir = format!("{work_dir}/data");
     let libsodium_dir = format!("{work_dir}/libsodium");
@@ -79,6 +80,7 @@ pub async fn setup_work_dir() -> Result<()> {
     let map: HashMap<&str, &String> = HashMap::from([
         ("working", &work_dir),
         ("ipc", &ipc_dir),
+        ("cardano", &cardano_dir),
         ("config", &config_dir),
         ("data", &data_dir),
         ("mainnet", &mainnet_data_dir),

@@ -1,7 +1,8 @@
-use crate::{CardanoCommand, NodeCommand, UpdateCommand, WalletCommand};
+use crate::{CardanoCommand, NodeCommand, WalletCommand};
 use anyhow::Result;
 use clap::Parser;
 use clap_complete::Shell;
+use lib::update_cli;
 
 #[derive(Debug, Parser)]
 #[clap(about = "Manage cardano components", version, long_about = None)]
@@ -18,7 +19,7 @@ impl Cli {
         match command {
             CardanoCommand::Node(command) => NodeCommand::exec(command).await,
             CardanoCommand::Wallet(command) => WalletCommand::exec(command).await,
-            CardanoCommand::Update => UpdateCommand::update().await,
+            CardanoCommand::Update => update_cli().await,
             // CardanoCommand::Tx(command) => TxCommand::exec(command).await,
             // CardanoCommand::Mint(command) => MintCommand::exec(command).await,
             // CardanoCommand::Address(command) => AddressCommand::exec(command).await,

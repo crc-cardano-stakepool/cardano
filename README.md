@@ -81,6 +81,8 @@ Currently supported operating systems
 
 ## Flags
 
+        --generate <GENERATOR>    If provided, outputs the completion file for given shell [possible
+                                  values: bash, elvish, fish, powershell, zsh]
     -h, --help       Prints help information
     -V, --version    Prints version information
 
@@ -88,6 +90,7 @@ Currently supported operating systems
 
     help      Prints this message or the help of the given subcommand(s)
     node      Manage cardano nodes
+    update    Updates the CLI
     wallet    Manage cardano wallets
 
 ## Install latest cardano-node release

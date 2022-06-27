@@ -26,8 +26,7 @@ pub async fn check_libsodium() -> Result<()> {
 
 pub async fn install_libsodium() -> Result<()> {
     let libsodium_path = check_env("LIBSODIUM_DIR")?;
-    let url = LIBSODIUM_URL;
-    check_repo(url, &libsodium_path, "libsodium").await?;
+    check_repo(LIBSODIUM_URL, &libsodium_path, "libsodium").await?;
     let checkout = "git checkout 66f017f1";
     let autogen = "./autogen.sh";
     let configure = "./configure";
