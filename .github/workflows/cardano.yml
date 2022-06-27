@@ -21,6 +21,10 @@ jobs:
         - os: ubuntu-latest
           target: x86_64-unknown-linux-gnu
     steps:
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get -y install git jq wget curl tidy 
       - name: Checkout
         uses: actions/checkout@v2
         with:
