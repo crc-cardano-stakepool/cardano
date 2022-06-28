@@ -1,7 +1,7 @@
 extern crate lib;
 use crate::{NodeArgs, NodeCommand, WalletArgs, WalletCommand};
 use anyhow::Result;
-use clap::{CommandFactory, Parser, Subcommand, ColorChoice};
+use clap::{ColorChoice, CommandFactory, Parser, Subcommand};
 use clap_complete::{generate, Shell};
 use ctrlc::set_handler;
 use human_panic::setup_panic;
