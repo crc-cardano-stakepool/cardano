@@ -118,7 +118,6 @@ dependencies = [
  "assert_cmd",
  "clap",
  "clap_complete",
- "console",
  "ctrlc",
  "human-panic",
  "lib",
@@ -379,7 +378,6 @@ name = "lib"
 version = "0.0.1"
 dependencies = [
  "anyhow",
- "console",
  "convert_case",
  "dialoguer",
  "sudo",

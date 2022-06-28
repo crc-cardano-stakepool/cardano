@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cargo install --path .
+cargo install --path src/bin
