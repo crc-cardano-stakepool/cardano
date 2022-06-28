@@ -1,8 +1,7 @@
 use crate::{Run, RunCommand};
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use console::Emoji;
-use lib::{install_component, print_emoji};
+use lib::{install_component, uninstall_component};
 
 #[derive(Debug, Args)]
 pub struct NodeArgs {
@@ -28,31 +27,8 @@ impl NodeCommand {
     pub async fn exec(cmd: NodeArgs) -> Result<()> {
         match cmd.command {
             NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
-            NodeCommand::Install { confirm } => NodeCommand::install_node(confirm).await,
-            NodeCommand::Uninstall => NodeCommand::uninstall_node().await,
+            NodeCommand::Install { confirm } => install_component("cardano-node", confirm).await,
+            NodeCommand::Uninstall => uninstall_component("cardano-node").await,
         }
-    }
-
-    pub async fn install_node(confirm: bool) -> Result<()> {
-        install_component("cardano-node", confirm).await
-    }
-
-    pub async fn uninstall_node() -> Result<()> {
-        print_emoji("white", "Uninstalling cardano-node", Emoji("💔", ""))
-    }
-}
-
-#[cfg(test)]
-mod test {
-    #[test]
-    #[ignore]
-    fn test_install_node() {
-        unimplemented!();
-    }
-
-    #[test]
-    #[ignore]
-    fn test_uninstall_node() {
-        unimplemented!();
     }
 }

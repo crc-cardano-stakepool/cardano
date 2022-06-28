@@ -28,17 +28,6 @@ impl Cli {
             CardanoCommand::Node(command) => NodeCommand::exec(command).await,
             CardanoCommand::Wallet(command) => WalletCommand::exec(command).await,
             CardanoCommand::Update => update_cli().await,
-            // CardanoCommand::Tx(command) => TxCommand::exec(command).await,
-            // CardanoCommand::Mint(command) => MintCommand::exec(command).await,
-            // CardanoCommand::Address(command) => AddressCommand::exec(command).await,
-            // CardanoCommand::Db(command) => DbCommand::exec(command).await,
-            // CardanoCommand::Graphql(command) => GraphqlCommand::exec(command).await,
-            // CardanoCommand::Ledger(command) => LedgerCommand::exec(command).await,
-            // CardanoCommand::Rosetta(command) => RosettaCommand::exec(command).await,
-            // CardanoCommand::Plutus(command) => PlutusCommand::exec(command).await,
-            // CardanoCommand::Marlowe(command) => MarloweCommand::exec(command).await,
-            // CardanoCommand::Explorer(command) => ExplorerCommand::exec(command).await,
-            // CardanoCommand::Smash(command) => SmashCommand::exec(command).await,
         }
     }
 }
@@ -51,18 +40,6 @@ pub enum CardanoCommand {
     Wallet(WalletArgs),
     /// Updates the CLI
     Update,
-    // Tx(TxCommand),
-    // Mint(MintCommand),
-    // Address(AddressCommand),
-    // Db(DbCommand),
-    // Graphql(GraphqlCommand),
-    // Ledger(LedgerCommand),
-    // Rosetta(RosettaCommand),
-    // Plutus(PlutusCommand),
-    // Marlowe(MarloweCommand),
-    // Explorer(ExplorerCommand),
-    // Smash(SmashCommand),
-    // Config(ConfigCommand),
 }
 
 #[tokio::main]
