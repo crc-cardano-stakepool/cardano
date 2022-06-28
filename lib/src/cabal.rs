@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::{async_command_pipe, async_user_command, check_env, print, VERSIONS_URL};
+use crate::{async_command_pipe, async_user_command, check_env, VERSIONS_URL};
 use anyhow::{anyhow, Result};
 
 pub async fn check_installed_cabal() -> Result<String> {
@@ -16,15 +16,12 @@ pub async fn check_installed_cabal() -> Result<String> {
 }
 
 pub async fn check_cabal() -> Result<()> {
-    print("", "Checking Cabal")?;
     let cabal = check_installed_cabal().await;
     match cabal {
         Ok(cabal) => {
             if compare_cabal(&cabal).await? {
-                print("green", "Cabal is installed")
+                Ok(())
             } else {
-                let msg = format!("Currently Cabal v{cabal} is installed, installing correct version of Cabal");
-                print("yellow", &msg)?;
                 install_cabal().await
             }
         }
@@ -40,14 +37,12 @@ pub async fn compare_cabal(installed_cabal: &str) -> Result<bool> {
 
 pub async fn install_cabal() -> Result<()> {
     let version = get_cabal_version().await?;
-    let msg = format!("Installing Cabal v{version}");
-    print("", &msg)?;
     let ghcup = check_env("GHCUP_BIN")?;
     let cmd = format!("{ghcup} install cabal {version}");
     async_user_command(&cmd).await?;
     let cmd = format!("{ghcup} set cabal {version}");
     async_user_command(&cmd).await?;
-    print("green", "Successfully installed Cabal")
+    Ok(())
 }
 
 pub async fn get_cabal_version() -> Result<String> {

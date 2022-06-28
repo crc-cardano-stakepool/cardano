@@ -1,8 +1,7 @@
 use crate::RunConfig;
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use console::Emoji;
-use lib::{is_bin_installed, print, print_emoji, Component};
+use lib::{is_bin_installed, Component};
 
 #[derive(Debug, Args)]
 pub struct Run {
@@ -28,22 +27,16 @@ impl RunCommand {
 
     async fn mainnet(config: RunConfig) -> Result<()> {
         let output: String = format!("The config to run node in mainnet: {config:#?}");
-        print("white", &output)?;
-        if is_bin_installed(Component::Node).await? {
-            print_emoji("green", "Proceeding to run node in mainnet", Emoji("💪", ""))
-        } else {
-            print("red", "cardano-node is not installed")
-        }
+        println!("{output}");
+        is_bin_installed(Component::Node).await?;
+        Ok(())
     }
 
     async fn testnet(config: RunConfig) -> Result<()> {
         let output: String = format!("The config to run node in testnet: {config:#?}");
-        print("white", &output)?;
-        if is_bin_installed(Component::Node).await? {
-            print_emoji("green", "Proceeding to run node in testnet", Emoji("🔍", ""))
-        } else {
-            print("red", "cardano-node is not installed")
-        }
+        println!("{output}");
+        is_bin_installed(Component::Node).await?;
+        Ok(())
     }
 }
 

@@ -1,11 +1,8 @@
-use crate::{
-    async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, print, SECP256K1_URL,
-};
+use crate::{async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, SECP256K1_URL};
 use anyhow::Result;
 use std::path::Path;
 
 pub async fn check_secp256k1() -> Result<()> {
-    print("", "Checking secp256k1")?;
     let pc = Path::new("/usr/local/lib/pkgconfig/libsecp256k1.pc");
     let so = Path::new("/usr/local/lib/libsecp256k1.so");
     let so_0 = Path::new("/usr/local/lib/libsecp256k1.so.0");
@@ -15,7 +12,7 @@ pub async fn check_secp256k1() -> Result<()> {
     if !(pc.exists() && so.exists() && la.exists() && so_0.exists() && so_0_0_0.exists() && a.exists()) {
         install_secp256k1().await?;
     }
-    print("green", "secp256k1 is installed")
+    Ok(())
 }
 
 pub async fn install_secp256k1() -> Result<()> {
@@ -33,7 +30,7 @@ pub async fn install_secp256k1() -> Result<()> {
     async_command("sudo ldconfig").await?;
     chownr(&secp256k1_path)?;
     export_shell_variables().await?;
-    print("green", "Successfully installed secp256k1")
+    Ok(())
 }
 
 #[cfg(test)]

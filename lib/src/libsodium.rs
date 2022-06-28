@@ -1,11 +1,8 @@
-use crate::{
-    async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, print, LIBSODIUM_URL,
-};
+use crate::{async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, LIBSODIUM_URL};
 use anyhow::Result;
 use std::path::Path;
 
 pub async fn check_libsodium() -> Result<()> {
-    print("", "Checking libsodium")?;
     let pc = Path::new("/usr/local/lib/pkgconfig/libsodium.pc");
     let so = Path::new("/usr/local/lib/libsodium.so");
     let so_23 = Path::new("/usr/local/lib/libsodium.so.23");
@@ -15,7 +12,7 @@ pub async fn check_libsodium() -> Result<()> {
     if !(pc.exists() && so.exists() && la.exists() && so_23_3_0.exists() && so_23.exists() && a.exists()) {
         install_libsodium().await?;
     }
-    print("green", "libsodium is installed")
+    Ok(())
 }
 
 pub async fn install_libsodium() -> Result<()> {
@@ -33,7 +30,7 @@ pub async fn install_libsodium() -> Result<()> {
     async_command(&cmd).await?;
     chownr(path)?;
     export_shell_variables().await?;
-    print("green", "Successfully installed libsodium")
+    Ok(())
 }
 
 #[cfg(test)]

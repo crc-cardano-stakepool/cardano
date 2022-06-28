@@ -1,4 +1,4 @@
-use crate::{check_home_dir, print};
+use crate::check_home_dir;
 use anyhow::{anyhow, Result};
 use std::{
     collections::HashMap,
@@ -18,7 +18,6 @@ pub fn set_env(key: &str, value: &str) {
 }
 
 pub async fn setup_env() -> Result<()> {
-    print("", "Setting up environment")?;
     let home_dir = check_home_dir().await?;
     let mut ghcup_dir = PathBuf::from(&home_dir);
     ghcup_dir.push(".ghcup");
@@ -42,7 +41,7 @@ pub async fn setup_env() -> Result<()> {
             set_env(key, value);
         }
     }
-    print("green", "Environment is ready")
+    Ok(())
 }
 
 #[cfg(test)]

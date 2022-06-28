@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_user, get_component_name, get_component_path, print, set_env, Component};
+use crate::{async_command, check_env, check_user, get_component_name, get_component_path, set_env, Component};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use nix::unistd::{getgid, getuid};
@@ -40,8 +40,6 @@ pub async fn copy_binary(component: Component) -> Result<()> {
     let install_dir = check_env("INSTALL_DIR")?;
     let path = Path::new(&install_dir);
     let component_name = get_component_name(component);
-    let msg = format!("Copying {component_name} binary to {install_dir}");
-    print("", &msg)?;
     match component {
         Component::Node => copy_node_binaries(path).await,
         _ => Err(anyhow!("Unknown component {component_name}")),
@@ -69,8 +67,7 @@ async fn copy_node_binaries(install_dir: impl AsRef<Path>) -> Result<()> {
     async_command(&cli).await?;
     set_env("CARDANO_NODE_BIN", &node_bin);
     set_env("CARDANO_CLI_BIN", &cli_bin);
-    let msg = format!("Successfully copied binaries to {install_dir}");
-    print("green", &msg)
+    Ok(())
 }
 
 pub async fn create_dir(absolute_path: impl AsRef<Path>) -> Result<()> {
@@ -121,7 +118,7 @@ pub async fn setup_work_dir() -> Result<()> {
             set_env(&env_key, path);
         }
     }
-    print("green", "Working directory is setup")
+    Ok(())
 }
 
 pub fn chownr(path: impl AsRef<Path>) -> Result<()> {

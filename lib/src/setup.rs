@@ -1,11 +1,10 @@
 use crate::{
     async_command, async_user_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
     check_latest_version, check_libsodium, check_secp256k1, check_user, chownr, clone_component, copy_binary,
-    get_component_name, get_ghc_version, is_bin_installed, print, print_emoji, proceed, process_success_inherit,
-    set_env, setup_packages, setup_shell, setup_work_dir, source_shell, Component,
+    get_component_name, get_ghc_version, is_bin_installed, proceed, process_success_inherit, set_env, setup_packages,
+    setup_shell, setup_work_dir, source_shell, Component,
 };
 use anyhow::{anyhow, Result};
-use console::Emoji;
 use convert_case::{Case, Casing};
 use std::path::Path;
 use sudo::{check, escalate_if_needed, RunningAs};
@@ -18,11 +17,8 @@ pub async fn install_component(component: Component, confirm: bool) -> Result<()
     set_confirm(confirm);
     if !check_root() {
         match escalate_if_needed() {
-            Ok(user) => {
-                let msg = format!("Running as {:#?}", user);
-                print("", &msg)
-            }
-            Err(_) => print("", "Failed obtaining root privileges"),
+            Ok(_) => Ok(()),
+            Err(_) => Err(anyhow!("Failed obtaining root privileges")),
         }
     } else if !is_bin_installed(component).await? {
         check_confirm(component, confirm).await
@@ -50,13 +46,9 @@ async fn check_confirm(component: Component, confirm: bool) -> Result<()> {
 async fn install_if_not_up_to_date(component: Component, confirm: bool) -> Result<()> {
     let installed = check_installed_version(component).await?;
     let latest = check_latest_version(component).await?;
-    let component_name = get_component_name(component);
     if installed.eq(&latest) {
-        let msg = format!("Already installed latest {component_name} (v{latest})");
-        print_emoji("green", &msg, Emoji("🙌🎉", ""))
+        Ok(())
     } else {
-        let msg = format!("Currently {component_name} (v{installed}) is installed, but the latest version is {latest}");
-        print_emoji("yellow", &msg, Emoji("⚠️", ""))?;
         check_confirm(component, confirm).await
     }
 }
@@ -67,15 +59,11 @@ async fn proceed_install(component: Component, latest: &str) -> Result<()> {
     if proceed(&msg)? {
         install(component).await
     } else {
-        let msg = format!("Aborted {component_name} installation");
-        print_emoji("red", &msg, Emoji("", ""))
+        Ok(())
     }
 }
 
 async fn install(component: Component) -> Result<()> {
-    let component_name = get_component_name(component);
-    let msg = format!("Installing latest {component_name}");
-    print_emoji("white", &msg, Emoji("🤟", ""))?;
     prepare_build().await?;
     build_component(component).await?;
     copy_binary(component).await?;
@@ -83,7 +71,6 @@ async fn install(component: Component) -> Result<()> {
 }
 
 pub async fn prepare_build() -> Result<()> {
-    print("", "Preparing build")?;
     setup_work_dir().await?;
     setup_packages().await?;
     setup_shell().await?;
@@ -91,7 +78,6 @@ pub async fn prepare_build() -> Result<()> {
 }
 
 pub async fn check_dependencies() -> Result<()> {
-    print("", "Checking dependencies")?;
     check_ghcup().await?;
     check_ghc().await?;
     check_cabal().await?;
@@ -107,46 +93,40 @@ pub async fn build_component(component: Component) -> Result<()> {
     let path = get_component_path(component).await?;
     update_cabal(&path, &cabal).await?;
     check_project_file(&project_file).await?;
-    configure_build(component, &ghc_version, &path, &cabal).await?;
-    update_project_file(component, &project_file).await?;
+    configure_build(&ghc_version, &path, &cabal).await?;
+    update_project_file(&project_file).await?;
     build(component, &path, &cabal).await
 }
 
 async fn update_cabal(path: &str, cabal_path: &str) -> Result<()> {
     let cmd = format!("cd {path} && {cabal_path} update");
-    print("", "Updating Cabal")?;
     async_user_command(&cmd).await?;
-    print("green", "Updated Cabal successfully")
+    Ok(())
 }
 
 async fn check_project_file(project_file: impl AsRef<Path>) -> Result<()> {
     if project_file.as_ref().exists() {
         std::fs::remove_file(project_file)?;
-        print("", "Removed project file")
+        Ok(())
     } else {
         Ok(())
     }
 }
 
-pub async fn configure_build(component: Component, ghc_version: &str, path: &str, cabal: &str) -> Result<()> {
-    print("", "Configuring build")?;
+pub async fn configure_build(ghc_version: &str, path: &str, cabal: &str) -> Result<()> {
     let ghc = check_env("GHC_BIN")?;
     let cmd = format!("cd {path} && {cabal} configure --with-compiler={ghc}-{ghc_version}");
     async_user_command(&cmd).await?;
-    let component_name = get_component_name(component);
-    let msg = format!("Configured build of {component_name} successfully");
-    print("green", &msg)
+    Ok(())
 }
 
-pub async fn update_project_file(component: Component, file_path: &str) -> Result<()> {
+pub async fn update_project_file(file_path: &str) -> Result<()> {
     let package = format!("echo \"package cardano-crypto-praos\" >> {file_path}");
     let libsodium_flag = format!("echo \"  flags: -external-libsodium-vrf\" >> {file_path}");
     async_command(&package).await?;
     async_command(&libsodium_flag).await?;
-    let component_name = get_component_name(component);
-    let msg = format!("Updated project file of {component_name}");
     chownr(file_path)?;
-    print("green", &msg)
+    Ok(())
 }
 
 pub async fn get_component_path(component: Component) -> Result<String> {
@@ -168,27 +148,20 @@ async fn build(component: Component, path: &str, cabal: &str) -> Result<()> {
     let cmd = format!("cd {path} && {cabal} build all");
     let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
     let component_name = get_component_name(component);
-    let msg = format!("Building {component_name}");
-    print("", &msg)?;
     if process_success_inherit(&cmd).await? {
-        let msg = format!("Successfully built {component_name}");
-        print("green", &msg)
+        Ok(())
     } else {
         Err(anyhow!("Failed building {component_name}"))
     }
 }
 
 pub async fn check_install(component: Component) -> Result<()> {
-    let component_name = get_component_name(component);
-    let msg = format!("Checking successful {component_name} installation");
-    print("", &msg)?;
     if let Component::Node = component {
         check_installed_version(Component::Cli).await?;
     }
     check_installed_version(component).await?;
     source_shell().await?;
-    let msg = format!("Successfully installed {component_name}");
-    print_emoji("green", &msg, Emoji("🙌🎉", ""))
+    Ok(())
 }
 
 #[cfg(test)]
