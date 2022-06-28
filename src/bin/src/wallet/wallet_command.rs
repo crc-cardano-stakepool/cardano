@@ -11,7 +11,9 @@ pub struct WalletArgs {
 
 #[derive(Debug, Subcommand)]
 pub enum WalletCommand {
+    /// Installs cardano-wallet
     Install { confirm: bool },
+    /// Uninstalls cardano-wallet
     Uninstall,
 }
 

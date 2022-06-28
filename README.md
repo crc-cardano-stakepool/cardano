@@ -64,7 +64,7 @@ Currently supported operating systems
     mkdir -p $HOME/.cardano
     git clone https://github.com/crc-cardano-stakepool/cardano.git $HOME/.cardano/cardano
     cd $HOME/.cardano/cardano
-    cargo install --branch main --path .
+    cargo install --branch main --path src/bin
 ```
 
 ## Usage

@@ -1,9 +1,8 @@
 extern crate lib;
 use crate::{NodeArgs, NodeCommand, WalletArgs, WalletCommand};
 use anyhow::Result;
-use clap::{Command, CommandFactory, Parser, Subcommand};
-use clap_complete::Shell;
-use clap_complete::{generate, Generator};
+use clap::{CommandFactory, Parser, Subcommand, ColorChoice};
+use clap_complete::{generate, Shell};
 use ctrlc::set_handler;
 use human_panic::setup_panic;
 use lib::update_cli;
@@ -13,9 +12,8 @@ pub mod wallet;
 pub use wallet::*;
 
 #[derive(Debug, Parser)]
-#[clap(about = "Manage cardano components", version)]
+#[clap(about = "Manage cardano components", version, color = ColorChoice::Never)]
 pub struct Cli {
-    /// If provided, outputs the completion file for given shell
     #[clap(long = "generate", arg_enum, value_parser)]
     pub generator: Option<Shell>,
     #[clap(subcommand)]
@@ -23,7 +21,7 @@ pub struct Cli {
 }
 
 impl Cli {
-    pub async fn start(command: CardanoCommand) -> Result<()> {
+    pub async fn exec(command: CardanoCommand) -> Result<()> {
         match command {
             CardanoCommand::Node(command) => NodeCommand::exec(command).await,
             CardanoCommand::Wallet(command) => WalletCommand::exec(command).await,
@@ -47,18 +45,16 @@ async fn main() -> Result<()> {
     setup_panic!();
     set_handler(|| println!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
     let cli = Cli::parse();
+    let mut cmd = Cli::command();
     if let Some(generator) = cli.generator {
-        let mut cmd = Cli::command();
+        let bin_name = cmd.get_name().to_string();
         eprintln!("Generating completion file for {:?}...", generator);
-        print_completions(generator, &mut cmd);
+        generate(generator, &mut cmd, bin_name, &mut std::io::stdout());
         Ok(())
     } else if let Some(command) = cli.command {
-        Cli::start(command).await
+        Cli::exec(command).await
     } else {
+        cmd.print_help()?;
         Ok(())
     }
-}
-
-fn print_completions<G: Generator>(gen: G, cmd: &mut Command) {
-    generate(gen, cmd, cmd.get_name().to_string(), &mut std::io::stdout());
 }
