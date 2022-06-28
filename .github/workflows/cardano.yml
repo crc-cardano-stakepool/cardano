@@ -34,7 +34,6 @@ jobs:
             ~/.cardano
             ~/.cabal/packages
             ~/.cabal/store
-            dist-newstyle
             ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
