@@ -2,7 +2,7 @@ use crate::{Run, RunCommand};
 use anyhow::Result;
 use clap::{Args, Subcommand};
 use console::Emoji;
-use lib::{install_component, print_emoji};
+use lib::{install_component, print_emoji, Component};
 
 #[derive(Debug, Args)]
 pub struct NodeArgs {
@@ -34,7 +34,7 @@ impl NodeCommand {
     }
 
     pub async fn install_node(confirm: bool) -> Result<()> {
-        install_component("cardano-node", confirm).await
+        install_component(Component::Node, confirm).await
     }
 
     pub async fn uninstall_node() -> Result<()> {

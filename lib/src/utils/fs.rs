@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_user, get_component_path, print, set_env};
+use crate::{async_command, check_env, check_user, get_component_name, get_component_path, print, set_env, Component};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use nix::unistd::{getgid, getuid};
@@ -36,14 +36,15 @@ pub async fn check_work_dir(home: impl AsRef<Path>) -> Result<PathBuf> {
     Ok(work_dir)
 }
 
-pub async fn copy_binary(component: &str) -> Result<()> {
+pub async fn copy_binary(component: Component) -> Result<()> {
     let install_dir = check_env("INSTALL_DIR")?;
     let path = Path::new(&install_dir);
-    let msg = format!("Copying {component} binary to {install_dir}");
+    let component_name = get_component_name(component);
+    let msg = format!("Copying {component_name} binary to {install_dir}");
     print("", &msg)?;
     match component {
-        "cardano-node" => copy_node_binaries(path).await,
-        _ => Err(anyhow!("Unknown component {component}")),
+        Component::Node => copy_node_binaries(path).await,
+        _ => Err(anyhow!("Unknown component {component_name}")),
     }
 }
 
@@ -58,8 +59,7 @@ pub fn get_path_string(path: impl AsRef<Path>) -> Result<String> {
 
 async fn copy_node_binaries(install_dir: impl AsRef<Path>) -> Result<()> {
     let install_dir = get_path_string(install_dir)?;
-    let component = "cardano-node";
-    let path = get_component_path(component).await?;
+    let path = get_component_path(Component::Node).await?;
     let bin_path = format!("{path}/scripts/bin-path.sh");
     let node = format!("cd {path} && cp -p \"$({bin_path} cardano-node)\" {install_dir}");
     let cli = format!("cd {path} && cp -p \"$({bin_path} cardano-cli)\" {install_dir}");
@@ -131,7 +131,7 @@ pub fn chownr(path: impl AsRef<Path>) -> Result<()> {
     if path.is_dir() {
         for entry in std::fs::read_dir(&path)? {
             let entry = entry?;
-            chownr(entry.path().as_path())?;
+            chownr(entry.path())?;
         }
     }
     nix::unistd::chown(path, uid, gid)?;

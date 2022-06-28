@@ -22,3 +22,5 @@ pub mod setup;
 pub use setup::*;
 pub mod update_cli;
 pub use update_cli::*;
+pub mod components;
+pub use components::*;
