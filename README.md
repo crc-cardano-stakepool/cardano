@@ -43,64 +43,68 @@ Whether you are a beginner in the Cardano ecosystem, an SPO or a builder, you ca
 - Setup a plutus development environment
 - Explore the blockchain
 
-## Installation
+## Prerequisiites
 
 Currently supported operating systems
 
 - Debian
 - Ubuntu
 
-## Install latest precompiled binary globally
+## Installation
 
+```sh
     sudo apt update
     sudo apt upgrade
-    sudo apt install git curl wget jq tidy
-    git clone https://github.com/crc-cardano-stakepool/cardano.git
-    cd cardano
-    ./install.sh
-
-## Install from source
-
-### Install Rust Toolchain
-
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    source $HOME/.cargo/env
-
-### Compile
-
-    sudo apt update
-    sudo apt upgrade
-    sudo apt install build-essential
-    git clone https://github.com/crc-cardano-stakepool/cardano.git
-    cd cardano
-    cargo install --path .
+    sudo apt install git build-essential
+    curl https://sh.rustup.rs -sSf | sh -s -- -y
+    case ":${PATH}:" in
+        *:"$HOME/.cargo/bin":*) ;;
+        *) export PATH="$HOME/.cargo/bin:$PATH" ;;
+    esac
+    mkdir -p $HOME/.cardano
+    git clone https://github.com/crc-cardano-stakepool/cardano.git $HOME/.cardano/cardano
+    cd $HOME/.cardano/cardano
+    cargo install --branch main --path .
+```
 
 ## Usage
 
+```sh
     cardano <SUBCOMMAND>
+```
 
 ## Flags
 
+```sh
         --generate <GENERATOR>    If provided, outputs the completion file for given shell [possible
                                   values: bash, elvish, fish, powershell, zsh]
     -h, --help       Prints help information
     -V, --version    Prints version information
+```
 
 ## Subcommands
 
+```sh
     help      Prints this message or the help of the given subcommand(s)
     node      Manage cardano nodes
     update    Updates the CLI
     wallet    Manage cardano wallets
+```
 
 ## Install latest cardano-node release
 
+```sh
     cardano node install
+```
 
 ## Install latest cardano-node release without interaction
 
+```sh
     cardano node install -y
+```
 
 ## Documentation
 
+```sh
     cargo doc --workspace --no-deps --open
+```
