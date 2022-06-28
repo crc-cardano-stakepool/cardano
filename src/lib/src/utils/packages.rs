@@ -1,6 +1,4 @@
-use crate::{
-    apt_install, async_command, async_command_pipe, check_distro, install_distro_packages, print, yum_install,
-};
+use crate::{apt_install, async_command, async_command_pipe, check_distro, install_distro_packages, yum_install};
 use anyhow::{anyhow, Result};
 
 pub async fn check_platform() -> Result<String> {
@@ -16,15 +14,11 @@ pub async fn setup_packages() -> Result<()> {
     let platform = output.as_str().trim();
     match platform {
         "linux" | "Linux" => {
-            print("green", "Detected linux")?;
             let output = check_distro().await?;
             let distro = output.as_str().trim();
             install_distro_packages(distro).await
         }
-        "darwin" | "Darwin" => {
-            print("red", "Detected macOS")?;
-            Err(anyhow!("macOS is currently unsupported"))
-        }
+        "darwin" | "Darwin" => Err(anyhow!("macOS is currently unsupported")),
         _ => Err(anyhow!("Unsupported platform: {platform}")),
     }
 }
@@ -38,7 +32,6 @@ pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
 }
 
 pub async fn update(package_manager: &str) -> Result<()> {
-    print("", "Updating")?;
     let cmd = format!("sudo {package_manager} update -y && sudo {package_manager} upgrade -y");
     async_command(&cmd).await?;
     Ok(())

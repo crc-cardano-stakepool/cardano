@@ -1,4 +1,4 @@
-use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, VERSIONS_URL};
+use crate::{async_command_pipe, async_user_command, check_env, file_exists, VERSIONS_URL};
 use anyhow::{anyhow, Result};
 
 pub async fn check_installed_ghc() -> Result<String> {
@@ -14,15 +14,12 @@ pub async fn check_installed_ghc() -> Result<String> {
 }
 
 pub async fn check_ghc() -> Result<()> {
-    print("", "Checking GHC")?;
     let ghc = check_installed_ghc().await;
     match ghc {
         Ok(ghc) => {
             if compare_ghc(&ghc).await? {
-                print("green", "GHC is installed")
+                Ok(())
             } else {
-                let msg = format!("Currently GHC v{ghc} is installed, installing correct version of GHC");
-                print("yellow", &msg)?;
                 install_ghc().await
             }
         }
@@ -48,14 +45,12 @@ pub async fn get_ghc_version() -> Result<String> {
 
 pub async fn install_ghc() -> Result<()> {
     let version = get_ghc_version().await?;
-    let msg = format!("Installing GHC v{version}",);
-    print("", &msg)?;
     let ghcup = check_env("GHCUP_BIN")?;
     let cmd = format!("{ghcup} install ghc {version}");
     async_user_command(&cmd).await?;
     let cmd = format!("{ghcup} set ghc {version}");
     async_user_command(&cmd).await?;
-    print("green", "Successfully installed GHC")
+    Ok(())
 }
 
 #[cfg(test)]

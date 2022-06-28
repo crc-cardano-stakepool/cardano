@@ -1,14 +1,10 @@
-use crate::{async_command_pipe, install_packages, print, update, DEBIAN_PACKAGES, NON_DEBIAN_PACKAGES};
+use crate::{async_command_pipe, install_packages, update, DEBIAN_PACKAGES, NON_DEBIAN_PACKAGES};
 use anyhow::{anyhow, Result};
 
 // TODO: Use lib sysinfo for this
 pub fn check_distro_result(distro: Result<String>) -> Result<String> {
     match distro {
-        Ok(result) => {
-            let msg = format!("Detected {}", result.trim());
-            print("green", &msg)?;
-            Ok(result)
-        }
+        Ok(result) => Ok(result),
         Err(e) => Err(anyhow!("Failed checking distribution with error: {e}")),
     }
 }

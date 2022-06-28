@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_user, get_component_path, print, set_env};
+use crate::{async_command, check_env, check_user, get_component_path, set_env};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::{collections::HashMap, path::Path};
@@ -27,12 +27,10 @@ pub async fn check_work_dir(home: &str) -> Result<String> {
 
 pub async fn copy_binary(component: &str) -> Result<()> {
     let install_dir = check_env("INSTALL_DIR")?;
-    let msg = format!("Copying {component} binary to {install_dir}");
-    print("", &msg)?;
-    match component {
-        "cardano-node" => copy_node_binaries(&install_dir).await,
-        _ => Err(anyhow!("Unknown component {component}")),
+    if component == "cardano-node" {
+        copy_node_binaries(&install_dir).await?;
     }
+    Ok(())
 }
 
 async fn copy_node_binaries(install_dir: &str) -> Result<()> {
@@ -47,8 +45,7 @@ async fn copy_node_binaries(install_dir: &str) -> Result<()> {
     async_command(&cli).await?;
     set_env("CARDANO_NODE_BIN", &node_bin);
     set_env("CARDANO_CLI_BIN", &cli_bin);
-    let msg = format!("Successfully copied binaries to {install_dir}");
-    print("green", &msg)
+    Ok(())
 }
 
 pub async fn create_dir(absolute_path: &str) -> Result<()> {
@@ -96,7 +93,7 @@ pub async fn setup_work_dir() -> Result<()> {
         set_env(&env_key, value);
     }
     chownr(&work_dir).await?;
-    print("green", "Working directory is setup")
+    Ok(())
 }
 
 // TODO: Use standard library instead

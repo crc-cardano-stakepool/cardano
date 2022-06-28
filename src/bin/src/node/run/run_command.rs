@@ -1,8 +1,7 @@
 use crate::RunConfig;
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use console::Emoji;
-use lib::{is_bin_installed, print, print_emoji};
+use lib::is_bin_installed;
 
 #[derive(Debug, Args)]
 pub struct Run {
@@ -27,37 +26,22 @@ impl RunCommand {
     }
 
     async fn mainnet(config: RunConfig) -> Result<()> {
-        let output: String = format!("The config to run node in mainnet: {config:#?}");
-        print("white", &output)?;
+        println!("The config to run node in mainnet: {config:#?}");
         if is_bin_installed("cardano-node").await? {
-            print_emoji("green", "Proceeding to run node in mainnet", Emoji("💪", ""))
+            println!("Proceeding to run node in mainnet");
         } else {
-            print("red", "cardano-node is not installed")
+            println!("cardano-node is not installed");
         }
+        Ok(())
     }
 
     async fn testnet(config: RunConfig) -> Result<()> {
-        let output: String = format!("The config to run node in testnet: {config:#?}");
-        print("white", &output)?;
+        println!("The config to run node in testnet: {config:#?}");
         if is_bin_installed("cardano-node").await? {
-            print_emoji("green", "Proceeding to run node in testnet", Emoji("🔍", ""))
+            println!("Proceeding to run node in testnet")
         } else {
-            print("red", "cardano-node is not installed")
+            println!("cardano-node is not installed");
         }
-    }
-}
-
-#[cfg(test)]
-mod test {
-    #[test]
-    #[ignore]
-    fn test_mainnet() {
-        unimplemented!();
-    }
-
-    #[test]
-    #[ignore]
-    fn test_testnet() {
-        unimplemented!();
+        Ok(())
     }
 }

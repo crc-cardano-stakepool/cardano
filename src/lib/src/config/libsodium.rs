@@ -1,11 +1,10 @@
 use crate::{
-    async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists, print,
+    async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists,
     LIBSODIUM_URL,
 };
 use anyhow::Result;
 
 pub async fn check_libsodium() -> Result<()> {
-    print("", "Checking libsodium")?;
     let pc = "/usr/local/lib/pkgconfig/libsodium.pc";
     let so = "/usr/local/lib/libsodium.so";
     let so_23 = "/usr/local/lib/libsodium.so.23";
@@ -21,12 +20,12 @@ pub async fn check_libsodium() -> Result<()> {
     {
         install_libsodium().await?;
     }
-    print("green", "libsodium is installed")
+    Ok(())
 }
 
 pub async fn install_libsodium() -> Result<()> {
     let libsodium_path = check_env("LIBSODIUM_DIR")?;
-    check_repo(LIBSODIUM_URL, &libsodium_path, "libsodium").await?;
+    check_repo(LIBSODIUM_URL, &libsodium_path).await?;
     let checkout = "git checkout 66f017f1";
     let autogen = "./autogen.sh";
     let configure = "./configure";
@@ -38,7 +37,7 @@ pub async fn install_libsodium() -> Result<()> {
     async_command(&cmd).await?;
     chownr(&libsodium_path).await?;
     export_shell_variables().await?;
-    print("green", "Successfully installed libsodium")
+    Ok(())
 }
 
 #[cfg(test)]

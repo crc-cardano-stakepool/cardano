@@ -1,6 +1,6 @@
 use crate::{
     async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, file_exists,
-    get_component_path, print, set_env, CARDANO_NODE_URL,
+    get_component_path, set_env, CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -11,8 +11,6 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
     let cmd = format!("{component_bin_path} --version | awk {} | head -n1", "'{print $2}'");
     let version = async_command_pipe(&cmd).await?;
     let installed_version: String = String::from(version.trim());
-    let msg = format!("{component} (v{installed_version})");
-    print("green", &msg)?;
     Ok(installed_version)
 }
 
@@ -23,34 +21,30 @@ pub async fn check_latest_version(component: &str) -> Result<String> {
     Ok(String::from(response.trim()))
 }
 
-pub async fn check_repo(url: &str, absolute_path: &str, repo_name: &str) -> Result<()> {
+pub async fn check_repo(url: &str, absolute_path: &str) -> Result<()> {
     if Path::new(absolute_path).is_dir() {
         let repo_git_path = format!("{absolute_path}/.git");
         if !Path::new(&repo_git_path).is_dir() {
             let cmd = format!("$(ls -A {absolute_path})");
             let directory_content = async_command_pipe(&cmd).await?;
             if directory_content.is_empty() {
-                clone_repo(url, absolute_path, repo_name).await
+                clone_repo(url, absolute_path).await
             } else {
-                let msg = "Can't clone into directory, directory is not empty";
-                print("red", msg)
+                Ok(())
             }
         } else {
-            let msg = format!("{repo_name} repository found");
-            print("green", &msg)
+            Ok(())
         }
     } else {
-        clone_repo(url, absolute_path, repo_name).await
+        clone_repo(url, absolute_path).await
     }
 }
 
 pub async fn checkout_latest_release(component: &str) -> Result<()> {
     let version = check_latest_version(component).await?;
-    let msg = format!("Checking out latest {component} release (v{version})");
     let path = get_component_path(component).await?;
     let cmd = format!("cd {path} && git checkout tags/{version}");
     fetch_tags(component).await?;
-    print("", &msg)?;
     async_user_command(&cmd).await?;
     chownr(&path).await
 }
@@ -66,28 +60,25 @@ pub async fn clone_component(component: &str) -> Result<()> {
         let env_name = format!("{component}-dir");
         let converted = env_name.to_case(Case::UpperSnake);
         set_env(&converted, &cardano_component_dir);
-        check_repo(url, &cardano_component_dir, component).await?;
+        check_repo(url, &cardano_component_dir).await?;
         checkout_latest_release(component).await
     } else {
         Err(anyhow!("Failed cloning {component} repository"))
     }
 }
 
-pub async fn clone_repo(url: &str, destination_path: &str, repo_name: &str) -> Result<()> {
-    let msg = format!("Cloning {repo_name} repository to {destination_path}");
-    print("", &msg)?;
+pub async fn clone_repo(url: &str, destination_path: &str) -> Result<()> {
     let cmd = format!("git clone {url} {destination_path}");
     async_command(&cmd).await?;
-    let msg = format!("Successfully cloned {repo_name} repository to {destination_path}");
     chownr(destination_path).await?;
-    print("green", &msg)
+    Ok(())
 }
 
 pub async fn fetch_tags(component: &str) -> Result<()> {
     let path = get_component_path(component).await?;
     let cmd = format!("cd {path} && git fetch --all --recurse-submodules --tags");
     async_user_command(&cmd).await?;
-    print("green", "Successfully fetched tags")
+    Ok(())
 }
 
 pub async fn get_bin_path(bin: &str) -> Result<String> {

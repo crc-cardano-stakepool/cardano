@@ -1,4 +1,4 @@
-use crate::{async_command, check_package, pipe, print, process_success};
+use crate::{async_command, check_package, pipe, process_success};
 use anyhow::{anyhow, Result};
 
 pub async fn apt_install(package: &str) -> Result<()> {
@@ -16,8 +16,6 @@ pub async fn apt_install(package: &str) -> Result<()> {
 }
 
 pub async fn install_package(package_manager: &str, package: &str) -> Result<()> {
-    let msg = format!("{package} is not installed");
-    print("red", &msg)?;
     let cmd = format!("sudo {package_manager} install {package} -y");
     let process = async_command(&cmd).await;
     match process {
@@ -30,7 +28,7 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
     for package in packages {
         check_package(package_manager, package).await?;
     }
-    print("green", "Successfully installed packages")
+    Ok(())
 }
 
 pub async fn yum_install(package: &str) -> Result<()> {

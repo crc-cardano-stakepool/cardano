@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use console::Emoji;
-use lib::{install_component, print_emoji};
+use lib::{install_component, uninstall_component};
 
 #[derive(Debug, Args)]
 pub struct WalletArgs {
@@ -20,16 +19,8 @@ pub enum WalletCommand {
 impl WalletCommand {
     pub async fn exec(cmd: WalletArgs) -> Result<()> {
         match cmd.command {
-            WalletCommand::Install { confirm } => install_wallet(confirm).await,
-            WalletCommand::Uninstall => uninstall_wallet().await,
+            WalletCommand::Install { confirm } => install_component("cardano-wallet", confirm).await,
+            WalletCommand::Uninstall => uninstall_component("cardano-wallet").await,
         }
     }
-}
-
-pub async fn install_wallet(confirm: bool) -> Result<()> {
-    install_component("cardano-wallet", confirm).await
-}
-
-pub async fn uninstall_wallet() -> Result<()> {
-    print_emoji("white", "Uninstalling cardano-wallet", Emoji("💔", ""))
 }

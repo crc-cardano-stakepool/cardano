@@ -1,5 +1,5 @@
 use crate::{
-    async_command, async_command_pipe, check_env, print, proceed, process_success, set_env, setup_env, LD_LIBRARY_PATH,
+    async_command, async_command_pipe, check_env, proceed, process_success, set_env, setup_env, LD_LIBRARY_PATH,
     PKG_CONFIG_PATH,
 };
 use anyhow::{anyhow, Result};
@@ -11,26 +11,20 @@ pub async fn ask_shell_config() -> Result<()> {
     if shell.is_empty() || shell_file.is_empty() {
         return Err(anyhow!("No shell found"));
     }
-    let msg = format!("Detected {shell}");
-    print("green", &msg)?;
-    check_ask_shell_confirm(&shell, &shell_file).await
+    check_ask_shell_confirm(&shell_file).await
 }
 
-async fn check_ask_shell_confirm(shell: &str, shell_file: &str) -> Result<()> {
+async fn check_ask_shell_confirm(shell_file: &str) -> Result<()> {
     let confirm = check_env("CONFIRM")?;
     let msg = format!("Do you want to automatically add the required PATH variables to {shell_file}");
     if confirm == "false" && proceed(&msg)? {
-        let msg = format!("Proceeding to add path variables for {shell} to {shell_file}");
-        print("magenta", &msg)?;
         change_shell_config().await
     } else {
-        print("yellow", "Skipped adding path variables")?;
         export_shell_variables().await
     }
 }
 
 pub async fn change_shell_config() -> Result<()> {
-    print("", "Checking for shell configuration")?;
     let paths = HashMap::from([
         (
             "LD_LIBRARY_PATH",
@@ -59,7 +53,7 @@ pub async fn change_shell_config() -> Result<()> {
             write_shell_config(value).await?;
         }
     }
-    print("green", "Shell configured")
+    Ok(())
 }
 
 pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
@@ -73,7 +67,6 @@ pub async fn check_shell() -> Result<String> {
 }
 
 pub async fn export_shell_variables() -> Result<()> {
-    print("", "Exporting shell variables")?;
     let envs = HashMap::from([
         ("LD_LIBRARY_PATH", LD_LIBRARY_PATH),
         ("PKG_CONFIG_PATH", PKG_CONFIG_PATH),
@@ -106,17 +99,17 @@ pub fn match_shell(shell: &str) -> Result<()> {
             let shell_profile_file = format!("{home}/.bashrc");
             set_env("SHELL_PROFILE_FILE", &shell_profile_file);
             set_env("MY_SHELL", "bash");
-            print("green", "Detected bash")
+            Ok(())
         } else if !check_env("ZSH_VERSION")?.is_empty() {
             let shell_profile_file = format!("{home}/.zshrc");
             set_env("SHELL_PROFILE_FILE", &shell_profile_file);
             set_env("MY_SHELL", "zsh");
-            print("green", "Detected zsh")
+            Ok(())
         } else {
             Err(anyhow!("Failed checking shell"))
         }
     } else {
-        print("red", "No shell found, exporting variables manually")
+        Ok(())
     }
 }
 
@@ -131,16 +124,15 @@ pub async fn source_shell() -> Result<()> {
     let shell_file = get_shell_profile_file().await?;
     let cmd = format!("source {shell_file}");
     async_command_pipe(&cmd).await?;
-    print("green", "Sourced shell")
+    Ok(())
 }
 
 pub async fn write_shell_config(value: &str) -> Result<()> {
     let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
     let append_string = format!("$(cat << 'EOF'\n{value}\nEOF\n)");
     let cmd = format!("echo \"{append_string}\" >> {shell_profile_file}");
-    let msg = format!("Added line to {shell_profile_file}: {value}");
     async_command(&cmd).await?;
-    print("green", &msg)
+    Ok(())
 }
 
 #[cfg(test)]

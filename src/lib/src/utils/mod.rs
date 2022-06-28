@@ -6,8 +6,6 @@ pub mod process;
 pub use process::*;
 pub mod user;
 pub use user::*;
-pub mod stdout;
-pub use stdout::*;
 pub mod dialog;
 pub use dialog::*;
 pub mod shell;

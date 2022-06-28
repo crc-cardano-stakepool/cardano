@@ -1,11 +1,10 @@
 use crate::{
     async_command, async_user_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
     check_latest_version, check_libsodium, check_secp256k1, check_user, chownr, clone_component, copy_binary,
-    file_exists, get_ghc_version, is_bin_installed, print, print_emoji, proceed, process_success_inherit, set_env,
-    setup_packages, setup_shell, setup_work_dir, source_shell,
+    file_exists, get_ghc_version, is_bin_installed, proceed, process_success_inherit, set_env, setup_packages,
+    setup_shell, setup_work_dir, source_shell,
 };
 use anyhow::{anyhow, Result};
-use console::Emoji;
 use convert_case::{Case, Casing};
 use sudo::{check, escalate_if_needed, RunningAs};
 
@@ -17,11 +16,8 @@ pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
     set_confirm(confirm);
     if !check_root() {
         match escalate_if_needed() {
-            Ok(user) => {
-                let msg = format!("Running as {:#?}", user);
-                print("", &msg)
-            }
-            Err(_) => print("", "Failed obtaining root privileges"),
+            Ok(_) => Ok(()),
+            Err(_) => Ok(()),
         }
     } else if !is_bin_installed(component).await? {
         check_confirm(component, confirm).await
@@ -50,11 +46,8 @@ async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()>
     let installed = check_installed_version(component).await?;
     let latest = check_latest_version(component).await?;
     if installed.eq(&latest) {
-        let msg = format!("Already installed latest {component} (v{latest})");
-        print_emoji("green", &msg, Emoji("🙌🎉", ""))
+        Ok(())
     } else {
-        let msg = format!("Currently {component} (v{installed}) is installed, but the latest version is {latest}");
-        print_emoji("yellow", &msg, Emoji("⚠️", ""))?;
         check_confirm(component, confirm).await
     }
 }
@@ -64,14 +57,11 @@ async fn proceed_install(component: &str, latest: &str) -> Result<()> {
     if proceed(&msg)? {
         install(component).await
     } else {
-        let msg = format!("Aborted {component} installation");
-        print_emoji("red", &msg, Emoji("", ""))
+        Ok(())
     }
 }
 
 async fn install(component: &str) -> Result<()> {
-    let msg = format!("Installing latest {component}");
-    print_emoji("white", &msg, Emoji("🤟", ""))?;
     prepare_build().await?;
     build_component(component).await?;
     copy_binary(component).await?;
@@ -79,7 +69,6 @@ async fn install(component: &str) -> Result<()> {
 }
 
 pub async fn prepare_build() -> Result<()> {
-    print("", "Preparing build")?;
     setup_work_dir().await?;
     setup_packages().await?;
     setup_shell().await?;
@@ -87,7 +76,6 @@ pub async fn prepare_build() -> Result<()> {
 }
 
 pub async fn check_dependencies() -> Result<()> {
-    print("", "Checking dependencies")?;
     check_ghcup().await?;
     check_ghc().await?;
     check_cabal().await?;
@@ -103,45 +91,41 @@ pub async fn build_component(component: &str) -> Result<()> {
     let path = get_component_path(component).await?;
     update_cabal(&path, &cabal).await?;
     check_project_file(&project_file).await?;
-    configure_build(component, &ghc_version, &path, &cabal).await?;
-    update_project_file(component, &project_file).await?;
+    configure_build(&ghc_version, &path, &cabal).await?;
+    update_project_file(&project_file).await?;
     build(component, &path, &cabal).await
 }
 
 async fn update_cabal(path: &str, cabal_path: &str) -> Result<()> {
     let cmd = format!("cd {path} && {cabal_path} update");
-    print("", "Updating Cabal")?;
     async_user_command(&cmd).await?;
-    print("green", "Updated Cabal successfully")
+    Ok(())
 }
 
 async fn check_project_file(project_file: &str) -> Result<()> {
     if file_exists(project_file) {
         let cmd = format!("rm {project_file}");
         async_command(&cmd).await?;
-        print("", "Removed project file")
+        Ok(())
     } else {
         Ok(())
     }
 }
 
-pub async fn configure_build(component: &str, ghc_version: &str, path: &str, cabal: &str) -> Result<()> {
-    print("", "Configuring build")?;
+pub async fn configure_build(ghc_version: &str, path: &str, cabal: &str) -> Result<()> {
     let ghc = check_env("GHC_BIN")?;
     let cmd = format!("cd {path} && {cabal} configure --with-compiler={ghc}-{ghc_version}");
     async_user_command(&cmd).await?;
-    let msg = format!("Configured build of {component} successfully");
-    print("green", &msg)
+    Ok(())
 }
 
-pub async fn update_project_file(component: &str, file_path: &str) -> Result<()> {
+pub async fn update_project_file(file_path: &str) -> Result<()> {
     let package = format!("echo \"package cardano-crypto-praos\" >> {file_path}");
     let libsodium_flag = format!("echo \"  flags: -external-libsodium-vrf\" >> {file_path}");
     async_command(&package).await?;
     async_command(&libsodium_flag).await?;
-    let msg = format!("Updated project file of {component}");
     chownr(file_path).await?;
-    print("green", &msg)
+    Ok(())
 }
 
 pub async fn get_component_path(component: &str) -> Result<String> {
@@ -161,26 +145,20 @@ async fn build(component: &str, path: &str, cabal: &str) -> Result<()> {
     let user = check_user().await?;
     let cmd = format!("cd {path} && {cabal} build all");
     let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
-    let msg = format!("Building {component}");
-    print("", &msg)?;
     if process_success_inherit(&cmd).await? {
-        let msg = format!("Successfully built {component}");
-        print("green", &msg)
+        Ok(())
     } else {
         Err(anyhow!("Failed building {component}"))
     }
 }
 
 pub async fn check_install(component: &str) -> Result<()> {
-    let msg = format!("Checking successful {component} installation");
-    print("", &msg)?;
     if let "cardano-node" = component {
         check_installed_version("cardano-cli").await?;
     }
     check_installed_version(component).await?;
     source_shell().await?;
-    let msg = format!("Successfully installed {component}");
-    print_emoji("green", &msg, Emoji("🙌🎉", ""))
+    Ok(())
 }
 
 #[cfg(test)]
