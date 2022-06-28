@@ -34,25 +34,19 @@ pub async fn change_shell_config() -> Result<()> {
     let paths = HashMap::from([
         (
             "LD_LIBRARY_PATH",
-            format!("export LD_LIBRARY_PATH={}", "\"/usr/local/lib:$LD_LIBRARY_PATH\""),
+            format!("export LD_LIBRARY_PATH=\"{LD_LIBRARY_PATH}\""),
         ),
         (
             "PKG_CONFIG_PATH",
-            format!(
-                "export PKG_CONFIG_PATH={}",
-                "\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\""
-            ),
+            format!("export PKG_CONFIG_PATH=\"{PKG_CONFIG_PATH}\""),
         ),
         (
             "CARDANO_NODE_SOCKET_PATH",
-            format!(
-                "export CARDANO_NODE_SOCKET_PATH={}",
-                "\"$HOME/.cardano/ipc/node.socket\""
-            ),
+            "export CARDANO_NODE_SOCKET_PATH=\"$HOME/.cardano/ipc/node.socket\"".to_string(),
         ),
-        (".local/bin", format!("export PATH={}", "\"$HOME/.local/bin:$PATH\"")),
-        (".cabal/bin", format!("export PATH={}", "\"$HOME/.cabal/bin:$PATH\"")),
-        (".ghcup/bin", format!("export PATH={}", "\"$HOME/.ghcup/bin:$PATH\"")),
+        (".local/bin", "export PATH=\"$HOME/.local/bin:$PATH\"".to_string()),
+        (".cabal/bin", "export PATH=\"$HOME/.cabal/bin:$PATH\"".to_string()),
+        (".ghcup/bin", "export PATH=\"$HOME/.ghcup/bin:$PATH\"".to_string()),
     ]);
     for (key, value) in paths.iter() {
         if !check_shell_config_env(key).await? {

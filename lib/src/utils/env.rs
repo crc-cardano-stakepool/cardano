@@ -3,6 +3,7 @@ use anyhow::{anyhow, Result};
 use std::{
     collections::HashMap,
     env::{set_var, var},
+    path::PathBuf,
 };
 
 pub fn check_env(key: &str) -> Result<String> {
@@ -19,18 +20,27 @@ pub fn set_env(key: &str, value: &str) {
 pub async fn setup_env() -> Result<()> {
     print("", "Setting up environment")?;
     let home_dir = check_home_dir().await?;
-    let ghcup_dir = format!("{home_dir}/.ghcup");
-    let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
-    let ghc_bin = format!("{ghcup_dir}/bin/ghc");
-    let cabal_bin = format!("{ghcup_dir}/bin/cabal");
-    let map: HashMap<&str, &String> = HashMap::from([
-        ("GHCUP_DIR", &ghcup_dir),
-        ("GHCUP_BIN", &ghcup_bin),
-        ("GHC_BIN", &ghc_bin),
-        ("CABAL_BIN", &cabal_bin),
+    let mut ghcup_dir = PathBuf::from(&home_dir);
+    ghcup_dir.push(".ghcup");
+    let mut ghcup_bin = PathBuf::from(&ghcup_dir);
+    ghcup_bin.push("bin");
+    ghcup_bin.push("ghcup");
+    let mut ghc_bin = PathBuf::from(&ghcup_dir);
+    ghc_bin.push("bin");
+    ghc_bin.push("ghc");
+    let mut cabal_bin = PathBuf::from(&ghcup_dir);
+    cabal_bin.push("bin");
+    cabal_bin.push("cabal");
+    let map: HashMap<&str, PathBuf> = HashMap::from([
+        ("GHCUP_DIR", ghcup_dir),
+        ("GHCUP_BIN", ghcup_bin),
+        ("GHC_BIN", ghc_bin),
+        ("CABAL_BIN", cabal_bin),
     ]);
     for (key, value) in map {
-        set_env(key, value);
+        if let Some(value) = value.to_str() {
+            set_env(key, value);
+        }
     }
     print("green", "Environment is ready")
 }
@@ -61,6 +71,7 @@ mod test {
     async fn test_setup_env() -> Result<()> {
         setup_env().await?;
         let home_dir = check_home_dir().await?;
+        let home_dir = home_dir.to_str().unwrap();
         let ghcup_dir = format!("{home_dir}/.ghcup");
         let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
         let ghc_bin = format!("{ghcup_dir}/bin/ghc");

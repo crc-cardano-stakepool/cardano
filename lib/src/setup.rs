@@ -1,12 +1,13 @@
 use crate::{
     async_command, async_user_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
     check_latest_version, check_libsodium, check_secp256k1, check_user, chownr, clone_component, copy_binary,
-    file_exists, get_ghc_version, is_bin_installed, print, print_emoji, proceed, process_success_inherit, set_env,
-    setup_packages, setup_shell, setup_work_dir, source_shell,
+    get_ghc_version, is_bin_installed, print, print_emoji, proceed, process_success_inherit, set_env, setup_packages,
+    setup_shell, setup_work_dir, source_shell,
 };
 use anyhow::{anyhow, Result};
 use console::Emoji;
 use convert_case::{Case, Casing};
+use std::path::Path;
 use sudo::{check, escalate_if_needed, RunningAs};
 
 pub fn check_root() -> bool {
@@ -115,10 +116,9 @@ async fn update_cabal(path: &str, cabal_path: &str) -> Result<()> {
     print("green", "Updated Cabal successfully")
 }
 
-async fn check_project_file(project_file: &str) -> Result<()> {
-    if file_exists(project_file) {
-        let cmd = format!("rm {project_file}");
-        async_command(&cmd).await?;
+async fn check_project_file(project_file: impl AsRef<Path>) -> Result<()> {
+    if project_file.as_ref().exists() {
+        std::fs::remove_file(project_file)?;
         print("", "Removed project file")
     } else {
         Ok(())
@@ -140,7 +140,7 @@ pub async fn update_project_file(component: &str, file_path: &str) -> Result<()>
     async_command(&package).await?;
     async_command(&libsodium_flag).await?;
     let msg = format!("Updated project file of {component}");
-    chownr(file_path).await?;
+    chownr(file_path)?;
     print("green", &msg)
 }
 

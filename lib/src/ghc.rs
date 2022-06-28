@@ -1,9 +1,10 @@
-use crate::{async_command_pipe, async_user_command, check_env, file_exists, print, VERSIONS_URL};
+use crate::{async_command_pipe, async_user_command, check_env, print, VERSIONS_URL};
 use anyhow::{anyhow, Result};
+use std::path::Path;
 
 pub async fn check_installed_ghc() -> Result<String> {
     let ghc = check_env("GHC_BIN")?;
-    if file_exists(&ghc) {
+    if Path::new(&ghc).exists() {
         let cmd = format!("{ghc} -V | awk {}", "'{print $8}'");
         let installed_ghc = async_command_pipe(&cmd).await?;
         let installed_ghc = installed_ghc.trim().to_string();
@@ -92,6 +93,7 @@ mod test {
     #[tokio::test]
     async fn test_check_installed_ghc() -> Result<()> {
         let home_dir = check_home_dir().await?;
+        let home_dir = home_dir.to_str().unwrap();
         let ghc_bin = format!("{home_dir}/.ghcup/bin/ghc");
         set_env("GHC_BIN", &ghc_bin);
         let version = check_installed_ghc().await;

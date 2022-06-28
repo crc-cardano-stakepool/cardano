@@ -1,24 +1,18 @@
 use crate::{
-    async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists, print,
-    LIBSODIUM_URL,
+    async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, print, LIBSODIUM_URL,
 };
 use anyhow::Result;
+use std::path::Path;
 
 pub async fn check_libsodium() -> Result<()> {
     print("", "Checking libsodium")?;
-    let pc = "/usr/local/lib/pkgconfig/libsodium.pc";
-    let so = "/usr/local/lib/libsodium.so";
-    let so_23 = "/usr/local/lib/libsodium.so.23";
-    let so_23_3_0 = "/usr/local/lib/libsodium.so.23.3.0";
-    let la = "/usr/local/lib/libsodium.la";
-    let a = "/usr/local/lib/libsodium.a";
-    if !(file_exists(pc)
-        && file_exists(so)
-        && file_exists(la)
-        && file_exists(so_23_3_0)
-        && file_exists(so_23)
-        && file_exists(a))
-    {
+    let pc = Path::new("/usr/local/lib/pkgconfig/libsodium.pc");
+    let so = Path::new("/usr/local/lib/libsodium.so");
+    let so_23 = Path::new("/usr/local/lib/libsodium.so.23");
+    let so_23_3_0 = Path::new("/usr/local/lib/libsodium.so.23.3.0");
+    let la = Path::new("/usr/local/lib/libsodium.la");
+    let a = Path::new("/usr/local/lib/libsodium.a");
+    if !(pc.exists() && so.exists() && la.exists() && so_23_3_0.exists() && so_23.exists() && a.exists()) {
         install_libsodium().await?;
     }
     print("green", "libsodium is installed")
@@ -26,7 +20,8 @@ pub async fn check_libsodium() -> Result<()> {
 
 pub async fn install_libsodium() -> Result<()> {
     let libsodium_path = check_env("LIBSODIUM_DIR")?;
-    check_repo(LIBSODIUM_URL, &libsodium_path, "libsodium").await?;
+    let path = Path::new(&libsodium_path);
+    check_repo(LIBSODIUM_URL, path, "libsodium").await?;
     let checkout = "git checkout 66f017f1";
     let autogen = "./autogen.sh";
     let configure = "./configure";
@@ -36,7 +31,7 @@ pub async fn install_libsodium() -> Result<()> {
     let cmd = format!("cd {libsodium_path}\n{sudo}");
     async_user_command(&cd).await?;
     async_command(&cmd).await?;
-    chownr(&libsodium_path).await?;
+    chownr(path)?;
     export_shell_variables().await?;
     print("green", "Successfully installed libsodium")
 }

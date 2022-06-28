@@ -1,12 +1,14 @@
-use crate::{async_user_command, check_env, file_exists, get_cabal_version, get_ghc_version, is_dir, print, GHCUP_URL};
+use crate::{async_user_command, check_env, get_cabal_version, get_ghc_version, print, GHCUP_URL};
 use anyhow::{anyhow, Result};
+use std::path::Path;
 
 pub async fn check_ghcup() -> Result<()> {
     print("", "Checking GHCup")?;
     let ghcup_dir = check_env("GHCUP_DIR")?;
     let ghcup_bin = check_env("GHCUP_BIN")?;
-    if is_dir(&ghcup_dir) {
-        if file_exists(&ghcup_bin) {
+
+    if Path::new(&ghcup_dir).is_dir() {
+        if Path::new(&ghcup_bin).exists() {
             print("green", "GHCup is installed")
         } else {
             Err(anyhow!("Failed installing GHCup"))

@@ -1,10 +1,11 @@
 use crate::{
-    async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, file_exists,
-    get_component_path, print, set_env, CARDANO_NODE_URL,
+    async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, get_component_path, print,
+    set_env, CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
-use std::path::Path;
+use nix::NixPath;
+use std::path::{Path, PathBuf};
 
 pub async fn check_installed_version(component: &str) -> Result<String> {
     let component_bin_path = get_bin_path(component).await?;
@@ -23,17 +24,16 @@ pub async fn check_latest_version(component: &str) -> Result<String> {
     Ok(String::from(response.trim()))
 }
 
-pub async fn check_repo(url: &str, absolute_path: &str, repo_name: &str) -> Result<()> {
-    if Path::new(absolute_path).is_dir() {
-        let repo_git_path = format!("{absolute_path}/.git");
-        if !Path::new(&repo_git_path).is_dir() {
-            let cmd = format!("$(ls -A {absolute_path})");
-            let directory_content = async_command_pipe(&cmd).await?;
-            if directory_content.is_empty() {
+pub async fn check_repo(url: &str, absolute_path: impl AsRef<Path>, repo_name: &str) -> Result<()> {
+    let path = absolute_path.as_ref();
+    if path.is_absolute() && path.is_dir() {
+        let mut git_repo_path = PathBuf::from(path);
+        git_repo_path.push(".git");
+        if !git_repo_path.is_dir() {
+            if path.is_empty() {
                 clone_repo(url, absolute_path, repo_name).await
             } else {
-                let msg = "Can't clone into directory, directory is not empty";
-                print("red", msg)
+                print("red", "Can't clone into directory, directory is not empty")
             }
         } else {
             let msg = format!("{repo_name} repository found");
@@ -52,7 +52,7 @@ pub async fn checkout_latest_release(component: &str) -> Result<()> {
     fetch_tags(component).await?;
     print("", &msg)?;
     async_user_command(&cmd).await?;
-    chownr(&path).await
+    chownr(&path)
 }
 
 pub async fn clone_component(component: &str) -> Result<()> {
@@ -73,14 +73,24 @@ pub async fn clone_component(component: &str) -> Result<()> {
     }
 }
 
-pub async fn clone_repo(url: &str, destination_path: &str, repo_name: &str) -> Result<()> {
-    let msg = format!("Cloning {repo_name} repository to {destination_path}");
-    print("", &msg)?;
-    let cmd = format!("git clone {url} {destination_path}");
-    async_command(&cmd).await?;
-    let msg = format!("Successfully cloned {repo_name} repository to {destination_path}");
-    chownr(destination_path).await?;
-    print("green", &msg)
+pub async fn clone_repo(url: &str, destination_path: impl AsRef<Path>, repo_name: &str) -> Result<()> {
+    let path = destination_path.as_ref();
+    if let Some(str_path) = path.to_str() {
+        if !path.exists() {
+            return Err(anyhow!("Invalid path: {str_path}"));
+        }
+    }
+    if let Some(destination_path) = path.to_str() {
+        let msg = format!("Cloning {repo_name} repository to {destination_path}");
+        print("", &msg)?;
+        let cmd = format!("git clone {url} {destination_path}");
+        async_command(&cmd).await?;
+        let msg = format!("Successfully cloned {repo_name} repository to {destination_path}");
+        chownr(destination_path)?;
+        print("green", &msg)
+    } else {
+        return Err(anyhow!("Failed to clone repo {repo_name}"));
+    }
 }
 
 pub async fn fetch_tags(component: &str) -> Result<()> {
@@ -99,7 +109,7 @@ pub async fn get_bin_path(bin: &str) -> Result<String> {
 pub async fn is_bin_installed(bin: &str) -> Result<bool> {
     let user = check_user().await?;
     let file = format!("/home/{user}/.local/bin/{bin}");
-    Ok(file_exists(&file))
+    Ok(Path::new(&file).exists())
 }
 
 #[cfg(test)]
@@ -127,8 +137,11 @@ mod test {
     }
     #[tokio::test]
     #[ignore]
-    async fn test_check_repo() {
-        unimplemented!();
+    async fn test_check_repo() -> Result<()> {
+        let path = Path::new("/home/clay/.cardano/cardano-node");
+        let repo_name = "cardano-node";
+        check_repo(CARDANO_NODE_URL, path, repo_name).await?;
+        Ok(())
     }
     #[tokio::test]
     #[ignore]
