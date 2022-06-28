@@ -41,6 +41,7 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ matrix.os }}-${{ matrix.target }}
+          restore-keys: ${{ matrix.os }}-${{ matrix.target }}
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
         with:
