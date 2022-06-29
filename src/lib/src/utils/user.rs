@@ -1,11 +1,13 @@
-use crate::{async_command_pipe, set_env};
+use crate::set_env;
 use anyhow::Result;
+use nix::unistd::{getuid, User};
 
-pub async fn check_user() -> Result<String> {
-    let user = async_command_pipe("echo ${SUDO_USER:-$USER}").await?;
-    let user = user.trim();
-    set_env("RUNNER", user);
-    Ok(user.to_string())
+pub fn check_user() -> Result<String> {
+    let uid = getuid();
+    let res = User::from_uid(uid).unwrap().unwrap();
+    let user = res.name;
+    set_env("RUNNER", &user);
+    Ok(user)
 }
 
 #[cfg(test)]
@@ -15,7 +17,7 @@ mod test {
 
     #[tokio::test]
     async fn test_check_user() -> Result<()> {
-        let user = check_user().await?;
+        let user = check_user()?;
         let user_env = check_env("RUNNER")?;
         assert_eq!(user, user_env);
         Ok(())

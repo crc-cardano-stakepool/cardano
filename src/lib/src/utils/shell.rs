@@ -1,7 +1,4 @@
-use crate::{
-    async_command, async_command_pipe, check_env, proceed, process_success, set_env, setup_env, LD_LIBRARY_PATH,
-    PKG_CONFIG_PATH,
-};
+use crate::{async_command, async_command_pipe, check_env, proceed, process_success, set_env, setup_env, LD_LIBRARY_PATH, PKG_CONFIG_PATH};
 use anyhow::{anyhow, Result};
 use std::collections::HashMap;
 
@@ -32,17 +29,11 @@ pub async fn change_shell_config() -> Result<()> {
         ),
         (
             "PKG_CONFIG_PATH",
-            format!(
-                "export PKG_CONFIG_PATH={}",
-                "\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\""
-            ),
+            format!("export PKG_CONFIG_PATH={}", "\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\""),
         ),
         (
             "CARDANO_NODE_SOCKET_PATH",
-            format!(
-                "export CARDANO_NODE_SOCKET_PATH={}",
-                "\"$HOME/.cardano/ipc/node.socket\""
-            ),
+            format!("export CARDANO_NODE_SOCKET_PATH={}", "\"$HOME/.cardano/ipc/node.socket\""),
         ),
         (".local/bin", format!("export PATH={}", "\"$HOME/.local/bin:$PATH\"")),
         (".cabal/bin", format!("export PATH={}", "\"$HOME/.cabal/bin:$PATH\"")),
@@ -67,10 +58,7 @@ pub async fn check_shell() -> Result<String> {
 }
 
 pub async fn export_shell_variables() -> Result<()> {
-    let envs = HashMap::from([
-        ("LD_LIBRARY_PATH", LD_LIBRARY_PATH),
-        ("PKG_CONFIG_PATH", PKG_CONFIG_PATH),
-    ]);
+    let envs = HashMap::from([("LD_LIBRARY_PATH", LD_LIBRARY_PATH), ("PKG_CONFIG_PATH", PKG_CONFIG_PATH)]);
     for (key, value) in envs.iter() {
         set_env(key, value);
     }

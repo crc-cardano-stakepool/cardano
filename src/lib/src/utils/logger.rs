@@ -40,10 +40,7 @@ pub fn setup_logger<P: AsRef<Path>>(log_level: LevelFilter, log_file: P) -> Resu
         .level(log_level)
         .chain(fern::Output::call(|record| println!("{}", record.args())));
 
-    fern::Dispatch::new()
-        .chain(stdout_dispatcher)
-        .chain(file_dispatcher)
-        .apply()?;
+    fern::Dispatch::new().chain(stdout_dispatcher).chain(file_dispatcher).apply()?;
 
     Ok(())
 }

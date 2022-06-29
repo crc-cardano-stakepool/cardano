@@ -1,7 +1,4 @@
-use crate::{
-    async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists,
-    LIBSODIUM_URL,
-};
+use crate::{async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists, LIBSODIUM_URL};
 use anyhow::Result;
 
 pub async fn check_libsodium() -> Result<()> {
@@ -11,13 +8,7 @@ pub async fn check_libsodium() -> Result<()> {
     let so_23_3_0 = "/usr/local/lib/libsodium.so.23.3.0";
     let la = "/usr/local/lib/libsodium.la";
     let a = "/usr/local/lib/libsodium.a";
-    if !(file_exists(pc)
-        && file_exists(so)
-        && file_exists(la)
-        && file_exists(so_23_3_0)
-        && file_exists(so_23)
-        && file_exists(a))
-    {
+    if !(file_exists(pc) && file_exists(so) && file_exists(la) && file_exists(so_23_3_0) && file_exists(so_23) && file_exists(a)) {
         install_libsodium().await?;
     }
     Ok(())

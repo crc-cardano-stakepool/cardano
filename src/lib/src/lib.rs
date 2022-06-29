@@ -4,5 +4,5 @@
 
 pub mod utils;
 pub use utils::*;
-pub mod config;
-pub use config::*;
+pub mod configs;
+pub use configs::*;
