@@ -27,19 +27,15 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Cache
+      - name: Cache Cardano
         uses: actions/cache@v3
         with:
           path: |
-            ~/.cardano
             ~/.cabal/packages
             ~/.cabal/store
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.os }}-${{ matrix.target }}
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v1
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
         with:
