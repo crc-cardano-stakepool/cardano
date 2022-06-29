@@ -1,6 +1,6 @@
 use crate::{async_command_pipe, install_packages, update, DEBIAN_PACKAGES, NON_DEBIAN_PACKAGES};
 use anyhow::{anyhow, Result};
-use sysinfo::{System, SystemExt, CpuExt, DiskExt};
+use sysinfo::{CpuExt, DiskExt, System, SystemExt};
 
 pub fn get_sysinfo() {
     let mut sys = System::new_all();
