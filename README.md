@@ -70,22 +70,21 @@ Currently supported operating systems
 ## Usage
 
 ```unix
-    cardano <SUBCOMMAND>
-```
+cardano 0.0.1
+Manage cardano components
 
-## Flags
+USAGE:
+    cardano [OPTIONS] [SUBCOMMAND]
 
-```unix
-        --generate <GENERATOR>    If provided, outputs the completion file for given shell [possible
-                                  values: bash, elvish, fish, powershell, zsh]
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-```
+OPTIONS:
+        --generate <GENERATOR>    [possible values: bash, elvish, fish, powershell, zsh]
+    -h, --help                    Print help information
+    -q, --quiet                   Less output per occurrence
+    -v, --verbose                 More output per occurrence
+    -V, --version                 Print version information
 
-## Subcommands
-
-```unix
-    help      Prints this message or the help of the given subcommand(s)
+SUBCOMMANDS:
+    help      Print this message or the help of the given subcommand(s)
     node      Manage cardano nodes
     update    Updates the CLI
     wallet    Manage cardano wallets
@@ -97,10 +96,10 @@ Currently supported operating systems
     cardano node install
 ```
 
-## Install latest cardano-node release without interaction
+## Update CLI
 
 ```unix
-    cardano node install -y
+    cardano update
 ```
 
 ## Documentation
