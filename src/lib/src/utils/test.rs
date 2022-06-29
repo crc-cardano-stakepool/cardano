@@ -1,10 +1,15 @@
-use log::info;
-
-pub fn setup() {
+#[cfg(test)]
+#[ctor::ctor]
+fn test_setup() {
+    use crate::setup_logger;
+    use log::LevelFilter;
     std::env::set_var("RUST_LOG", "debug");
-    let _ = env_logger::builder().is_test(true).try_init();
+    let _ = setup_logger(LevelFilter::Debug, "../../output.log");
+    log::debug!("Setting up tests");
 }
 
-pub fn teardown() {
-    info!("Cleaning up")
+#[cfg(test)]
+#[ctor::dtor]
+fn test_teardown() {
+    log::debug!("Tearing down tests");
 }

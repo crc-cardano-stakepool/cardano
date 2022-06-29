@@ -42,6 +42,7 @@ async fn check_confirm(component: &str, confirm: bool) -> Result<()> {
         proceed_install(component, &latest).await
     }
 }
+
 async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()> {
     let installed = check_installed_version(component).await?;
     let latest = check_latest_version(component).await?;

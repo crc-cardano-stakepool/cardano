@@ -1,5 +1,5 @@
 extern crate lib;
-use lib::update_cli;
+use lib::{setup_logger, update_cli};
 
 use crate::{NodeArgs, NodeCommand, WalletArgs, WalletCommand};
 
@@ -47,9 +47,7 @@ pub enum CardanoCommand {
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = Cli::parse();
-    pretty_env_logger::formatted_builder()
-        .filter_level(cli.verbose.log_level_filter())
-        .init();
+    setup_logger(cli.verbose.log_level_filter(), "output.log")?;
     human_panic::setup_panic!();
     ctrlc::set_handler(|| println!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
     let mut cmd = Cli::command();
