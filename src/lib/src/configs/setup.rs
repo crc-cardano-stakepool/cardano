@@ -1,8 +1,7 @@
 use crate::{
-    async_command, async_user_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
-    check_latest_version, check_libsodium, check_secp256k1, check_user, chownr, clone_component, copy_binary,
-    file_exists, get_ghc_version, is_bin_installed, proceed, process_success_inherit, set_env, setup_packages,
-    setup_shell, setup_work_dir, source_shell,
+    async_command, async_user_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version, check_latest_version,
+    check_libsodium, check_secp256k1, check_user, chownr, clone_component, copy_binary, file_exists, get_ghc_version, is_bin_installed,
+    proceed, process_success_inherit, set_env, setup_packages, setup_shell, setup_work_dir, source_shell,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -42,6 +41,7 @@ async fn check_confirm(component: &str, confirm: bool) -> Result<()> {
         proceed_install(component, &latest).await
     }
 }
+
 async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()> {
     let installed = check_installed_version(component).await?;
     let latest = check_latest_version(component).await?;
@@ -142,7 +142,7 @@ pub async fn get_project_file(component: &str) -> Result<String> {
 }
 
 async fn build(component: &str, path: &str, cabal: &str) -> Result<()> {
-    let user = check_user().await?;
+    let user = check_user()?;
     let cmd = format!("cd {path} && {cabal} build all");
     let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
     if process_success_inherit(&cmd).await? {

@@ -12,15 +12,15 @@ pub async fn check_dir(absolute_path: &str) -> Result<()> {
     }
 }
 
-pub async fn check_home_dir() -> Result<String> {
-    let user = check_user().await?;
+pub fn check_home_dir() -> Result<String> {
+    let user = check_user()?;
     let home_directory = format!("/home/{}", user.trim());
     set_env("RUNNER_HOME", &home_directory);
     Ok(home_directory)
 }
 
 pub async fn check_work_dir(home: &str) -> Result<String> {
-    let install_directory = format!("{home}/.cardano");
+    let install_directory = format!("{home}/.config/.cardano");
     set_env("WORK_DIR", &install_directory);
     Ok(install_directory)
 }
@@ -62,7 +62,7 @@ pub fn is_dir(absolute_path: &str) -> bool {
 }
 
 pub async fn setup_work_dir() -> Result<()> {
-    let home_dir = check_home_dir().await?;
+    let home_dir = check_home_dir()?;
     check_work_dir(&home_dir).await?;
     let work_dir = check_env("WORK_DIR")?;
     let ipc_dir = format!("{work_dir}/ipc");
@@ -98,7 +98,7 @@ pub async fn setup_work_dir() -> Result<()> {
 
 // TODO: Use standard library instead
 pub async fn chownr(absolute_path: &str) -> Result<()> {
-    let user = check_user().await?;
+    let user = check_user()?;
     let user = user.trim();
     let cmd = format!("chown -R {user}:{user} {absolute_path}");
     if async_command(&cmd).await.is_ok() {
@@ -144,7 +144,7 @@ mod test {
 
     #[tokio::test]
     async fn test_check_work_dir() -> Result<()> {
-        let home = check_home_dir().await?;
+        let home = check_home_dir()?;
         let work_dir = check_work_dir(&home).await?;
         let result = check_env("WORK_DIR")?;
         assert_eq!(work_dir, result);
@@ -153,7 +153,7 @@ mod test {
 
     #[tokio::test]
     async fn test_check_home_dir() -> Result<()> {
-        let home = check_home_dir().await?;
+        let home = check_home_dir()?;
         let result = check_env("RUNNER_HOME")?;
         assert_eq!(home, result);
         Ok(())

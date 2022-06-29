@@ -12,3 +12,5 @@ pub mod secp256k1;
 pub use secp256k1::*;
 pub mod setup;
 pub use setup::*;
+pub mod settings;
+pub use settings::*;

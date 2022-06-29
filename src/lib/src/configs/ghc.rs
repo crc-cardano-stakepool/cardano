@@ -86,7 +86,7 @@ mod test {
 
     #[tokio::test]
     async fn test_check_installed_ghc() -> Result<()> {
-        let home_dir = check_home_dir().await?;
+        let home_dir = check_home_dir()?;
         let ghc_bin = format!("{home_dir}/.ghcup/bin/ghc");
         set_env("GHC_BIN", &ghc_bin);
         let version = check_installed_ghc().await;

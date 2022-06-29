@@ -1,6 +1,6 @@
 use crate::{
-    async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, file_exists,
-    get_component_path, set_env, CARDANO_NODE_URL,
+    async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, file_exists, get_component_path, set_env,
+    CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -82,13 +82,13 @@ pub async fn fetch_tags(component: &str) -> Result<()> {
 }
 
 pub async fn get_bin_path(bin: &str) -> Result<String> {
-    let user = check_user().await?;
+    let user = check_user()?;
     let path = format!("/home/{user}/.local/bin/{bin}");
     Ok(path)
 }
 
 pub async fn is_bin_installed(bin: &str) -> Result<bool> {
-    let user = check_user().await?;
+    let user = check_user()?;
     let file = format!("/home/{user}/.local/bin/{bin}");
     Ok(file_exists(&file))
 }

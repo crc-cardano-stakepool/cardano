@@ -17,7 +17,7 @@ pub fn set_env(key: &str, value: &str) {
 }
 
 pub async fn setup_env() -> Result<()> {
-    let home_dir = check_home_dir().await?;
+    let home_dir = check_home_dir()?;
     let ghcup_dir = format!("{home_dir}/.ghcup");
     let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
     let ghc_bin = format!("{ghcup_dir}/bin/ghc");
@@ -40,7 +40,7 @@ mod test {
 
     #[tokio::test]
     async fn test_check_env() -> Result<()> {
-        let user = crate::check_user().await?;
+        let user = crate::check_user()?;
         let checked_env_user = check_env("USER")?;
         assert_eq!(user, checked_env_user);
         Ok(())
@@ -59,7 +59,7 @@ mod test {
     #[tokio::test]
     async fn test_setup_env() -> Result<()> {
         setup_env().await?;
-        let home_dir = check_home_dir().await?;
+        let home_dir = check_home_dir()?;
         let ghcup_dir = format!("{home_dir}/.ghcup");
         let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
         let ghc_bin = format!("{ghcup_dir}/bin/ghc");

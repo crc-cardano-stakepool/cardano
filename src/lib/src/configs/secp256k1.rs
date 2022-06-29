@@ -1,7 +1,4 @@
-use crate::{
-    async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists,
-    SECP256K1_URL,
-};
+use crate::{async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists, SECP256K1_URL};
 use anyhow::Result;
 
 pub async fn check_secp256k1() -> Result<()> {
@@ -11,13 +8,7 @@ pub async fn check_secp256k1() -> Result<()> {
     let so_0_0_0 = "/usr/local/lib/libsecp256k1.so.0.0.0";
     let la = "/usr/local/lib/libsecp256k1.la";
     let a = "/usr/local/lib/libsecp256k1.a";
-    if !(file_exists(pc)
-        && file_exists(so)
-        && file_exists(la)
-        && file_exists(so_0)
-        && file_exists(so_0_0_0)
-        && file_exists(a))
-    {
+    if !(file_exists(pc) && file_exists(so) && file_exists(la) && file_exists(so_0) && file_exists(so_0_0_0) && file_exists(a)) {
         install_secp256k1().await?;
     }
     Ok(())

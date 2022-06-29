@@ -18,12 +18,7 @@ pub async fn async_command(command: &str) -> Result<String> {
 }
 
 pub async fn async_command_pipe(command: &str) -> Result<String> {
-    let process = Command::new("sh")
-        .arg("-c")
-        .arg(command)
-        .stdout(Stdio::piped())
-        .output()
-        .await;
+    let process = Command::new("sh").arg("-c").arg(command).stdout(Stdio::piped()).output().await;
     match process {
         Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
         Err(e) => Err(anyhow!("{e}")),
@@ -31,7 +26,7 @@ pub async fn async_command_pipe(command: &str) -> Result<String> {
 }
 
 pub async fn async_user_command(command: &str) -> Result<()> {
-    let user = check_user().await?;
+    let user = check_user()?;
     let cmd = format!("sudo su - {user} -c \"eval {command}\"");
     async_command(&cmd).await?;
     Ok(())

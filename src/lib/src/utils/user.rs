@@ -1,11 +1,14 @@
-use crate::{async_command_pipe, set_env};
+use crate::{check_env, set_env};
 use anyhow::Result;
 
-pub async fn check_user() -> Result<String> {
-    let user = async_command_pipe("echo ${SUDO_USER:-$USER}").await?;
-    let user = user.trim();
-    set_env("RUNNER", user);
-    Ok(user.to_string())
+pub fn check_user() -> Result<String> {
+    let user = match check_env("SUDO_USER") {
+        Ok(sudo_user) => sudo_user,
+        Err(_) => check_env("USER").unwrap(),
+    };
+    log::debug!("user: {user}");
+    set_env("RUNNER", &user);
+    Ok(user)
 }
 
 #[cfg(test)]
@@ -15,8 +18,10 @@ mod test {
 
     #[tokio::test]
     async fn test_check_user() -> Result<()> {
-        let user = check_user().await?;
+        let user = check_user()?;
+        log::debug!("user: {user}");
         let user_env = check_env("RUNNER")?;
+        log::debug!("user_env: {user_env}");
         assert_eq!(user, user_env);
         Ok(())
     }
