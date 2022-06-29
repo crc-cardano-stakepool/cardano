@@ -18,6 +18,7 @@ fern = { version = "0.6.1", features = ["colored"] }
 chrono = "0.4.19"
 config = "0.13.1"
 lazy_static = "1.4.0"
+sysinfo = "0.24.5"
 
 [dev-dependencies]
 ctor = "0.1.22"

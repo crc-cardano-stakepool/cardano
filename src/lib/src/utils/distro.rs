@@ -1,7 +1,41 @@
 use crate::{async_command_pipe, install_packages, update, DEBIAN_PACKAGES, NON_DEBIAN_PACKAGES};
 use anyhow::{anyhow, Result};
+use sysinfo::{System, SystemExt, CpuExt, DiskExt};
 
-// TODO: Use lib sysinfo for this
+pub fn get_sysinfo() {
+    let mut sys = System::new_all();
+    sys.refresh_all();
+
+    log::info!("Getting system info");
+    log::debug!("System name: {:?}", sys.name());
+
+    log::info!("Getting disk info");
+    for disk in sys.disks() {
+        log::info!("Found disk: {disk:#?}");
+        let disk_type = disk.type_();
+        log::debug!("Disk type: {:?}", disk_type);
+        let file_system = disk.file_system();
+        log::debug!("Disk filesystem: {:?}", file_system);
+        let mount_point = disk.mount_point();
+        log::debug!("Disk mounted at: {:?}", mount_point);
+        let total_space = disk.total_space();
+        log::debug!("Total disk space: {:?} B", total_space);
+        let available_space = disk.available_space();
+        log::debug!("Total available disk space: {:?} B", available_space);
+    }
+
+    log::info!("Getting memory info");
+    log::debug!("total memory    : {} KB", sys.total_memory());
+    log::debug!("used memory     : {} KB", sys.used_memory());
+    log::debug!("available memory: {} KB", sys.available_memory());
+    log::debug!("total swap      : {} KB", sys.total_swap());
+    log::debug!("used swap       : {} KB", sys.used_swap());
+
+    log::info!("Getting CPU info");
+    log::debug!("CPU info        : {:?}", sys.global_cpu_info().brand());
+    log::debug!("Physical cores  : {:?}", sys.physical_core_count());
+}
+
 pub fn check_distro_result(distro: Result<String>) -> Result<String> {
     match distro {
         Ok(result) => Ok(result),
@@ -9,7 +43,6 @@ pub fn check_distro_result(distro: Result<String>) -> Result<String> {
     }
 }
 
-// TODO: Use lib sysinfo for this
 pub async fn check_distro() -> Result<String> {
     let cmd = format!("cat /etc/*ease | grep ID_LIKE | awk -F '=' {}", "'{print $2}'");
     let distro = async_command_pipe(&cmd).await;
@@ -45,7 +78,12 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
 
 #[cfg(test)]
 mod test {
-    // use super::*;
+    use super::*;
+
+    #[test]
+    fn test_get_sysinfo() {
+        get_sysinfo()
+    }
 
     #[tokio::test]
     #[ignore]
