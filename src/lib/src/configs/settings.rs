@@ -21,7 +21,7 @@ lazy_static::lazy_static! {
         };
         let config_home_path = config_home.to_str().unwrap();
         if !config_home.exists() {
-            nix::unistd::mkdir(&config_home, nix::sys::stat::Mode::S_IRWXU).unwrap();
+            std::fs::create_dir_all(&config_home).unwrap();
         }
         let mut config = PathBuf::from(&config_home);
         let cardano_config_file = "cardano.toml";
