@@ -1,11 +1,13 @@
 extern crate lib;
+use lib::update_cli;
+
 use crate::{NodeArgs, NodeCommand, WalletArgs, WalletCommand};
+
 use anyhow::Result;
 use clap::{ColorChoice, CommandFactory, Parser, Subcommand};
 use clap_complete::{generate, Shell};
-use ctrlc::set_handler;
-use human_panic::setup_panic;
-use lib::update_cli;
+use clap_verbosity_flag::Verbosity;
+
 pub mod node;
 pub use node::*;
 pub mod wallet;
@@ -18,6 +20,8 @@ pub struct Cli {
     pub generator: Option<Shell>,
     #[clap(subcommand)]
     pub command: Option<CardanoCommand>,
+    #[clap(flatten)]
+    verbose: Verbosity,
 }
 
 impl Cli {
@@ -42,9 +46,12 @@ pub enum CardanoCommand {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    setup_panic!();
-    set_handler(|| println!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
     let cli = Cli::parse();
+    pretty_env_logger::formatted_builder()
+        .filter_level(cli.verbose.log_level_filter())
+        .init();
+    human_panic::setup_panic!();
+    ctrlc::set_handler(|| println!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
     let mut cmd = Cli::command();
     if let Some(generator) = cli.generator {
         let bin_name = cmd.get_name().to_string();

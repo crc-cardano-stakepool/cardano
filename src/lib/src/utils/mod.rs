@@ -22,3 +22,5 @@ pub mod update_cli;
 pub use update_cli::*;
 pub mod uninstall;
 pub use uninstall::*;
+pub mod test;
+pub use test::*;

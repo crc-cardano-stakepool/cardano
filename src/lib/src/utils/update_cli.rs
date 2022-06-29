@@ -7,7 +7,7 @@ pub async fn update_cli() -> Result<()> {
     println!("Updating the CLI");
     let cardano_path = check_env("CARDANO_DIR")?;
     check_repo(CARDANO_URL, &cardano_path).await?;
-    let cmd = format!("cd {cardano_path} && git checkout main && git pull && cargo install --path .");
+    let cmd = format!("cd {cardano_path} && git checkout main && git pull && cargo install --path src/bin");
     async_command(&cmd).await?;
     Ok(())
 }

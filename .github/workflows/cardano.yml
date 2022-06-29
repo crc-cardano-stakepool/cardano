@@ -34,13 +34,12 @@ jobs:
             ~/.cardano
             ~/.cabal/packages
             ~/.cabal/store
-            dist-newstyle
             ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ matrix.os }}-${{ matrix.target }}
+          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -74,8 +73,8 @@ jobs:
       - name: Package
         id: package
         run: |
-          PROJECT_NAME="$(sed -n 's/^name = "\(.*\)"/\1/p' Cargo.toml)"
-          PROJECT_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)"
+          PROJECT_NAME="$(sed -n 's/^name = "\(.*\)"/\1/p' src/bin/Cargo.toml)"
+          PROJECT_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' src/bin/Cargo.toml | head -n1)"
           PKG_SUFFIX=".tar.gz"
           PKG_NAME="${PROJECT_NAME}-${PROJECT_VERSION}-${{ matrix.target }}${PKG_SUFFIX}"
           tar -C target/${{matrix.target}}/release -czf "${PKG_NAME}" cardano

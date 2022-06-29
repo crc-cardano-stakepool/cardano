@@ -69,13 +69,13 @@ Currently supported operating systems
 
 ## Usage
 
-```sh
+```unix
     cardano <SUBCOMMAND>
 ```
 
 ## Flags
 
-```sh
+```unix
         --generate <GENERATOR>    If provided, outputs the completion file for given shell [possible
                                   values: bash, elvish, fish, powershell, zsh]
     -h, --help       Prints help information
@@ -84,7 +84,7 @@ Currently supported operating systems
 
 ## Subcommands
 
-```sh
+```unix
     help      Prints this message or the help of the given subcommand(s)
     node      Manage cardano nodes
     update    Updates the CLI
@@ -93,18 +93,18 @@ Currently supported operating systems
 
 ## Install latest cardano-node release
 
-```sh
+```unix
     cardano node install
 ```
 
 ## Install latest cardano-node release without interaction
 
-```sh
+```unix
     cardano node install -y
 ```
 
 ## Documentation
 
-```sh
+```unix
     cargo doc --workspace --no-deps --open
 ```
