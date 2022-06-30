@@ -1,5 +1,5 @@
 use crate::{
-    MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB, MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB, MIN_CPUS,
+    MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB, MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB, MIN_CORES,
     MIN_CPU_FREQUENCY_IN_MHZ, RECOMMENDED_CPU_FREQUENCY_IN_MHZ, TESTNET_MIN_FREE_DISK_SPACE_IN_GB, TESTNET_MIN_FREE_RAM_IN_GB,
 };
 use anyhow::{anyhow, Result};
@@ -8,7 +8,7 @@ use sysinfo::{CpuExt, DiskExt, DiskType, System, SystemExt};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SystemRequirements {
-    min_cpus: u8,
+    min_cores: u8,
     mainnet_min_free_disk_space_in_gb: u8,
     mainnet_recommended_free_disk_space_in_gb: u8,
     testnet_min_free_disk_space_in_gb: u8,
@@ -22,7 +22,7 @@ pub struct SystemRequirements {
 impl Default for SystemRequirements {
     fn default() -> Self {
         Self {
-            min_cpus: MIN_CPUS,
+            min_cores: MIN_CORES,
             mainnet_min_free_disk_space_in_gb: MAINNET_MIN_FREE_DISK_SPACE_IN_GB,
             mainnet_recommended_free_disk_space_in_gb: MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB,
             testnet_min_free_disk_space_in_gb: TESTNET_MIN_FREE_DISK_SPACE_IN_GB,
@@ -32,6 +32,130 @@ impl Default for SystemRequirements {
             min_processor_frequency_in_mhz: MIN_CPU_FREQUENCY_IN_MHZ,
             recommended_processor_frequency_in_mhz: RECOMMENDED_CPU_FREQUENCY_IN_MHZ,
         }
+    }
+}
+
+impl SystemRequirements {
+    pub fn check_requirements() -> bool {
+        log::info!("Checking system requirements");
+        let system = SystemRequirements::default();
+        let current = SystemInfo::default();
+        let os_ok = SystemRequirements::check_os(&system, current.name);
+        let cpu_ok = SystemRequirements::check_cpu(&system, current.cpu);
+        let disk_ok = SystemRequirements::check_disk(&system, current.disk);
+        let memory_ok = SystemRequirements::check_memory(&system, current.memory);
+        if os_ok && cpu_ok && disk_ok && memory_ok {
+            log::info!("System meets all the requirements to run a cardano-node!");
+            return true;
+        }
+        log::error!("System doesn't meet all the requirements to run a cardano-node");
+        false
+    }
+    pub fn check_os(&self, name: String) -> bool {
+        log::info!("Checking OS");
+        match name.as_str() {
+            "Ubuntu" => {
+                log::debug!("{name} is supported!");
+                true
+            }
+            "Debian" => {
+                log::debug!("{name} is supported!");
+                true
+            }
+            _ => {
+                log::error!("{name} is not supported");
+                false
+            }
+        }
+    }
+    pub fn check_cpu(&self, cpu: CpuInfo) -> bool {
+        log::info!("Checking CPU");
+        let cores_ok = self.check_cpu_cores(cpu.cores);
+        let vendor_ok = self.check_cpu_vendor(cpu.vendor);
+        let frequency_ok = self.check_cpu_frequency(cpu.cpu_frequency_in_mhz);
+        if cores_ok && vendor_ok && frequency_ok {
+            log::debug!("CPU meets the requirements to run a cardano node");
+            return true;
+        }
+        log::error!("CPU doesn't meet the requirements to run a cardano node");
+        false
+    }
+    pub fn check_cpu_cores(&self, cores: u8) -> bool {
+        log::info!("Checking CPU cores");
+        if cores >= self.min_cores {
+            log::debug!("CPU has enough cores to run a cardano node");
+            return true;
+        }
+        log::error!("CPU doesn't have enough cores to run a cardano node");
+        log::error!("At least {} cores are required", self.min_cores);
+        false
+    }
+    pub fn check_cpu_vendor(&self, vendor: String) -> bool {
+        log::info!("Checking CPU vendor");
+        let supported_vendor = SupportedCpu::default();
+        if vendor.eq(&supported_vendor.intel) || vendor.eq(&supported_vendor.amd) {
+            log::debug!("CPU vendor is supported");
+            return true;
+        }
+        log::error!("CPU vendor isn't supported");
+        log::error!("Only Intel or AMD processors are supported");
+        false
+    }
+    pub fn check_cpu_frequency(&self, frequency: u16) -> bool {
+        log::info!("Checking CPU frequency");
+        if frequency >= self.recommended_processor_frequency_in_mhz {
+            log::debug!("CPU meets the recommended frequency requirements for stake pools");
+            return true;
+        }
+        if frequency >= self.min_processor_frequency_in_mhz {
+            log::debug!("CPU meets the minimal frequency requirements");
+            return true;
+        }
+        log::error!("CPU doesn't meet the requirements to run a cardano node");
+        log::error!("At least 1.6GHz is required");
+        false
+    }
+    pub fn check_disk(&self, disk: DiskInfo) -> bool {
+        log::info!("Checking disk");
+        const GB_TO_B_CONVERSION_RATIO: u64 = 1073741824;
+        let test_net_min_free_disk_space_in_b = self.testnet_min_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
+        let mainnet_min_free_disk_space_in_b = self.mainnet_min_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
+        let mainnet_recommended_min_free_disk_space_in_b = self.mainnet_recommended_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
+        if disk.available_space_in_b >= mainnet_recommended_min_free_disk_space_in_b {
+            log::debug!("Disk has enough space to run a cardano node in mainnet for future growth");
+            return true;
+        }
+        if disk.available_space_in_b >= mainnet_min_free_disk_space_in_b {
+            log::debug!("Disk has enough space to run a cardano node in mainnet");
+            return true;
+        }
+        if disk.available_space_in_b >= test_net_min_free_disk_space_in_b {
+            log::debug!("Disk has enough space to run a cardano node in testnet");
+            return true;
+        }
+        log::error!("Disk does not have enough space to run a cardano node");
+        log::error!("At least {TESTNET_MIN_FREE_DISK_SPACE_IN_GB} GB are required to run a node in testnet");
+        log::error!("At least {MAINNET_MIN_FREE_DISK_SPACE_IN_GB} GB are required to run a node in mainnet");
+        log::error!("At least {MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB} are required to run a node in mainnet");
+        false
+    }
+    pub fn check_memory(&self, memory: MemoryInfo) -> bool {
+        log::info!("Checking RAM");
+        const GB_TO_KB_CONVERSION_RATIO: u64 = 1048576;
+        let testnet_free_ram_in_kb = self.testnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
+        let mainnet_free_ram_in_kb = self.mainnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
+        if memory.available_memory_in_kb >= mainnet_free_ram_in_kb {
+            log::debug!("System has enough RAM to run a cardano node in mainnet");
+            return true;
+        }
+        if memory.available_memory_in_kb >= testnet_free_ram_in_kb {
+            log::debug!("System has enough RAM to run a cardano node in testnet");
+            return true;
+        }
+        log::error!("System does not have enough RAM to run a cardano node");
+        log::error!("At least {TESTNET_MIN_FREE_RAM_IN_GB} GB of RAM are required to run a cardano node in testnet");
+        log::error!("At least {MAINNET_MIN_FREE_RAM_IN_GB} GB of RAM are required to run a cardano node in mainnet");
+        false
     }
 }
 
@@ -94,7 +218,7 @@ impl SystemInfo {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct DiskInfo {
-    available_space: u64,
+    available_space_in_b: u64,
 }
 
 impl Default for DiskInfo {
@@ -106,10 +230,8 @@ impl Default for DiskInfo {
 impl DiskInfo {
     pub fn get_disk_info() -> Self {
         log::info!("Getting disk info");
-
         let mut sys = System::new_all();
         sys.refresh_all();
-
         for disk in sys.disks() {
             log::info!("Found disk: {disk:#?}");
             let disk_type = disk.type_();
@@ -127,7 +249,7 @@ impl DiskInfo {
             log::debug!("Total available disk space: {:?} B", available_space);
         }
         let disk = Self {
-            available_space: DiskInfo::get_available_disk_space(),
+            available_space_in_b: DiskInfo::get_available_disk_space(),
         };
         log::debug!("{disk:#?}");
         disk
@@ -135,10 +257,8 @@ impl DiskInfo {
 
     pub fn get_available_disk_space() -> u64 {
         log::info!("Getting disk space");
-
         let mut sys = System::new_all();
         sys.refresh_all();
-
         let available_space: u64 = sys
             .disks()
             .iter()
@@ -158,7 +278,6 @@ impl DiskInfo {
                 mp.eq(Path::new("/")) || mp.eq(Path::new("/home"))
             })
             .fold(0, |available_space, disk| available_space + disk.available_space());
-
         log::debug!("Total available useful disk space: {:?} B", available_space);
         available_space
     }
@@ -166,7 +285,7 @@ impl DiskInfo {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MemoryInfo {
-    available_memory: u64,
+    available_memory_in_kb: u64,
 }
 
 impl Default for MemoryInfo {
@@ -179,7 +298,7 @@ impl MemoryInfo {
     pub fn get_memory_info() -> Self {
         log::info!("Getting memory info");
         let memory = Self {
-            available_memory: MemoryInfo::get_available_memory_in_kb(),
+            available_memory_in_kb: MemoryInfo::get_available_memory_in_kb(),
         };
         log::debug!("{memory:#?}");
         memory
@@ -218,7 +337,6 @@ impl CpuInfo {
         log::debug!("{cpu:#?}");
         cpu
     }
-
     pub fn get_cpu_frequency() -> Result<u16> {
         log::info!("Getting CPU frequency");
         let mut sys = System::new_all();
@@ -240,7 +358,6 @@ impl CpuInfo {
             Err(anyhow!("Failed to determine CPU frequency"))
         }
     }
-
     pub fn get_cpu_vendor() -> String {
         log::info!("Getting CPU vendor");
         let mut sys = System::new_all();
@@ -249,7 +366,6 @@ impl CpuInfo {
         log::debug!("CPU vendor: {:?}", vendor);
         vendor
     }
-
     pub fn get_cpu_cores() -> u8 {
         log::info!("Getting CPU cores");
         let mut sys = System::new_all();
@@ -266,6 +382,117 @@ impl CpuInfo {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn test_check_requirements() {
+        assert!(SystemRequirements::check_requirements())
+    }
+
+    #[test]
+    fn test_check_os() {
+        let system = SystemRequirements::default();
+        assert_eq!(system.check_os("Ubuntu".to_string()), true);
+        assert_eq!(system.check_os("Debian".to_string()), true);
+        assert_eq!(system.check_os("Arch Linux".to_string()), false);
+    }
+
+    #[test]
+    fn test_check_cpu() {
+        let system = SystemRequirements::default();
+        let cpu = CpuInfo {
+            cpu_frequency_in_mhz: 2000,
+            vendor: "GenuineIntel".to_string(),
+            cores: 2,
+        };
+        assert_eq!(system.check_cpu(cpu), true);
+        let cpu = CpuInfo {
+            cpu_frequency_in_mhz: 1599,
+            vendor: "GenuineIntel".to_string(),
+            cores: 2,
+        };
+        assert_eq!(system.check_cpu(cpu), false);
+        let cpu = CpuInfo {
+            cpu_frequency_in_mhz: 1600,
+            vendor: "AuthenticAMD".to_string(),
+            cores: 2,
+        };
+        assert_eq!(system.check_cpu(cpu), true);
+        let cpu = CpuInfo {
+            cpu_frequency_in_mhz: 1600,
+            vendor: "AuthenticAMD".to_string(),
+            cores: 1,
+        };
+        assert_eq!(system.check_cpu(cpu), false);
+        let cpu = CpuInfo {
+            cpu_frequency_in_mhz: 1600,
+            vendor: "Unknown CPU Vendor".to_string(),
+            cores: 1,
+        };
+        assert_eq!(system.check_cpu(cpu), false);
+    }
+
+    #[test]
+    fn test_check_cpu_cores() {
+        let system = SystemRequirements::default();
+        assert_eq!(system.check_cpu_cores(2), true);
+        assert_eq!(system.check_cpu_cores(1), false);
+    }
+
+    #[test]
+    fn test_check_cpu_vendors() {
+        let system = SystemRequirements::default();
+        assert_eq!(system.check_cpu_vendor("GenuineIntel".to_string()), true);
+        assert_eq!(system.check_cpu_vendor("AuthenticAMD".to_string()), true);
+        assert_eq!(system.check_cpu_vendor("Anything else".to_string()), false);
+    }
+
+    #[test]
+    fn test_check_cpu_frequency() {
+        let system = SystemRequirements::default();
+        assert_eq!(system.check_cpu_frequency(2000), true);
+        assert_eq!(system.check_cpu_frequency(1600), true);
+        assert_eq!(system.check_cpu_frequency(1599), false);
+    }
+
+    #[test]
+    fn test_check_disk() {
+        let system = SystemRequirements::default();
+        let _20_gb_in_b = 21474836480;
+        let disk = DiskInfo {
+            available_space_in_b: _20_gb_in_b,
+        };
+        assert_eq!(system.check_disk(disk), true);
+        let disk = DiskInfo {
+            available_space_in_b: _20_gb_in_b - 1,
+        };
+        assert_eq!(system.check_disk(disk), false);
+        let disk = DiskInfo {
+            available_space_in_b: _20_gb_in_b * 4,
+        };
+        assert_eq!(system.check_disk(disk), true);
+        let disk = DiskInfo {
+            available_space_in_b: _20_gb_in_b * 5,
+        };
+        assert_eq!(system.check_disk(disk), true);
+    }
+
+    #[test]
+    fn test_check_memory() {
+        let system = SystemRequirements::default();
+        let _4_gb_in_kb: u64 = 4194304;
+        let memory = MemoryInfo {
+            available_memory_in_kb: _4_gb_in_kb,
+        };
+        assert_eq!(system.check_memory(memory), true);
+        let memory = MemoryInfo {
+            available_memory_in_kb: _4_gb_in_kb - 1,
+        };
+        assert_eq!(system.check_memory(memory), false);
+        let memory = MemoryInfo {
+            available_memory_in_kb: _4_gb_in_kb * 4,
+        };
+        assert_eq!(system.check_memory(memory), true);
+    }
 
     #[test]
     fn test_get_all_sysinfo() {

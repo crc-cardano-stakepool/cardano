@@ -1,4 +1,4 @@
-pub const MIN_CPUS: u8 = 2;
+pub const MIN_CORES: u8 = 2;
 pub const MAINNET_MIN_FREE_DISK_SPACE_IN_GB: u8 = 75;
 pub const MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB: u8 = 100;
 pub const TESTNET_MIN_FREE_DISK_SPACE_IN_GB: u8 = 20;
