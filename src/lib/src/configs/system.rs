@@ -61,6 +61,22 @@ impl SystemRequirements {
                 log::debug!("{name} is supported!");
                 true
             }
+            "Linux Mint" => {
+                log::debug!("{name} is supported!");
+                true
+            }
+            "Red Hat" => {
+                log::debug!("{name} is supported!");
+                true
+            }
+            "Fedora" => {
+                log::debug!("{name} is supported!");
+                true
+            }
+            "CentOs" => {
+                log::debug!("{name} is supported!");
+                true
+            }
             _ => {
                 log::error!("{name} is not supported");
                 false

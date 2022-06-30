@@ -3,7 +3,7 @@ use anyhow::{anyhow, Result};
 
 pub async fn install_distro_packages(distro: &str) -> Result<()> {
     match distro {
-        "Ubuntu" | "Debian" => {
+        "Ubuntu" | "Debian" | "Linux Mint" => {
             let package_manager = "apt";
             update(package_manager).await?;
             install_packages(package_manager, &DEBIAN_PACKAGES).await
