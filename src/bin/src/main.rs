@@ -16,7 +16,8 @@ pub use wallet::*;
 #[derive(Debug, Parser)]
 #[clap(about = "Manage cardano components", version, color = ColorChoice::Never)]
 pub struct Cli {
-    #[clap(long = "generate", arg_enum, value_parser)]
+    /// Generate shell a shell completion file
+    #[clap(short, long = "generate", arg_enum, value_parser)]
     pub generator: Option<Shell>,
     #[clap(subcommand)]
     pub command: Option<CardanoCommand>,
@@ -48,7 +49,7 @@ pub enum CardanoCommand {
 async fn main() -> Result<()> {
     let cli = Cli::parse();
     let log_file = get_setting("LOG_FILE")?;
-    setup_logger(cli.verbose.log_level_filter(), log_file)?;
+    setup_logger(cli.verbose.log_level_filter(), true, log_file)?;
     human_panic::setup_panic!();
     ctrlc::set_handler(|| println!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
     let mut cmd = Cli::command();

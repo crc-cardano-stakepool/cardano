@@ -1,4 +1,4 @@
-use crate::{async_command, async_command_pipe, check_distro, install_distro_packages, pipe, process_success};
+use crate::{async_command, async_command_pipe, install_distro_packages, pipe, process_success, SystemInfo};
 use anyhow::{anyhow, Result};
 
 pub async fn check_platform() -> Result<String> {
@@ -14,9 +14,8 @@ pub async fn setup_packages() -> Result<()> {
     let platform = output.as_str().trim();
     match platform {
         "linux" | "Linux" => {
-            let output = check_distro().await?;
-            let distro = output.as_str().trim();
-            install_distro_packages(distro).await
+            let distro = SystemInfo::get_sysinfo();
+            install_distro_packages(&distro).await
         }
         "darwin" | "Darwin" => Err(anyhow!("macOS is currently unsupported")),
         _ => Err(anyhow!("Unsupported platform: {platform}")),

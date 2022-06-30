@@ -1,7 +1,7 @@
 use crate::{
     async_command, async_user_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version, check_latest_version,
     check_libsodium, check_secp256k1, check_user, chownr, clone_component, copy_binary, file_exists, get_ghc_version, is_bin_installed,
-    proceed, process_success_inherit, set_env, setup_packages, setup_shell, setup_work_dir, source_shell,
+    proceed, process_success_inherit, set_env, setup_packages, setup_shell, setup_work_dir, source_shell, SystemRequirements,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -14,6 +14,7 @@ pub fn check_root() -> bool {
 pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
     set_confirm(confirm);
     if !check_root() {
+        log::error!("Root privileges are needed to install cardano node");
         match escalate_if_needed() {
             Ok(_) => Ok(()),
             Err(_) => Ok(()),
@@ -53,6 +54,9 @@ async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()>
 }
 
 async fn proceed_install(component: &str, latest: &str) -> Result<()> {
+    if !SystemRequirements::check_requirements() {
+        log::error!("System not officially supported, installation may fail")
+    }
     let msg = format!("Do you want to install the latest {component} binary (v{latest})?");
     if proceed(&msg)? {
         install(component).await

@@ -5,7 +5,7 @@ use fern::{
 use log::{LevelFilter, Record};
 use std::{fmt::Arguments, path::Path};
 
-pub fn setup_logger<P: AsRef<Path>>(log_level: LevelFilter, log_file: P) -> Result<(), fern::InitError> {
+pub fn setup_logger<P: AsRef<Path>>(log_level: LevelFilter, is_cli: bool, log_file: P) -> Result<(), fern::InitError> {
     let colors = ColoredLevelConfig::new()
         .error(Color::Red)
         .warn(Color::Yellow)
@@ -15,18 +15,30 @@ pub fn setup_logger<P: AsRef<Path>>(log_level: LevelFilter, log_file: P) -> Resu
 
     let make_formatter = |use_colors: bool| {
         move |out: FormatCallback, message: &Arguments, record: &Record| {
-            out.finish(format_args!(
-                "[{}] {} [{}:{}] -> {}",
-                if use_colors {
-                    colors.color(record.level()).to_string()
-                } else {
-                    record.level().to_string()
-                },
-                chrono::Local::now().format("[%d.%m.%Y %H:%M:%S]"),
-                record.file().unwrap_or("?"),
-                record.line().unwrap_or_default(),
-                message
-            ))
+            if !is_cli {
+                out.finish(format_args!(
+                    "[{}] {} [{}:{}] -> {}",
+                    if use_colors {
+                        colors.color(record.level()).to_string()
+                    } else {
+                        record.level().to_string()
+                    },
+                    chrono::Local::now().format("[%d.%m.%Y %H:%M:%S]"),
+                    record.file().unwrap_or("?"),
+                    record.line().unwrap_or_default(),
+                    message
+                ))
+            } else {
+                out.finish(format_args!(
+                    "[{}] -> {}",
+                    if use_colors {
+                        colors.color(record.level()).to_string()
+                    } else {
+                        record.level().to_string()
+                    },
+                    message
+                ))
+            }
         }
     };
 
