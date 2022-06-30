@@ -2,7 +2,7 @@ use crate::{
     MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB, MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB, MIN_CORES,
     MIN_CPU_FREQUENCY_IN_MHZ, RECOMMENDED_CPU_FREQUENCY_IN_MHZ, TESTNET_MIN_FREE_DISK_SPACE_IN_GB, TESTNET_MIN_FREE_RAM_IN_GB,
 };
-use anyhow::{anyhow, Result};
+use anyhow::anyhow;
 use std::path::Path;
 use sysinfo::{CpuExt, DiskExt, DiskType, System, SystemExt};
 
@@ -254,7 +254,6 @@ impl DiskInfo {
         log::debug!("{disk:#?}");
         disk
     }
-
     pub fn get_available_disk_space() -> u64 {
         log::info!("Getting disk space");
         let mut sys = System::new_all();
@@ -330,14 +329,14 @@ impl CpuInfo {
     pub fn get_cpu_info() -> Self {
         log::info!("Getting CPU info");
         let cpu = Self {
-            cpu_frequency_in_mhz: CpuInfo::get_cpu_frequency().unwrap(),
+            cpu_frequency_in_mhz: CpuInfo::get_cpu_frequency(),
             vendor: CpuInfo::get_cpu_vendor(),
             cores: CpuInfo::get_cpu_cores(),
         };
         log::debug!("{cpu:#?}");
         cpu
     }
-    pub fn get_cpu_frequency() -> Result<u16> {
+    pub fn get_cpu_frequency() -> u16 {
         log::info!("Getting CPU frequency");
         let mut sys = System::new_all();
         sys.refresh_all();
@@ -349,13 +348,15 @@ impl CpuInfo {
                 .replace("GHz", "")
                 .replace('.', "")
                 .parse::<u16>()
-                .map_err(|err| anyhow!("Failed parsing {} to u16: {err}", ghz_str[0]))?;
+                .map_err(|err| anyhow!("Failed parsing {} to u16: {err}", ghz_str[0]))
+                .unwrap();
             log::debug!("Parsed to u16: {ghz_parse}");
             let cpu_frequency_in_mhz = ghz_parse * 10;
             log::debug!("CPU MHz: {cpu_frequency_in_mhz}");
-            Ok(cpu_frequency_in_mhz)
+            cpu_frequency_in_mhz
         } else {
-            Err(anyhow!("Failed to determine CPU frequency"))
+            log::error!("Failed to determine CPU frequency");
+            0
         }
     }
     pub fn get_cpu_vendor() -> String {
@@ -531,7 +532,7 @@ mod test {
 
     #[test]
     fn test_get_cpu_frequency() {
-        CpuInfo::get_cpu_frequency().unwrap();
+        CpuInfo::get_cpu_frequency();
     }
 
     #[test]
