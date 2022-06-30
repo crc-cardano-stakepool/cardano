@@ -16,7 +16,8 @@ pub use wallet::*;
 #[derive(Debug, Parser)]
 #[clap(about = "Manage cardano components", version, color = ColorChoice::Never)]
 pub struct Cli {
-    #[clap(long = "generate", arg_enum, value_parser)]
+    /// Generate shell a shell completion file
+    #[clap(short, long = "generate", arg_enum, value_parser)]
     pub generator: Option<Shell>,
     #[clap(subcommand)]
     pub command: Option<CardanoCommand>,

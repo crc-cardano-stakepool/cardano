@@ -1,3 +1,11 @@
+pub const MIN_CPUS: u8 = 2;
+pub const MAINNET_MIN_FREE_DISK_SPACE_IN_GB: u8 = 75;
+pub const MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB: u8 = 100;
+pub const TESTNET_MIN_FREE_DISK_SPACE_IN_GB: u8 = 20;
+pub const MAINNET_MIN_FREE_RAM_IN_GB: u8 = 16;
+pub const TESTNET_MIN_FREE_RAM_IN_GB: u8 = 4;
+pub const MIN_CPU_FREQUENCY_IN_MHZ: u16 = 1600;
+pub const RECOMMENDED_CPU_FREQUENCY_IN_MHZ: u16 = 2000;
 pub const GHC_VERSION: &str = "8.10.7";
 pub const CABAL_VERSION: &str = "3.6.2.0";
 pub const LD_LIBRARY_PATH: &str = "/usr/local/lib:$LD_LIBRARY_PATH";
