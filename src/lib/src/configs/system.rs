@@ -3,8 +3,7 @@ use crate::{
     MIN_CPU_FREQUENCY_IN_MHZ, RECOMMENDED_CPU_FREQUENCY_IN_MHZ, TESTNET_MIN_FREE_DISK_SPACE_IN_GB, TESTNET_MIN_FREE_RAM_IN_GB,
 };
 use anyhow::anyhow;
-use std::path::Path;
-use sysinfo::{CpuExt, DiskExt, DiskType, System, SystemExt};
+use sysinfo::{CpuExt, DiskExt, System, SystemExt};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SystemRequirements {
@@ -136,7 +135,7 @@ impl SystemRequirements {
         log::error!("Disk does not have enough space to run a cardano node");
         log::error!("At least {TESTNET_MIN_FREE_DISK_SPACE_IN_GB} GB are required to run a node in testnet");
         log::error!("At least {MAINNET_MIN_FREE_DISK_SPACE_IN_GB} GB are required to run a node in mainnet");
-        log::error!("At least {MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB} are required to run a node in mainnet");
+        log::error!("At least {MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB} GB are required to run a future proof node in mainnet");
         false
     }
     pub fn check_memory(&self, memory: MemoryInfo) -> bool {
@@ -262,19 +261,11 @@ impl DiskInfo {
             .disks()
             .iter()
             .filter(|disk| {
-                let dtype = disk.type_();
-                dtype == DiskType::SSD || dtype == DiskType::HDD
-            })
-            .filter(|disk| {
                 let fs = disk.file_system().to_vec();
                 let fs = String::from_utf8(fs)
                     .map_err(|err| anyhow!("Failed to convert byte slice to string: {err}"))
                     .unwrap();
                 fs.eq("ext4") || fs.eq("btrfs")
-            })
-            .filter(|disk| {
-                let mp = disk.mount_point();
-                mp.eq(Path::new("/")) || mp.eq(Path::new("/home"))
             })
             .fold(0, |available_space, disk| available_space + disk.available_space());
         log::debug!("Total available useful disk space: {:?} B", available_space);
