@@ -11,6 +11,7 @@ pub const CABAL_VERSION: &str = "3.6.2.0";
 pub const LD_LIBRARY_PATH: &str = "/usr/local/lib:$LD_LIBRARY_PATH";
 pub const PKG_CONFIG_PATH: &str = "/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH";
 pub const CARDANO_NODE_URL: &str = "https://github.com/input-output-hk/cardano-node.git";
+pub const CARDANO_NODE_RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-node/releases/latest";
 pub const LIBSODIUM_URL: &str = "https://github.com/input-output-hk/libsodium.git";
 pub const SECP256K1_URL: &str = "https://github.com/bitcoin-core/secp256k1.git";
 pub const CARDANO_URL: &str = "https://github.com/crc-cardano-stakepool/cardano.git";
