@@ -1,6 +1,6 @@
 use crate::{
     async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, file_exists, get_component_path, set_env,
-    CARDANO_NODE_URL,
+    CARDANO_NODE_URL, CARDANO_NODE_RELEASE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -15,9 +15,11 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
 }
 
 pub async fn check_latest_version(component: &str) -> Result<String> {
-    let release_url = format!("https://api.github.com/repos/input-output-hk/{component}/releases/latest");
-    let cmd = format!("curl -s {release_url} | jq -r .tag_name");
+    log::info!("Checking latest {component} version");
+    let cmd = format!("curl -s {CARDANO_NODE_RELEASE_URL} | jq -r .tag_name");
+    log::debug!("Executing command: {cmd}");
     let response = async_command_pipe(&cmd).await?;
+    log::debug!("Response: {response}");
     Ok(String::from(response.trim()))
 }
 
@@ -122,10 +124,9 @@ mod test {
         unimplemented!();
     }
     #[tokio::test]
-    #[ignore]
     async fn test_check_latest_version() -> Result<()> {
         let version = check_latest_version("cardano-node").await?;
-        assert_eq!(version, "1.34.1");
+        assert_eq!(version, "1.35.0");
         Ok(())
     }
     #[tokio::test]
