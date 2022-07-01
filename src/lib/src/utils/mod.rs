@@ -10,8 +10,6 @@ pub mod dialog;
 pub use dialog::*;
 pub mod shell;
 pub use shell::*;
-pub mod distro;
-pub use distro::*;
 pub mod packages;
 pub use packages::*;
 pub mod git;

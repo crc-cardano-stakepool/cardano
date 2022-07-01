@@ -1,4 +1,4 @@
-use crate::{async_command, async_command_pipe, install_distro_packages, pipe, process_success, SystemInfo};
+use crate::{async_command, async_command_pipe, pipe, process_success, SystemInfo, DEBIAN_PACKAGES, NON_DEBIAN_PACKAGES};
 use anyhow::{anyhow, Result};
 
 pub async fn check_platform() -> Result<String> {
@@ -19,6 +19,22 @@ pub async fn setup_packages() -> Result<()> {
         }
         "darwin" | "Darwin" => Err(anyhow!("macOS is currently unsupported")),
         _ => Err(anyhow!("Unsupported platform: {platform}")),
+    }
+}
+
+pub async fn install_distro_packages(distro: &str) -> Result<()> {
+    match distro {
+        "Ubuntu" | "Debian" | "Linux Mint" => {
+            let package_manager = "apt";
+            update(package_manager).await?;
+            install_packages(package_manager, &DEBIAN_PACKAGES).await
+        }
+        "Fedora" | "Red Hat" | "CentOs" => {
+            let package_manager = "yum";
+            update(package_manager).await?;
+            install_packages(package_manager, &NON_DEBIAN_PACKAGES).await
+        }
+        _ => Err(anyhow!("Unsupported distro: {distro}")),
     }
 }
 
@@ -82,6 +98,12 @@ mod test {
     #[tokio::test]
     #[ignore]
     async fn test_check_platform() {
+        unimplemented!();
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_install_distro_packages() {
         unimplemented!();
     }
 

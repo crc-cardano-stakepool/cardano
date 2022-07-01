@@ -99,7 +99,6 @@ pub async fn setup_work_dir() -> Result<()> {
 // TODO: Use standard library instead
 pub async fn chownr(absolute_path: &str) -> Result<()> {
     let user = check_user()?;
-    let user = user.trim();
     let cmd = format!("chown -R {user}:{user} {absolute_path}");
     if async_command(&cmd).await.is_ok() {
         Ok(())
