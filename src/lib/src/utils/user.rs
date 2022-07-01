@@ -7,6 +7,7 @@ pub fn check_user() -> Result<String> {
         Err(_) => check_env("USER").unwrap(),
     };
     log::debug!("user: {user}");
+    let user = user.trim().to_string();
     set_env("RUNNER", &user);
     Ok(user.trim().to_string())
 }
