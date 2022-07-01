@@ -56,7 +56,7 @@ pub async fn install_ghc() -> Result<()> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{check_home_dir, set_env};
+    use crate::set_env;
 
     #[tokio::test]
     #[ignore]
@@ -86,7 +86,8 @@ mod test {
 
     #[tokio::test]
     async fn test_check_installed_ghc() -> Result<()> {
-        let home_dir = check_home_dir()?;
+        let home_dir = dirs::home_dir().unwrap();
+        let home_dir = home_dir.to_str().unwrap();
         let ghc_bin = format!("{home_dir}/.ghcup/bin/ghc");
         set_env("GHC_BIN", &ghc_bin);
         let version = check_installed_ghc().await;

@@ -19,6 +19,8 @@ chrono = "0.4.19"
 config = "0.13.1"
 lazy_static = "1.4.0"
 sysinfo = "0.24.5"
+dirs = "4.0.0"
+drop-root = "0.1.1"
 
 [dev-dependencies]
 ctor = "0.1.22"

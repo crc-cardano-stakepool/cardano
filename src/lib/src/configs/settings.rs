@@ -1,4 +1,4 @@
-use crate::{check_env, check_home_dir};
+use crate::check_env;
 use anyhow::{anyhow, Result};
 use config::Config;
 use std::{collections::HashMap, fs::File, io::Write, path::PathBuf, sync::RwLock};
@@ -12,7 +12,7 @@ lazy_static::lazy_static! {
                 config
             }
             Err(_) => {
-                let home = check_home_dir().unwrap();
+                let home = dirs::home_dir().unwrap();
                 let mut config = PathBuf::from(&home);
                 config.push(".config");
                 config.push(".cardano");
@@ -67,8 +67,8 @@ mod test {
     async fn test_get_setting() -> Result<()> {
         let key = "WORK_DIR";
         let value = get_setting(key)?;
-        let home_dir = check_home_dir()?;
-        let work_dir = check_work_dir(&home_dir).await?;
+        let work_dir = check_work_dir()?;
+        let work_dir = work_dir.to_str().unwrap();
         assert_eq!(value, work_dir);
         Ok(())
     }

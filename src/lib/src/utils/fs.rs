@@ -1,7 +1,10 @@
 use crate::{async_command, check_env, check_user, get_component_path, set_env};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
-use std::{collections::HashMap, path::Path};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 use tokio::fs::create_dir_all;
 
 pub async fn check_dir(absolute_path: &str) -> Result<()> {
@@ -12,17 +15,17 @@ pub async fn check_dir(absolute_path: &str) -> Result<()> {
     }
 }
 
-pub fn check_home_dir() -> Result<String> {
-    let user = check_user()?;
-    let home_directory = format!("/home/{}", user.trim());
-    set_env("RUNNER_HOME", &home_directory);
-    Ok(home_directory)
-}
-
-pub async fn check_work_dir(home: &str) -> Result<String> {
-    let install_directory = format!("{home}/.config/.cardano");
-    set_env("WORK_DIR", &install_directory);
-    Ok(install_directory)
+pub fn check_work_dir() -> Result<PathBuf> {
+    let mut work_dir = dirs::config_dir()
+        .ok_or_else(|| anyhow!("Failed to determine XDG_DATA_CONFIG"))
+        .unwrap();
+    work_dir.push(".cardano");
+    if let Some(path) = work_dir.to_str() {
+        set_env("WORK_DIR", path);
+        Ok(work_dir)
+    } else {
+        Err(anyhow!("Failed to set working directory"))
+    }
 }
 
 pub async fn copy_binary(component: &str) -> Result<()> {
@@ -62,8 +65,9 @@ pub fn is_dir(absolute_path: &str) -> bool {
 }
 
 pub async fn setup_work_dir() -> Result<()> {
-    let home_dir = check_home_dir()?;
-    check_work_dir(&home_dir).await?;
+    let home_dir = dirs::home_dir().expect("Failed to read $HOME");
+    let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
+    check_work_dir()?;
     let work_dir = check_env("WORK_DIR")?;
     let ipc_dir = format!("{work_dir}/ipc");
     let cardano_dir = format!("{work_dir}/cardano");
@@ -99,7 +103,6 @@ pub async fn setup_work_dir() -> Result<()> {
 // TODO: Use standard library instead
 pub async fn chownr(absolute_path: &str) -> Result<()> {
     let user = check_user()?;
-    let user = user.trim();
     let cmd = format!("chown -R {user}:{user} {absolute_path}");
     if async_command(&cmd).await.is_ok() {
         Ok(())
@@ -144,18 +147,15 @@ mod test {
 
     #[tokio::test]
     async fn test_check_work_dir() -> Result<()> {
-        let home = check_home_dir()?;
-        let work_dir = check_work_dir(&home).await?;
+        let home = dirs::home_dir().unwrap();
+        let home = home.to_str().unwrap();
+        log::debug!("{home}");
+        let work_dir = check_work_dir()?;
+        let work_dir = work_dir.to_str().unwrap();
+        log::debug!("{work_dir}");
         let result = check_env("WORK_DIR")?;
+        log::debug!("{result}");
         assert_eq!(work_dir, result);
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_check_home_dir() -> Result<()> {
-        let home = check_home_dir()?;
-        let result = check_env("RUNNER_HOME")?;
-        assert_eq!(home, result);
         Ok(())
     }
 

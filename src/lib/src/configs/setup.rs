@@ -5,7 +5,7 @@ use crate::{
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
-use sudo::{check, escalate_if_needed, RunningAs};
+use sudo::{check, RunningAs};
 
 pub fn check_root() -> bool {
     matches!(check(), RunningAs::Root)
@@ -15,11 +15,12 @@ pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
     set_confirm(confirm);
     if !check_root() {
         log::error!("Root privileges are needed to install cardano node");
-        match escalate_if_needed() {
+        return match sudo::with_env(&["HOME"]) {
             Ok(_) => Ok(()),
             Err(_) => Ok(()),
-        }
-    } else if !is_bin_installed(component).await? {
+        };
+    }
+    if !is_bin_installed(component).await? {
         check_confirm(component, confirm).await
     } else {
         install_if_not_up_to_date(component, confirm).await

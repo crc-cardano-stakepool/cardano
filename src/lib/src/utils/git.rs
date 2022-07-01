@@ -1,6 +1,6 @@
 use crate::{
     async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, file_exists, get_component_path, set_env,
-    CARDANO_NODE_URL, CARDANO_NODE_RELEASE_URL,
+    CARDANO_NODE_RELEASE_URL, CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};

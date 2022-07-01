@@ -8,7 +8,7 @@ pub fn check_user() -> Result<String> {
     };
     log::debug!("user: {user}");
     set_env("RUNNER", &user);
-    Ok(user)
+    Ok(user.trim().to_string())
 }
 
 #[cfg(test)]

@@ -1,4 +1,3 @@
-use crate::check_home_dir;
 use anyhow::{anyhow, Result};
 use std::{
     collections::HashMap,
@@ -17,7 +16,8 @@ pub fn set_env(key: &str, value: &str) {
 }
 
 pub async fn setup_env() -> Result<()> {
-    let home_dir = check_home_dir()?;
+    let home_dir = dirs::home_dir().expect("Failed to read $HOME");
+    let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
     let ghcup_dir = format!("{home_dir}/.ghcup");
     let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
     let ghc_bin = format!("{ghcup_dir}/bin/ghc");
@@ -59,7 +59,8 @@ mod test {
     #[tokio::test]
     async fn test_setup_env() -> Result<()> {
         setup_env().await?;
-        let home_dir = check_home_dir()?;
+        let home_dir = dirs::home_dir().expect("Failed to read $HOME");
+        let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
         let ghcup_dir = format!("{home_dir}/.ghcup");
         let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
         let ghc_bin = format!("{ghcup_dir}/bin/ghc");
