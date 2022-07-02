@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_user, get_component_path, set_env};
+use crate::{async_command, check_env, check_user, get_component_path, set_env, async_user_command};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::{
@@ -96,7 +96,6 @@ pub async fn setup_work_dir() -> Result<()> {
         env_key = env_key.to_case(Case::UpperSnake);
         set_env(&env_key, value);
     }
-    chownr(&work_dir).await?;
     Ok(())
 }
 
@@ -104,7 +103,7 @@ pub async fn setup_work_dir() -> Result<()> {
 pub async fn chownr(absolute_path: &str) -> Result<()> {
     let user = check_user()?;
     let cmd = format!("chown -R {user}:{user} {absolute_path}");
-    if async_command(&cmd).await.is_ok() {
+    if async_user_command(&cmd).await.is_ok() {
         Ok(())
     } else {
         Err(anyhow!("Failed adjusting permissions of {absolute_path}"))

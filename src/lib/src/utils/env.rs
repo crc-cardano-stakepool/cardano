@@ -16,7 +16,7 @@ pub fn check_env(key: &str) -> Result<String> {
 }
 
 pub fn set_env(key: &str, value: &str) {
-    log::info!("Setting {key}={value}");
+    log::info!("Setting environment variable {key}={value}");
     set_var(key, value);
 }
 

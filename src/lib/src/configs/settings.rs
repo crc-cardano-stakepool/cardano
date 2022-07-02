@@ -42,7 +42,7 @@ lazy_static::lazy_static! {
             let mut f = File::create(&config_file)
                 .map_err(|err| anyhow!("Failed to create config file in {path}: {err}"))
                 .unwrap();
-            writeln!(f, "{}", toml)
+            writeln!(f, "{toml}")
                 .map_err(|err| anyhow!("Failed write config file in {path}: {err}"))
                 .unwrap();
         }
@@ -56,9 +56,9 @@ lazy_static::lazy_static! {
 }
 
 pub fn read_settings() -> HashMap<String, String> {
-    log::info!("Reading settings");
     SETTINGS
         .read()
+        .map_err(|err| anyhow!("Failed to read from settings: {err}"))
         .unwrap()
         .clone()
         .try_deserialize::<HashMap<String, String>>()
@@ -67,13 +67,12 @@ pub fn read_settings() -> HashMap<String, String> {
 }
 
 pub fn show_settings() {
-    log::info!("Showing settings");
     let settings = read_settings();
     log::debug!("{settings:?}");
 }
 
 pub fn read_setting(key: &str) -> Result<String> {
-    log::info!("settings");
+    log::info!("Reading setting {key}");
     let settings = read_settings();
     let setting = settings
         .get(key)
@@ -104,7 +103,7 @@ mod test {
     }
 
     #[test]
-    fn test_get_setting() -> Result<()> {
+    fn test_read_setting() -> Result<()> {
         let key = "work_dir";
         let value = read_setting(key)?;
         let work_dir = check_work_dir()?;
@@ -115,7 +114,7 @@ mod test {
 
     #[test]
     #[should_panic(expected = "Failed to read setting")]
-    fn test_get_setting_fails() {
+    fn test_read_setting_fails() {
         std::panic::set_hook(Box::new(|_| {}));
         let key = "invalid_setting";
         read_setting(key).unwrap();
