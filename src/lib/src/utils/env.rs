@@ -55,7 +55,7 @@ pub fn check_user() -> Result<String> {
 pub fn drop_privileges() -> Result<()> {
     log::info!("Dropping root privileges");
     let user = check_user()?;
-    drop_root::set_user_group(&user, &user)?;
+    drop_root::set_user(&user)?;
     let user = check_env("USER")?;
     log::debug!("Now running as user: {user}");
     Ok(())
