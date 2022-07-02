@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_user, get_component_path, set_env, async_user_command};
+use crate::{async_command, async_user_command, check_env, check_user, get_component_path, set_env};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::{
