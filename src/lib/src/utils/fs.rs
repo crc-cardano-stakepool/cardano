@@ -1,4 +1,4 @@
-use crate::{async_command, async_user_command, check_env, check_user, get_component_path, set_env};
+use crate::{async_command, check_env, get_component_path, set_env};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::{
@@ -29,6 +29,7 @@ pub fn check_work_dir() -> Result<PathBuf> {
 }
 
 pub async fn copy_binary(component: &str) -> Result<()> {
+    log::info!("Copying the built binaries of {component}");
     let install_dir = check_env("INSTALL_DIR")?;
     if component == "cardano-node" {
         copy_node_binaries(&install_dir).await?;
@@ -37,6 +38,7 @@ pub async fn copy_binary(component: &str) -> Result<()> {
 }
 
 async fn copy_node_binaries(install_dir: &str) -> Result<()> {
+    log::info!("Copying to {install_dir}");
     let component = "cardano-node";
     let path = get_component_path(component).await?;
     let bin_path = format!("{path}/scripts/bin-path.sh");
@@ -53,7 +55,7 @@ async fn copy_node_binaries(install_dir: &str) -> Result<()> {
 
 pub async fn create_dir(absolute_path: &str) -> Result<()> {
     create_dir_all(absolute_path).await?;
-    chownr(absolute_path).await
+    Ok(())
 }
 
 pub fn file_exists(absolute_path: &str) -> bool {
@@ -65,6 +67,7 @@ pub fn is_dir(absolute_path: &str) -> bool {
 }
 
 pub async fn setup_work_dir() -> Result<()> {
+    log::info!("Setting up working directory");
     let home_dir = dirs::home_dir().expect("Failed to read $HOME");
     let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
     check_work_dir()?;
@@ -98,18 +101,23 @@ pub async fn setup_work_dir() -> Result<()> {
     }
     Ok(())
 }
-
-// TODO: Use standard library instead
-pub async fn chownr(absolute_path: &str) -> Result<()> {
-    let user = check_user()?;
-    let cmd = format!("chown -R {user}:{user} {absolute_path}");
-    if async_user_command(&cmd).await.is_ok() {
-        Ok(())
-    } else {
-        Err(anyhow!("Failed adjusting permissions of {absolute_path}"))
-    }
-}
-
+//
+//pub fn chownr<P: AsRef<Path>>(path: P) -> Result<()> {
+//    let user = check_user()?;
+//    let nix_user = nix::unistd::User::from_name(&user)
+//        .map_err(|err| anyhow!("Failed to parse user {user}: {err}"))
+//        .unwrap();
+//    let nix_user = nix_user.ok_or_else(|| anyhow!("User {user} does not exist or is invalid")).unwrap();
+//    if path.as_ref().is_dir() {
+//        for entry in fs::read_dir(&path)? {
+//            let entry = entry?;
+//            chownr(entry.path().as_path())?;
+//        }
+//    }
+//    nix::unistd::chown(path.as_ref(), Some(nix_user.uid), Some(nix_user.gid))?;
+//    Ok(())
+//}
+//
 #[cfg(test)]
 mod test {
     use super::*;

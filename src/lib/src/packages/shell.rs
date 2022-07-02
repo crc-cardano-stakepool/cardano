@@ -45,6 +45,7 @@ pub async fn change_shell_config() -> Result<()> {
 }
 
 pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
+    log::info!("Checking if shell profile is already configured");
     let shell_profile_file = get_shell_profile_file().await?;
     let cmd = format!("grep -q {pattern} {shell_profile_file}");
     process_success(&cmd).await
@@ -55,6 +56,7 @@ pub async fn check_shell() -> Result<String> {
 }
 
 pub async fn export_shell_variables() -> Result<()> {
+    log::info!("Exporting shell variables");
     let envs = HashMap::from([("LD_LIBRARY_PATH", LD_LIBRARY_PATH), ("PKG_CONFIG_PATH", PKG_CONFIG_PATH)]);
     for (key, value) in envs.iter() {
         set_env(key, value);
@@ -63,11 +65,13 @@ pub async fn export_shell_variables() -> Result<()> {
 }
 
 pub async fn get_shell_profile_file() -> Result<String> {
+    log::info!("Getting shell profile");
     match_shell(&check_shell().await?)?;
     check_env("SHELL_PROFILE_FILE")
 }
 
 pub fn match_shell(shell: &str) -> Result<()> {
+    log::info!("Matching shell");
     let home = check_env("HOME")?;
     if shell.contains("/zsh") {
         let shell_profile_file = format!("{home}/.zshrc");
@@ -100,6 +104,7 @@ pub fn match_shell(shell: &str) -> Result<()> {
 }
 
 pub async fn setup_shell() -> Result<()> {
+    log::info!("Setting up shell");
     let shell = check_shell().await?;
     match_shell(&shell)?;
     ask_shell_config().await?;
@@ -107,6 +112,7 @@ pub async fn setup_shell() -> Result<()> {
 }
 
 pub async fn source_shell() -> Result<()> {
+    log::info!("Sourcing shell");
     let shell_file = get_shell_profile_file().await?;
     let cmd = format!("source {shell_file}");
     async_command_pipe(&cmd).await?;
@@ -114,6 +120,7 @@ pub async fn source_shell() -> Result<()> {
 }
 
 pub async fn write_shell_config(value: &str) -> Result<()> {
+    log::info!("Writing shell config");
     let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
     let append_string = format!("$(cat << 'EOF'\n{value}\nEOF\n)");
     let cmd = format!("echo \"{append_string}\" >> {shell_profile_file}");

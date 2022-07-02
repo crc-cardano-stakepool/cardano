@@ -41,6 +41,7 @@ pub fn setup_env() -> Result<()> {
 }
 
 pub fn check_user() -> Result<String> {
+    log::info!("Checking user");
     let user = match check_env("SUDO_USER") {
         Ok(sudo_user) => sudo_user,
         Err(_) => check_env("USER").unwrap(),
@@ -49,6 +50,15 @@ pub fn check_user() -> Result<String> {
     let user = user.trim().to_string();
     set_env("RUNNER", &user);
     Ok(user.trim().to_string())
+}
+
+pub fn drop_privileges() -> Result<()> {
+    log::info!("Dropping root privileges");
+    let user = check_user()?;
+    drop_root::set_user_group(&user, &user)?;
+    let user = check_env("USER")?;
+    log::debug!("Now running as user: {user}");
+    Ok(())
 }
 
 #[cfg(test)]

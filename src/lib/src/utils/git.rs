@@ -1,5 +1,5 @@
 use crate::{
-    async_command, async_command_pipe, async_user_command, check_env, check_user, chownr, file_exists, get_component_path, set_env,
+    async_command, async_command_pipe, async_user_command, check_env, check_user, file_exists, get_component_path, set_env,
     CARDANO_NODE_RELEASE_URL, CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
@@ -7,6 +7,7 @@ use convert_case::{Case, Casing};
 use std::path::Path;
 
 pub async fn check_installed_version(component: &str) -> Result<String> {
+    log::info!("Checking installed version of {component}");
     let component_bin_path = get_bin_path(component).await?;
     let cmd = format!("{component_bin_path} --version | awk {} | head -n1", "'{print $2}'");
     let version = async_command_pipe(&cmd).await?;
@@ -24,6 +25,7 @@ pub async fn check_latest_version(component: &str) -> Result<String> {
 }
 
 pub async fn check_repo(url: &str, absolute_path: &str) -> Result<()> {
+    log::info!("Cheking if {absolute_path} is a repository");
     if Path::new(absolute_path).is_dir() {
         let repo_git_path = format!("{absolute_path}/.git");
         if !Path::new(&repo_git_path).is_dir() {
@@ -43,15 +45,16 @@ pub async fn check_repo(url: &str, absolute_path: &str) -> Result<()> {
 }
 
 pub async fn checkout_latest_release(component: &str) -> Result<()> {
+    log::info!("Checking out the latest release of {component}");
     let version = check_latest_version(component).await?;
     let path = get_component_path(component).await?;
     let cmd = format!("cd {path} && git checkout tags/{version}");
     fetch_tags(component).await?;
-    async_user_command(&cmd).await?;
-    chownr(&path).await
+    async_user_command(&cmd).await
 }
 
 pub async fn clone_component(component: &str) -> Result<()> {
+    log::info!("Cloning {component}");
     let url = match component {
         "cardano-node" => Ok(CARDANO_NODE_URL),
         _ => Err(anyhow!("Unknown component {component}")),
@@ -70,13 +73,14 @@ pub async fn clone_component(component: &str) -> Result<()> {
 }
 
 pub async fn clone_repo(url: &str, destination_path: &str) -> Result<()> {
+    log::info!("Cloning repo to {destination_path}");
     let cmd = format!("git clone {url} {destination_path}");
     async_command(&cmd).await?;
-    chownr(destination_path).await?;
     Ok(())
 }
 
 pub async fn fetch_tags(component: &str) -> Result<()> {
+    log::info!("Fetching the latest tags of the {component} source reposity of");
     let path = get_component_path(component).await?;
     let cmd = format!("cd {path} && git fetch --all --recurse-submodules --tags");
     async_user_command(&cmd).await?;
@@ -90,6 +94,7 @@ pub async fn get_bin_path(bin: &str) -> Result<String> {
 }
 
 pub async fn is_bin_installed(bin: &str) -> Result<bool> {
+    log::debug!("Checking if {bin} is already installed");
     let user = check_user()?;
     let file = format!("/home/{user}/.local/bin/{bin}");
     Ok(file_exists(&file))

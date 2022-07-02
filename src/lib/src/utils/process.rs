@@ -1,9 +1,10 @@
-use crate::check_user;
+use crate::{check_user, drop_privileges};
 use anyhow::{anyhow, Result};
 use std::process::{Command as Cmd, Stdio};
 use tokio::process::Command;
 
 pub async fn async_command(command: &str) -> Result<String> {
+    log::info!("Executing command: {command}");
     let child = Command::new("sh")
         .arg("-c")
         .arg(command)
@@ -37,6 +38,7 @@ pub async fn async_user_command(command: &str) -> Result<()> {
     let user = check_user()?;
     let cmd = format!("sudo su - {user} -c \"eval {command}\"");
     async_command(&cmd).await?;
+    drop_privileges()?;
     Ok(())
 }
 
@@ -84,6 +86,7 @@ pub async fn process_success_inherit(cmd: &str) -> Result<bool> {
 }
 
 pub async fn process_success(cmd: &str) -> Result<bool> {
+    log::info!("Checking for success of command: {cmd}");
     let output = Command::new("sh").arg("-c").arg(&cmd).output().await?;
     Ok(output.status.success())
 }

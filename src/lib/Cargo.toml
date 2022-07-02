@@ -12,7 +12,6 @@ tokio = { version = "1.19.2", features = ["full"] }
 dialoguer = "0.10.1"
 anyhow = "1.0.57"
 convert_case = "0.5.0"
-sudo = "0.6.0"
 log = "0.4.17"
 fern = { version = "0.6.1", features = ["colored"] }
 chrono = "0.4.19"

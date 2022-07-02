@@ -1,4 +1,4 @@
-use crate::{async_command_pipe, async_user_command, check_env, file_exists, VERSIONS_URL};
+use crate::{async_command, async_command_pipe, check_env, file_exists, VERSIONS_URL};
 use anyhow::{anyhow, Result};
 
 pub async fn check_cabal() -> Result<()> {
@@ -24,7 +24,7 @@ pub async fn check_installed_cabal() -> Result<String> {
         let cmd = format!("{cabal} -V | head -n1 | awk '{{print $3}}'");
         let installed_cabal = async_command_pipe(&cmd).await?;
         let installed_cabal = installed_cabal.trim().to_string();
-        log::debug!("Installed Cabal version: {installed_cabal}");
+        log::debug!("Installed Cabal v{installed_cabal}");
         return Ok(installed_cabal);
     }
     Err(anyhow!("Cabal is not installed"))
@@ -42,9 +42,9 @@ pub async fn install_cabal() -> Result<()> {
     let version = get_cabal_version().await?;
     let ghcup = check_env("GHCUP_BIN")?;
     let cmd = format!("{ghcup} install cabal {version}");
-    async_user_command(&cmd).await?;
+    async_command(&cmd).await?;
     let cmd = format!("{ghcup} set cabal {version}");
-    async_user_command(&cmd).await?;
+    async_command(&cmd).await?;
     Ok(())
 }
 

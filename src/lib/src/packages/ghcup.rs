@@ -2,6 +2,7 @@ use crate::{async_user_command, check_env, file_exists, get_cabal_version, get_g
 use anyhow::{anyhow, Result};
 
 pub async fn check_ghcup() -> Result<()> {
+    log::info!("Checking GHCup");
     let ghcup_dir = check_env("GHCUP_DIR")?;
     let ghcup_bin = check_env("GHCUP_BIN")?;
     if is_dir(&ghcup_dir) {
@@ -16,6 +17,7 @@ pub async fn check_ghcup() -> Result<()> {
 }
 
 pub async fn install_ghcup() -> Result<()> {
+    log::info!("Installing GHCup");
     let ghc_version = get_ghc_version().await?;
     let cabal_version = get_cabal_version().await?;
     let non_interactive = "export BOOTSTRAP_HASKELL_NONINTERACTIVE=1";
