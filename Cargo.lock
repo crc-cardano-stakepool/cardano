@@ -645,9 +645,11 @@ dependencies = [
  "fern",
  "lazy_static",
  "log",
+ "serde",
  "sudo",
  "sysinfo",
  "tokio",
+ "toml",
 ]
 
 [[package]]

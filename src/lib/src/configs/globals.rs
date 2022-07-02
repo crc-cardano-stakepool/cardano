@@ -10,6 +10,7 @@ pub const GHC_VERSION: &str = "8.10.7";
 pub const CABAL_VERSION: &str = "3.6.2.0";
 pub const LD_LIBRARY_PATH: &str = "/usr/local/lib:$LD_LIBRARY_PATH";
 pub const PKG_CONFIG_PATH: &str = "/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH";
+pub const CARDANO_CONFIG_FILE_NAME: &str = "cardano.toml";
 pub const CARDANO_NODE_URL: &str = "https://github.com/input-output-hk/cardano-node.git";
 pub const CARDANO_NODE_RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-node/releases/latest";
 pub const LIBSODIUM_URL: &str = "https://github.com/input-output-hk/libsodium.git";

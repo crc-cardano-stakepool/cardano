@@ -21,6 +21,8 @@ lazy_static = "1.4.0"
 sysinfo = "0.24.5"
 dirs = "4.0.0"
 drop-root = "0.1.1"
+serde = "1.0.137"
+toml = "0.5.9"
 
 [dev-dependencies]
 ctor = "0.1.22"
