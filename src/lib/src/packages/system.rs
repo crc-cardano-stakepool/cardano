@@ -213,11 +213,9 @@ impl Default for SystemInfo {
 impl SystemInfo {
     pub fn get_sysinfo() -> String {
         log::info!("Getting system info");
-        if System::IS_SUPPORTED {
-            log::info!("This OS is supported!");
-        } else {
+        if !System::IS_SUPPORTED {
             log::error!("This OS isn't supported (yet?).");
-            panic!()
+            panic!("Can't determine anything about the running system");
         }
         log::info!("Getting system name");
         let mut sys = System::new_all();

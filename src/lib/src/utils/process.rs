@@ -1,9 +1,10 @@
-use crate::check_user;
+use crate::{check_user, drop_privileges};
 use anyhow::{anyhow, Result};
 use std::process::{Command as Cmd, Stdio};
 use tokio::process::Command;
 
 pub async fn async_command(command: &str) -> Result<String> {
+    log::info!("Executing command: {command}");
     let child = Command::new("sh")
         .arg("-c")
         .arg(command)
@@ -18,10 +19,18 @@ pub async fn async_command(command: &str) -> Result<String> {
 }
 
 pub async fn async_command_pipe(command: &str) -> Result<String> {
+    log::info!("Executing command: {command}");
     let process = Command::new("sh").arg("-c").arg(command).stdout(Stdio::piped()).output().await;
     match process {
-        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
-        Err(e) => Err(anyhow!("{e}")),
+        Ok(output) => {
+            let output = String::from(String::from_utf8_lossy(&output.stdout)).trim().to_string();
+            log::debug!("Output: {output}");
+            Ok(output)
+        }
+        Err(e) => {
+            log::error!("Command failed");
+            Err(anyhow!("{e}"))
+        }
     }
 }
 
@@ -29,6 +38,7 @@ pub async fn async_user_command(command: &str) -> Result<()> {
     let user = check_user()?;
     let cmd = format!("sudo su - {user} -c \"eval {command}\"");
     async_command(&cmd).await?;
+    drop_privileges()?;
     Ok(())
 }
 
@@ -76,6 +86,7 @@ pub async fn process_success_inherit(cmd: &str) -> Result<bool> {
 }
 
 pub async fn process_success(cmd: &str) -> Result<bool> {
+    log::info!("Checking for success of command: {cmd}");
     let output = Command::new("sh").arg("-c").arg(&cmd).output().await?;
     Ok(output.status.success())
 }
@@ -93,7 +104,7 @@ mod test {
 
     #[tokio::test]
     pub async fn test_async_command_pipe() -> Result<()> {
-        let expected = "not expected to be printed on console\n";
+        let expected = "not expected to be printed on console";
         let cmd = format!("echo {expected}");
         let output = async_command_pipe(&cmd).await?;
         assert_eq!(output, expected);

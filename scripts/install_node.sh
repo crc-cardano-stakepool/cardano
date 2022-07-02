@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cargo install --path .
+cargo install --path src/bin
 
-cardano node install -y
+cardano node install -vv -y

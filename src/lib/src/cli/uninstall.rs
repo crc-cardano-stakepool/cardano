@@ -13,7 +13,7 @@ mod test {
     use super::*;
 
     #[tokio::test]
-    async fn test_logger() {
+    async fn test_uninstall_component() {
         let result = uninstall_component("cardano-node").await.is_ok();
         assert!(result)
     }

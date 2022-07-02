@@ -1,7 +1,10 @@
-use crate::{async_command, async_user_command, check_env, check_repo, chownr, export_shell_variables, file_exists, LIBSODIUM_URL};
+use crate::{
+    async_command, async_user_command, check_env, check_repo, drop_privileges, export_shell_variables, file_exists, LIBSODIUM_URL,
+};
 use anyhow::Result;
 
 pub async fn check_libsodium() -> Result<()> {
+    log::info!("Checking if libdsodium is installed");
     let pc = "/usr/local/lib/pkgconfig/libsodium.pc";
     let so = "/usr/local/lib/libsodium.so";
     let so_23 = "/usr/local/lib/libsodium.so.23";
@@ -9,12 +12,14 @@ pub async fn check_libsodium() -> Result<()> {
     let la = "/usr/local/lib/libsodium.la";
     let a = "/usr/local/lib/libsodium.a";
     if !(file_exists(pc) && file_exists(so) && file_exists(la) && file_exists(so_23_3_0) && file_exists(so_23) && file_exists(a)) {
+        log::warn!("Libsodium is not installed");
         install_libsodium().await?;
     }
     Ok(())
 }
 
 pub async fn install_libsodium() -> Result<()> {
+    log::info!("Installing libsodium");
     let libsodium_path = check_env("LIBSODIUM_DIR")?;
     check_repo(LIBSODIUM_URL, &libsodium_path).await?;
     let checkout = "git checkout 66f017f1";
@@ -26,7 +31,7 @@ pub async fn install_libsodium() -> Result<()> {
     let cmd = format!("cd {libsodium_path}\n{sudo}");
     async_user_command(&cd).await?;
     async_command(&cmd).await?;
-    chownr(&libsodium_path).await?;
+    drop_privileges()?;
     export_shell_variables().await?;
     Ok(())
 }
