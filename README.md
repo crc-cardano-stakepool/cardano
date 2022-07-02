@@ -53,31 +53,31 @@ Currently supported operating systems
 ## Installation
 
 ```sh
-    sudo apt update -y
-    sudo apt upgrade -y
-    sudo apt install git build-essential -y
-    curl https://sh.rustup.rs -sSf | sh -s -- -y
-    case ":${PATH}:" in
-        *:"$HOME/.cargo/bin":*) ;;
-        *) export PATH="$HOME/.cargo/bin:$PATH" ;;
-    esac
-    mkdir -p $HOME/.cardano
-    git clone https://github.com/crc-cardano-stakepool/cardano.git $HOME/.cardano/cardano
-    cd $HOME/.cardano/cardano
-    cargo install --branch main --path src/bin
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt install git build-essential -y
+curl https://sh.rustup.rs -sSf | sh -s -- -y
+case ":${PATH}:" in
+    *:"$HOME/.cargo/bin":*) ;;
+    *) export PATH="$HOME/.cargo/bin:$PATH" ;;
+esac
+git clone https://github.com/crc-cardano-stakepool/cardano.git
+cd cardano
+cargo install --branch main --path src/bin
 ```
 
 ## Usage
 
 ```unix
-cardano 0.0.1
+cardano 0.0.2
 Manage cardano components
 
 USAGE:
     cardano [OPTIONS] [SUBCOMMAND]
 
 OPTIONS:
-        --generate <GENERATOR>    [possible values: bash, elvish, fish, powershell, zsh]
+    -g, --generate <GENERATOR>    Generate shell a shell completion file [possible values: bash,
+                                  elvish, fish, powershell, zsh]
     -h, --help                    Print help information
     -q, --quiet                   Less output per occurrence
     -v, --verbose                 More output per occurrence
@@ -93,17 +93,26 @@ SUBCOMMANDS:
 ## Install latest cardano-node release
 
 ```unix
-    cardano node install
+cardano node install
 ```
 
 ## Update CLI
 
 ```unix
-    cardano update
+cardano update
+```
+
+## Install shell completion
+
+### Zsh
+
+```unix
+cardano -g zsh > _cardano
+sudo mv _cardano /usr/share/zsh/functions/Completion/Unix/_cardano
 ```
 
 ## Documentation
 
 ```unix
-    cargo doc --workspace --no-deps --open
+cargo doc --workspace --no-deps --open
 ```
