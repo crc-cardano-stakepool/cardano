@@ -23,21 +23,18 @@ async fn check_ask_shell_confirm(shell_file: &str) -> Result<()> {
 
 pub async fn change_shell_config() -> Result<()> {
     let paths = HashMap::from([
-        (
-            "LD_LIBRARY_PATH",
-            format!("export LD_LIBRARY_PATH={}", "\"/usr/local/lib:$LD_LIBRARY_PATH\""),
-        ),
+        ("LD_LIBRARY_PATH", "export LD_LIBRARY_PATH=\"/usr/local/lib:$LD_LIBRARY_PATH\""),
         (
             "PKG_CONFIG_PATH",
-            format!("export PKG_CONFIG_PATH={}", "\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\""),
+            "export PKG_CONFIG_PATH=\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\"",
         ),
         (
             "CARDANO_NODE_SOCKET_PATH",
-            format!("export CARDANO_NODE_SOCKET_PATH={}", "\"$HOME/.cardano/ipc/node.socket\""),
+            "export CARDANO_NODE_SOCKET_PATH=\"$HOME/.cardano/ipc/node.socket\"",
         ),
-        (".local/bin", format!("export PATH={}", "\"$HOME/.local/bin:$PATH\"")),
-        (".cabal/bin", format!("export PATH={}", "\"$HOME/.cabal/bin:$PATH\"")),
-        (".ghcup/bin", format!("export PATH={}", "\"$HOME/.ghcup/bin:$PATH\"")),
+        (".local/bin", "export PATH=\"$HOME/.local/bin:$PATH\""),
+        (".cabal/bin", "export PATH=\"$HOME/.cabal/bin:$PATH\""),
+        (".ghcup/bin", "export PATH=\"$HOME/.ghcup/bin:$PATH\""),
     ]);
     for (key, value) in paths.iter() {
         if !check_shell_config_env(key).await? {
@@ -71,41 +68,42 @@ pub async fn get_shell_profile_file() -> Result<String> {
 }
 
 pub fn match_shell(shell: &str) -> Result<()> {
-    let home = check_env("RUNNER_HOME")?;
+    let home = check_env("HOME")?;
     if shell.contains("/zsh") {
         let shell_profile_file = format!("{home}/.zshrc");
         set_env("SHELL_PROFILE_FILE", &shell_profile_file);
         set_env("MY_SHELL", "zsh");
-        Ok(())
-    } else if shell.contains("/bash") {
+        return Ok(());
+    }
+    if shell.contains("/bash") {
         let shell_profile_file = format!("{home}/.bashrc");
         set_env("SHELL_PROFILE_FILE", &shell_profile_file);
         set_env("MY_SHELL", "bash");
-        Ok(())
-    } else if shell.contains("/sh") {
+        return Ok(());
+    }
+    if shell.contains("/sh") {
         if !check_env("BASH")?.is_empty() {
             let shell_profile_file = format!("{home}/.bashrc");
             set_env("SHELL_PROFILE_FILE", &shell_profile_file);
             set_env("MY_SHELL", "bash");
-            Ok(())
-        } else if !check_env("ZSH_VERSION")?.is_empty() {
+            return Ok(());
+        }
+        if !check_env("ZSH_VERSION")?.is_empty() {
             let shell_profile_file = format!("{home}/.zshrc");
             set_env("SHELL_PROFILE_FILE", &shell_profile_file);
             set_env("MY_SHELL", "zsh");
-            Ok(())
-        } else {
-            Err(anyhow!("Failed checking shell"))
+            return Ok(());
         }
-    } else {
-        Ok(())
+        return Err(anyhow!("Failed checking shell"));
     }
+    Ok(())
 }
 
 pub async fn setup_shell() -> Result<()> {
     let shell = check_shell().await?;
     match_shell(&shell)?;
     ask_shell_config().await?;
-    setup_env().await
+    setup_env()
 }
 
 pub async fn source_shell() -> Result<()> {

@@ -15,7 +15,7 @@ pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
     set_confirm(confirm);
     if !check_root() {
         log::error!("Root privileges are needed to install cardano node");
-        return match sudo::with_env(&["HOME"]) {
+        return match sudo::with_env(&["HOME", "USER"]) {
             Ok(_) => Ok(()),
             Err(_) => Ok(()),
         };

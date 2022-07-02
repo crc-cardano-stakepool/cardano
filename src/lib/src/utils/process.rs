@@ -18,10 +18,18 @@ pub async fn async_command(command: &str) -> Result<String> {
 }
 
 pub async fn async_command_pipe(command: &str) -> Result<String> {
+    log::info!("Executing command: {command}");
     let process = Command::new("sh").arg("-c").arg(command).stdout(Stdio::piped()).output().await;
     match process {
-        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
-        Err(e) => Err(anyhow!("{e}")),
+        Ok(output) => {
+            let output = String::from(String::from_utf8_lossy(&output.stdout)).trim().to_string();
+            log::debug!("Output: {output}");
+            Ok(output)
+        }
+        Err(e) => {
+            log::error!("Command failed");
+            Err(anyhow!("{e}"))
+        }
     }
 }
 
@@ -93,7 +101,7 @@ mod test {
 
     #[tokio::test]
     pub async fn test_async_command_pipe() -> Result<()> {
-        let expected = "not expected to be printed on console\n";
+        let expected = "not expected to be printed on console";
         let cmd = format!("echo {expected}");
         let output = async_command_pipe(&cmd).await?;
         assert_eq!(output, expected);

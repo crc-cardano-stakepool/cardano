@@ -5,17 +5,23 @@ use std::{
 };
 
 pub fn check_env(key: &str) -> Result<String> {
+    log::info!("Checking environment variable: {key}");
     match var(key) {
-        Ok(val) => Ok(val),
-        Err(e) => Err(anyhow!("couldn't interpret {key}: {e}")),
+        Ok(val) => {
+            log::debug!("{key}={val}");
+            Ok(val)
+        }
+        Err(e) => Err(anyhow!("Failed to check environment variable {key}: {e}")),
     }
 }
 
 pub fn set_env(key: &str, value: &str) {
+    log::info!("Setting {key}={value}");
     set_var(key, value);
 }
 
-pub async fn setup_env() -> Result<()> {
+pub fn setup_env() -> Result<()> {
+    log::info!("Setting up environment variables");
     let home_dir = dirs::home_dir().expect("Failed to read $HOME");
     let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
     let ghcup_dir = format!("{home_dir}/.ghcup");
@@ -56,9 +62,9 @@ mod test {
         Ok(())
     }
 
-    #[tokio::test]
-    async fn test_setup_env() -> Result<()> {
-        setup_env().await?;
+    #[test]
+    fn test_setup_env() -> Result<()> {
+        setup_env()?;
         let home_dir = dirs::home_dir().expect("Failed to read $HOME");
         let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
         let ghcup_dir = format!("{home_dir}/.ghcup");
