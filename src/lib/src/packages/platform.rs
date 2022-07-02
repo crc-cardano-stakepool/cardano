@@ -75,7 +75,7 @@ pub async fn apt_install(package: &str) -> Result<()> {
 
 pub async fn install_package(package_manager: &str, package: &str) -> Result<()> {
     log::info!("Installing {package} with {package_manager}");
-    let cmd = format!("{package_manager} install {package} -y");
+    let cmd = format!("sudo {package_manager} install {package} -y");
     let process = async_command(&cmd).await;
     match process {
         Ok(_) => Ok(()),

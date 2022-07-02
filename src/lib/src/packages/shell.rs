@@ -51,8 +51,11 @@ pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
     process_success(&cmd).await
 }
 
-pub async fn check_shell() -> Result<String> {
-    check_env("SHELL")
+pub fn check_shell() -> String {
+    match check_env("SHELL") {
+        Ok(shell) => shell,
+        Err(_) => "/usr/bin/bash".to_string()
+    }
 }
 
 pub async fn export_shell_variables() -> Result<()> {
@@ -66,7 +69,7 @@ pub async fn export_shell_variables() -> Result<()> {
 
 pub async fn get_shell_profile_file() -> Result<String> {
     log::info!("Getting shell profile");
-    match_shell(&check_shell().await?)?;
+    match_shell(&check_shell())?;
     check_env("SHELL_PROFILE_FILE")
 }
 
@@ -105,7 +108,7 @@ pub fn match_shell(shell: &str) -> Result<()> {
 
 pub async fn setup_shell() -> Result<()> {
     log::info!("Setting up shell");
-    let shell = check_shell().await?;
+    let shell = check_shell();
     match_shell(&shell)?;
     ask_shell_config().await?;
     setup_env()
