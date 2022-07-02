@@ -43,7 +43,7 @@ Whether you are a beginner in the Cardano ecosystem, an SPO or a builder, you ca
 - Setup a plutus development environment
 - Explore the blockchain
 
-## Prerequisiites
+## Prerequisites
 
 Currently supported operating systems
 
