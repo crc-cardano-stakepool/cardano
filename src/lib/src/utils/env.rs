@@ -40,6 +40,17 @@ pub fn setup_env() -> Result<()> {
     Ok(())
 }
 
+pub fn check_user() -> Result<String> {
+    let user = match check_env("SUDO_USER") {
+        Ok(sudo_user) => sudo_user,
+        Err(_) => check_env("USER").unwrap(),
+    };
+    log::debug!("user: {user}");
+    let user = user.trim().to_string();
+    set_env("RUNNER", &user);
+    Ok(user.trim().to_string())
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -79,6 +90,16 @@ mod test {
         assert_eq!(result, ghc_bin);
         let result = check_env("CABAL_BIN")?;
         assert_eq!(result, cabal_bin);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_check_user() -> Result<()> {
+        let user = check_user()?;
+        log::debug!("user: {user}");
+        let user_env = check_env("RUNNER")?;
+        log::debug!("user_env: {user_env}");
+        assert_eq!(user, user_env);
         Ok(())
     }
 }
