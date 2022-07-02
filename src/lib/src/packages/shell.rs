@@ -54,7 +54,7 @@ pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
 pub fn check_shell() -> String {
     match check_env("SHELL") {
         Ok(shell) => shell,
-        Err(_) => "/usr/bin/bash".to_string()
+        Err(_) => "/usr/bin/bash".to_string(),
     }
 }
 
