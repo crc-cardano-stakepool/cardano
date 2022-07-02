@@ -56,6 +56,7 @@ lazy_static::lazy_static! {
 }
 
 pub fn read_settings() -> HashMap<String, String> {
+    log::info!("Reading settings");
     SETTINGS
         .read()
         .map_err(|err| anyhow!("Failed to read from settings: {err}"))
