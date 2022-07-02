@@ -108,7 +108,7 @@ cardano update
 
 ```unix
 cardano -g zsh > _cardano
-sudo mv /usr/share/zsh/functions/Completion/Unix/_cardano
+sudo mv _cardano /usr/share/zsh/functions/Completion/Unix/_cardano
 ```
 
 ## Documentation
