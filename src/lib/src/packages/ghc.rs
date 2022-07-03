@@ -1,10 +1,12 @@
-use crate::{async_command, async_command_pipe, check_env, file_exists, VERSIONS_URL};
+use crate::{async_command, async_command_pipe, check_env, VERSIONS_URL};
 use anyhow::{anyhow, Result};
+use std::path::Path;
 
 pub async fn check_installed_ghc() -> Result<String> {
     log::info!("Checking GHC");
     let ghc = check_env("GHC_BIN")?;
-    if file_exists(&ghc) {
+    let ghc_path = Path::new(&ghc);
+    if ghc_path.is_file() {
         log::debug!("GHC is installed");
         let cmd = format!("{ghc} -V | awk {}", "'{print $8}'");
         let installed_ghc = async_command_pipe(&cmd).await?;

@@ -1,17 +1,16 @@
-use crate::{
-    async_command, async_user_command, check_env, check_repo, drop_privileges, export_shell_variables, file_exists, SECP256K1_URL,
-};
+use crate::{async_command, async_user_command, check_env, check_repo, drop_privileges, export_shell_variables, SECP256K1_URL};
 use anyhow::Result;
+use std::path::Path;
 
 pub async fn check_secp256k1() -> Result<()> {
     log::info!("Checking secp256k1");
-    let pc = "/usr/local/lib/pkgconfig/libsecp256k1.pc";
-    let so = "/usr/local/lib/libsecp256k1.so";
-    let so_0 = "/usr/local/lib/libsecp256k1.so.0";
-    let so_0_0_0 = "/usr/local/lib/libsecp256k1.so.0.0.0";
-    let la = "/usr/local/lib/libsecp256k1.la";
-    let a = "/usr/local/lib/libsecp256k1.a";
-    if !(file_exists(pc) && file_exists(so) && file_exists(la) && file_exists(so_0) && file_exists(so_0_0_0) && file_exists(a)) {
+    let pc = Path::new("/usr/local/lib/pkgconfig/libsecp256k1.pc");
+    let so = Path::new("/usr/local/lib/libsecp256k1.so");
+    let so_0 = Path::new("/usr/local/lib/libsecp256k1.so.0");
+    let so_0_0_0 = Path::new("/usr/local/lib/libsecp256k1.so.0.0.0");
+    let la = Path::new("/usr/local/lib/libsecp256k1.la");
+    let a = Path::new("/usr/local/lib/libsecp256k1.a");
+    if !(pc.is_file() && so.is_file() && la.is_file() && so_0.is_file() && so_0_0_0.is_file() && a.is_file()) {
         log::warn!("secp256k1 is not installed");
         install_secp256k1().await?;
     }

@@ -107,7 +107,7 @@ mod test {
         let key = "work_dir";
         let value = read_setting(key)?;
         let work_dir = check_work_dir()?;
-        let work_dir = work_dir.to_str().unwrap();
+        let work_dir = work_dir.as_ref().to_str().unwrap();
         assert_eq!(value, work_dir);
         Ok(())
     }

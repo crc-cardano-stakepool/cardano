@@ -1,7 +1,9 @@
+use std::path::Path;
+
 use crate::{
-    async_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version, check_latest_version, check_libsodium,
-    check_secp256k1, clone_component, copy_binary, file_exists, get_ghc_version, is_bin_installed, proceed, process_success_inherit,
-    set_env, setup_packages, setup_shell, setup_work_dir, source_shell, SystemRequirements,
+    absolute_ref_path_to_string, async_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
+    check_latest_version, check_libsodium, check_secp256k1, clone_component, copy_binary, get_ghc_version, is_bin_installed, proceed,
+    process_success_inherit, set_env, setup_packages, setup_shell, setup_work_dir, source_shell, SystemRequirements,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -96,11 +98,12 @@ async fn update_cabal(path: &str, cabal_path: &str) -> Result<()> {
     Ok(())
 }
 
-async fn check_project_file(project_file: &str) -> Result<()> {
+async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
     log::info!("Checking if the project file already exists");
-    if file_exists(project_file) {
+    let path = absolute_ref_path_to_string(&project_file)?;
+    if project_file.as_ref().is_file() {
         log::warn!("Project file already exists, removing it");
-        let cmd = format!("rm {project_file}");
+        let cmd = format!("rm {path}");
         async_command(&cmd).await?;
         return Ok(());
     }

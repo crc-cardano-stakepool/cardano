@@ -1,5 +1,6 @@
-use crate::{async_command, async_command_pipe, check_env, file_exists, VERSIONS_URL};
+use crate::{async_command, async_command_pipe, check_env, VERSIONS_URL};
 use anyhow::{anyhow, Result};
+use std::path::Path;
 
 pub async fn check_cabal() -> Result<()> {
     log::info!("Checking Cabal");
@@ -20,7 +21,8 @@ pub async fn check_cabal() -> Result<()> {
 pub async fn check_installed_cabal() -> Result<String> {
     log::info!("Checking if Cabal is installed");
     let cabal = check_env("CABAL_BIN")?;
-    if file_exists(&cabal) {
+    let cabal_path = Path::new(&cabal);
+    if cabal_path.is_file() {
         let cmd = format!("{cabal} -V | head -n1 | awk '{{print $3}}'");
         let installed_cabal = async_command_pipe(&cmd).await?;
         let installed_cabal = installed_cabal.trim().to_string();
