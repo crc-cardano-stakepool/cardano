@@ -4,7 +4,7 @@ use std::process::{Command as Cmd, Stdio};
 use tokio::process::Command;
 
 pub async fn async_command(command: &str) -> Result<String> {
-    log::info!("Executing command: {command}");
+    log::debug!("Executing command: {command}");
     let child = Command::new("sh")
         .arg("-c")
         .arg(command)
@@ -19,14 +19,10 @@ pub async fn async_command(command: &str) -> Result<String> {
 }
 
 pub async fn async_command_pipe(command: &str) -> Result<String> {
-    log::info!("Executing command: {command}");
+    log::debug!("Executing command: {command}");
     let process = Command::new("sh").arg("-c").arg(command).stdout(Stdio::piped()).output().await;
     match process {
-        Ok(output) => {
-            let output = String::from(String::from_utf8_lossy(&output.stdout)).trim().to_string();
-            log::debug!("Output: {output}");
-            Ok(output)
-        }
+        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout)).trim().to_string()),
         Err(e) => {
             log::error!("Command failed");
             Err(anyhow!("{e}"))
@@ -48,6 +44,7 @@ pub async fn is_program_installed(program: &str) -> Result<bool> {
 }
 
 pub async fn pipe(command: &str, pipe_command: &str) -> Result<String> {
+    log::debug!("Executing command: {command} | {pipe_command}");
     let mut child = Cmd::new("sh")
         .arg("-c")
         .arg(command)
@@ -72,6 +69,7 @@ pub async fn pipe(command: &str, pipe_command: &str) -> Result<String> {
 }
 
 pub async fn process_success_inherit(cmd: &str) -> Result<bool> {
+    log::debug!("Executing command: {cmd}");
     let child = Command::new("sh")
         .arg("-c")
         .arg(cmd)
@@ -86,7 +84,7 @@ pub async fn process_success_inherit(cmd: &str) -> Result<bool> {
 }
 
 pub async fn process_success(cmd: &str) -> Result<bool> {
-    log::info!("Checking for success of command: {cmd}");
+    log::debug!("Checking for success of command: {cmd}");
     let output = Command::new("sh").arg("-c").arg(&cmd).output().await?;
     Ok(output.status.success())
 }

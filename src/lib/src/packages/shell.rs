@@ -15,10 +15,9 @@ async fn check_ask_shell_confirm(shell_file: &str) -> Result<()> {
     let confirm = check_env("CONFIRM")?;
     let msg = format!("Do you want to automatically add the required PATH variables to {shell_file}");
     if confirm == "false" && proceed(&msg)? {
-        change_shell_config().await
-    } else {
-        export_shell_variables().await
+        return change_shell_config().await;
     }
+    export_shell_variables().await
 }
 
 pub async fn change_shell_config() -> Result<()> {
@@ -45,7 +44,7 @@ pub async fn change_shell_config() -> Result<()> {
 }
 
 pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
-    log::info!("Checking if shell profile is already configured");
+    log::debug!("Checking if shell profile is already configured");
     let shell_profile_file = get_shell_profile_file().await?;
     let cmd = format!("grep -q {pattern} {shell_profile_file}");
     process_success(&cmd).await
@@ -59,7 +58,7 @@ pub fn check_shell() -> String {
 }
 
 pub async fn export_shell_variables() -> Result<()> {
-    log::info!("Exporting shell variables");
+    log::debug!("Exporting shell variables");
     let envs = HashMap::from([("LD_LIBRARY_PATH", LD_LIBRARY_PATH), ("PKG_CONFIG_PATH", PKG_CONFIG_PATH)]);
     for (key, value) in envs.iter() {
         set_env(key, value);
@@ -68,13 +67,13 @@ pub async fn export_shell_variables() -> Result<()> {
 }
 
 pub async fn get_shell_profile_file() -> Result<String> {
-    log::info!("Getting shell profile");
+    log::debug!("Getting shell profile");
     match_shell(&check_shell())?;
     check_env("SHELL_PROFILE_FILE")
 }
 
 pub fn match_shell(shell: &str) -> Result<()> {
-    log::info!("Matching shell");
+    log::debug!("Matching shell");
     let home = check_env("HOME")?;
     if shell.contains("/zsh") {
         let shell_profile_file = format!("{home}/.zshrc");
@@ -115,7 +114,7 @@ pub async fn setup_shell() -> Result<()> {
 }
 
 pub async fn source_shell() -> Result<()> {
-    log::info!("Sourcing shell");
+    log::debug!("Sourcing shell");
     let shell_file = get_shell_profile_file().await?;
     let cmd = format!("source {shell_file}");
     async_command_pipe(&cmd).await?;
@@ -123,8 +122,8 @@ pub async fn source_shell() -> Result<()> {
 }
 
 pub async fn write_shell_config(value: &str) -> Result<()> {
-    log::info!("Writing shell config");
     let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
+    log::info!("Writing {value} to {shell_profile_file}");
     let append_string = format!("$(cat << 'EOF'\n{value}\nEOF\n)");
     let cmd = format!("echo \"{append_string}\" >> {shell_profile_file}");
     async_command(&cmd).await?;

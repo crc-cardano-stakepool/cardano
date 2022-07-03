@@ -1,10 +1,12 @@
-use crate::{async_command, async_command_pipe, check_env, file_exists, VERSIONS_URL};
+use crate::{async_command, async_command_pipe, check_env, VERSIONS_URL};
 use anyhow::{anyhow, Result};
+use std::path::Path;
 
 pub async fn check_installed_ghc() -> Result<String> {
-    log::info!("Checking GHC");
+    log::debug!("Checking GHC");
     let ghc = check_env("GHC_BIN")?;
-    if file_exists(&ghc) {
+    let ghc_path = Path::new(&ghc);
+    if ghc_path.is_file() {
         log::debug!("GHC is installed");
         let cmd = format!("{ghc} -V | awk {}", "'{print $8}'");
         let installed_ghc = async_command_pipe(&cmd).await?;
@@ -17,30 +19,30 @@ pub async fn check_installed_ghc() -> Result<String> {
 }
 
 pub async fn check_ghc() -> Result<()> {
-    log::info!("Installing GHC if it is not installed");
+    log::debug!("Installing GHC if it is not installed");
     let ghc = check_installed_ghc().await;
     match ghc {
         Ok(ghc) => {
             if compare_ghc(&ghc).await? {
                 log::info!("Installed GHC v{ghc} is correct");
-                Ok(())
-            } else {
-                install_ghc().await
+                return Ok(());
             }
+            log::warn!("GHC versions do not match");
+            install_ghc().await
         }
         Err(_) => install_ghc().await,
     }
 }
 
 pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
-    log::info!("Comparing installed GHC v{installed_ghc} with the required GHC version to build a cardano node");
+    log::debug!("Comparing installed GHC v{installed_ghc} with the required GHC version to build a cardano node");
     let required = get_ghc_version().await?;
     let installed = installed_ghc.trim().to_string();
     Ok(installed.eq(&required))
 }
 
 pub async fn get_ghc_version() -> Result<String> {
-    log::info!("Getting the correct GHC version to build a cardano node");
+    log::debug!("Getting the correct GHC version to build a cardano node");
     let cmd = format!(
         "curl -s {VERSIONS_URL} | tidy -i | grep '<code>ghc ' | {} | {} | {}",
         "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"

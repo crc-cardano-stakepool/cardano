@@ -7,15 +7,15 @@ use sysinfo::{CpuExt, DiskExt, System, SystemExt};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SystemRequirements {
-    min_cores: u8,
-    mainnet_min_free_disk_space_in_gb: u8,
-    mainnet_recommended_free_disk_space_in_gb: u8,
-    testnet_min_free_disk_space_in_gb: u8,
-    mainnet_min_free_ram_in_gb: u8,
-    testnet_min_free_ram_in_gb: u8,
-    processor: SupportedCpu,
-    min_processor_frequency_in_mhz: u16,
-    recommended_processor_frequency_in_mhz: u16,
+    pub min_cores: u8,
+    pub mainnet_min_free_disk_space_in_gb: u8,
+    pub mainnet_recommended_free_disk_space_in_gb: u8,
+    pub testnet_min_free_disk_space_in_gb: u8,
+    pub mainnet_min_free_ram_in_gb: u8,
+    pub testnet_min_free_ram_in_gb: u8,
+    pub processor: SupportedCpu,
+    pub min_processor_frequency_in_mhz: u16,
+    pub recommended_processor_frequency_in_mhz: u16,
 }
 
 impl Default for SystemRequirements {
@@ -36,7 +36,7 @@ impl Default for SystemRequirements {
 
 impl SystemRequirements {
     pub fn check_requirements() -> bool {
-        log::info!("Checking system requirements");
+        log::debug!("Checking system requirements");
         let system = SystemRequirements::default();
         let current = SystemInfo::default();
         let os_ok = SystemRequirements::check_os(&system, current.name);
@@ -51,7 +51,7 @@ impl SystemRequirements {
         false
     }
     pub fn check_os(&self, name: String) -> bool {
-        log::info!("Checking OS");
+        log::debug!("Checking OS");
         match name.as_str() {
             "Ubuntu" => {
                 log::debug!("{name} is supported!");
@@ -84,7 +84,7 @@ impl SystemRequirements {
         }
     }
     pub fn check_cpu(&self, cpu: CpuInfo) -> bool {
-        log::info!("Checking CPU");
+        log::debug!("Checking CPU");
         let cores_ok = self.check_cpu_cores(cpu.cores);
         let vendor_ok = self.check_cpu_vendor(cpu.vendor);
         let frequency_ok = self.check_cpu_frequency(cpu.cpu_frequency_in_mhz);
@@ -96,7 +96,7 @@ impl SystemRequirements {
         false
     }
     pub fn check_cpu_cores(&self, cores: u8) -> bool {
-        log::info!("Checking CPU cores");
+        log::debug!("Checking CPU cores");
         if cores >= self.min_cores {
             log::debug!("CPU has enough cores to run a cardano node");
             return true;
@@ -106,7 +106,7 @@ impl SystemRequirements {
         false
     }
     pub fn check_cpu_vendor(&self, vendor: String) -> bool {
-        log::info!("Checking CPU vendor");
+        log::debug!("Checking CPU vendor");
         let supported_vendor = SupportedCpu::default();
         if vendor.eq(&supported_vendor.intel) || vendor.eq(&supported_vendor.amd) {
             log::debug!("CPU vendor is supported");
@@ -117,7 +117,7 @@ impl SystemRequirements {
         false
     }
     pub fn check_cpu_frequency(&self, frequency: u16) -> bool {
-        log::info!("Checking CPU frequency");
+        log::debug!("Checking CPU frequency");
         if frequency >= self.recommended_processor_frequency_in_mhz {
             log::debug!("CPU meets the recommended frequency requirements for stake pools");
             return true;
@@ -131,7 +131,7 @@ impl SystemRequirements {
         false
     }
     pub fn check_disk(&self, disk: DiskInfo) -> bool {
-        log::info!("Checking disk");
+        log::debug!("Checking disk");
         const GB_TO_B_CONVERSION_RATIO: u64 = 1073741824;
         let test_net_min_free_disk_space_in_b = self.testnet_min_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
         let mainnet_min_free_disk_space_in_b = self.mainnet_min_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
@@ -155,7 +155,7 @@ impl SystemRequirements {
         false
     }
     pub fn check_memory(&self, memory: MemoryInfo) -> bool {
-        log::info!("Checking RAM");
+        log::debug!("Checking RAM");
         const GB_TO_KB_CONVERSION_RATIO: u64 = 1048576;
         let testnet_free_ram_in_kb = self.testnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
         let mainnet_free_ram_in_kb = self.mainnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
@@ -176,8 +176,8 @@ impl SystemRequirements {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SupportedCpu {
-    intel: String,
-    amd: String,
+    pub intel: String,
+    pub amd: String,
 }
 
 impl Default for SupportedCpu {
@@ -191,10 +191,10 @@ impl Default for SupportedCpu {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SystemInfo {
-    name: String,
-    disk: DiskInfo,
-    memory: MemoryInfo,
-    cpu: CpuInfo,
+    pub name: String,
+    pub disk: DiskInfo,
+    pub memory: MemoryInfo,
+    pub cpu: CpuInfo,
 }
 
 impl Default for SystemInfo {
@@ -217,7 +217,7 @@ impl SystemInfo {
             log::error!("This OS isn't supported (yet?).");
             panic!("Can't determine anything about the running system");
         }
-        log::info!("Getting system name");
+        log::debug!("Getting system name");
         let mut sys = System::new_all();
         sys.refresh_all();
         let name = sys
@@ -231,7 +231,7 @@ impl SystemInfo {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct DiskInfo {
-    available_space_in_b: u64,
+    pub available_space_in_b: u64,
 }
 
 impl Default for DiskInfo {
@@ -242,7 +242,7 @@ impl Default for DiskInfo {
 
 impl DiskInfo {
     pub fn get_disk_info() -> Self {
-        log::info!("Getting disk info");
+        log::debug!("Getting disk info");
         let mut sys = System::new_all();
         sys.refresh_all();
         for disk in sys.disks() {
@@ -268,7 +268,7 @@ impl DiskInfo {
         disk
     }
     pub fn get_available_disk_space() -> u64 {
-        log::info!("Getting disk space");
+        log::debug!("Getting disk space");
         let mut sys = System::new_all();
         sys.refresh_all();
         let available_space: u64 = sys
@@ -289,7 +289,7 @@ impl DiskInfo {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MemoryInfo {
-    available_memory_in_kb: u64,
+    pub available_memory_in_kb: u64,
 }
 
 impl Default for MemoryInfo {
@@ -300,7 +300,7 @@ impl Default for MemoryInfo {
 
 impl MemoryInfo {
     pub fn get_memory_info() -> Self {
-        log::info!("Getting memory info");
+        log::debug!("Getting memory info");
         let memory = Self {
             available_memory_in_kb: MemoryInfo::get_available_memory_in_kb(),
         };
@@ -308,7 +308,7 @@ impl MemoryInfo {
         memory
     }
     pub fn get_available_memory_in_kb() -> u64 {
-        log::info!("Getting available memory");
+        log::debug!("Getting available memory");
         let mut sys = System::new_all();
         sys.refresh_all();
         let available_memory = sys.available_memory();
@@ -319,9 +319,9 @@ impl MemoryInfo {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct CpuInfo {
-    cpu_frequency_in_mhz: u16,
-    vendor: String,
-    cores: u8,
+    pub cpu_frequency_in_mhz: u16,
+    pub vendor: String,
+    pub cores: u8,
 }
 
 impl Default for CpuInfo {
@@ -332,7 +332,7 @@ impl Default for CpuInfo {
 
 impl CpuInfo {
     pub fn get_cpu_info() -> Self {
-        log::info!("Getting CPU info");
+        log::debug!("Getting CPU info");
         let cpu = Self {
             cpu_frequency_in_mhz: CpuInfo::get_cpu_frequency(),
             vendor: CpuInfo::get_cpu_vendor(),
@@ -342,7 +342,7 @@ impl CpuInfo {
         cpu
     }
     pub fn get_cpu_frequency() -> u16 {
-        log::info!("Getting CPU frequency");
+        log::debug!("Getting CPU frequency");
         let mut sys = System::new_all();
         sys.refresh_all();
         let brand = sys.global_cpu_info().brand();
@@ -365,7 +365,7 @@ impl CpuInfo {
         }
     }
     pub fn get_cpu_vendor() -> String {
-        log::info!("Getting CPU vendor");
+        log::debug!("Getting CPU vendor");
         let mut sys = System::new_all();
         sys.refresh_all();
         let vendor = sys.global_cpu_info().vendor_id().to_string();
@@ -373,7 +373,7 @@ impl CpuInfo {
         vendor
     }
     pub fn get_cpu_cores() -> u8 {
-        log::info!("Getting CPU cores");
+        log::debug!("Getting CPU cores");
         let mut sys = System::new_all();
         sys.refresh_all();
         let cores = sys

@@ -9,3 +9,5 @@ pub mod packages;
 pub use packages::*;
 pub mod configs;
 pub use configs::*;
+pub mod components;
+pub use components::*;

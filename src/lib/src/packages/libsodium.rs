@@ -1,17 +1,16 @@
-use crate::{
-    async_command, async_user_command, check_env, check_repo, drop_privileges, export_shell_variables, file_exists, LIBSODIUM_URL,
-};
+use crate::{async_command, async_user_command, check_env, check_repo, drop_privileges, export_shell_variables, LIBSODIUM_URL};
 use anyhow::Result;
+use std::path::Path;
 
 pub async fn check_libsodium() -> Result<()> {
-    log::info!("Checking if libdsodium is installed");
-    let pc = "/usr/local/lib/pkgconfig/libsodium.pc";
-    let so = "/usr/local/lib/libsodium.so";
-    let so_23 = "/usr/local/lib/libsodium.so.23";
-    let so_23_3_0 = "/usr/local/lib/libsodium.so.23.3.0";
-    let la = "/usr/local/lib/libsodium.la";
-    let a = "/usr/local/lib/libsodium.a";
-    if !(file_exists(pc) && file_exists(so) && file_exists(la) && file_exists(so_23_3_0) && file_exists(so_23) && file_exists(a)) {
+    log::debug!("Checking if libsodium is installed");
+    let pc = Path::new("/usr/local/lib/pkgconfig/libsodium.pc");
+    let so = Path::new("/usr/local/lib/libsodium.so");
+    let so_23 = Path::new("/usr/local/lib/libsodium.so.23");
+    let so_23_3_0 = Path::new("/usr/local/lib/libsodium.so.23.3.0");
+    let la = Path::new("/usr/local/lib/libsodium.la");
+    let a = Path::new("/usr/local/lib/libsodium.a");
+    if !(pc.is_file() && so.is_file() && la.is_file() && so_23_3_0.is_file() && so_23.is_file() && a.is_file()) {
         log::warn!("Libsodium is not installed");
         install_libsodium().await?;
     }

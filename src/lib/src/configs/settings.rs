@@ -7,8 +7,8 @@ use crate::CARDANO_CONFIG_FILE_NAME;
 
 #[derive(Hash, Serialize, Debug, Eq, PartialEq)]
 pub struct Settings {
-    work_dir: PathBuf,
-    log_file: PathBuf,
+    pub work_dir: PathBuf,
+    pub log_file: PathBuf,
 }
 
 impl Default for Settings {
@@ -72,7 +72,7 @@ pub fn show_settings() {
 }
 
 pub fn read_setting(key: &str) -> Result<String> {
-    log::info!("Reading setting {key}");
+    log::debug!("Reading setting {key}");
     let settings = read_settings();
     let setting = settings
         .get(key)
@@ -107,7 +107,7 @@ mod test {
         let key = "work_dir";
         let value = read_setting(key)?;
         let work_dir = check_work_dir()?;
-        let work_dir = work_dir.to_str().unwrap();
+        let work_dir = work_dir.as_ref().to_str().unwrap();
         assert_eq!(value, work_dir);
         Ok(())
     }

@@ -5,7 +5,7 @@ use std::{
 };
 
 pub fn check_env(key: &str) -> Result<String> {
-    log::info!("Checking environment variable: {key}");
+    log::debug!("Checking environment variable: {key}");
     match var(key) {
         Ok(val) => {
             log::debug!("{key}={val}");
@@ -41,19 +41,19 @@ pub fn setup_env() -> Result<()> {
 }
 
 pub fn check_user() -> Result<String> {
-    log::info!("Checking user");
-    let user = match check_env("SUDO_USER") {
-        Ok(sudo_user) => sudo_user,
-        Err(_) => check_env("USER").unwrap(),
-    };
+    log::debug!("Checking user");
+    let user = check_env("USER")?;
+    let user = if user != "root" { user } else { check_env("SUDO_USER")? };
     log::debug!("user: {user}");
     let user = user.trim().to_string();
-    set_env("RUNNER", &user);
     Ok(user.trim().to_string())
 }
 
 pub fn drop_privileges() -> Result<()> {
-    log::info!("Dropping root privileges");
+    if check_env("USER")? != "root" {
+        return Ok(());
+    }
+    log::debug!("Dropping root privileges");
     let user = check_user()?;
     drop_root::set_user(&user)?;
     let user = check_env("USER")?;
@@ -103,13 +103,19 @@ mod test {
         Ok(())
     }
 
-    #[tokio::test]
-    async fn test_check_user() -> Result<()> {
+    #[test]
+    fn test_check_user() -> Result<()> {
         let user = check_user()?;
         log::debug!("user: {user}");
-        let user_env = check_env("RUNNER")?;
+        let user_env = check_env("USER")?;
         log::debug!("user_env: {user_env}");
         assert_eq!(user, user_env);
+        Ok(())
+    }
+
+    #[test]
+    fn test_drop_privileges() -> Result<()> {
+        drop_privileges()?;
         Ok(())
     }
 }
