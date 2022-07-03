@@ -16,12 +16,12 @@ pub fn check_env(key: &str) -> Result<String> {
 }
 
 pub fn set_env(key: &str, value: &str) {
-    log::info!("Setting environment variable {key}={value}");
+    log::debug!("Setting environment variable {key}={value}");
     set_var(key, value);
 }
 
 pub fn setup_env() -> Result<()> {
-    log::info!("Setting up environment variables");
+    log::debug!("Setting up environment variables");
     let home_dir = dirs::home_dir().expect("Failed to read $HOME");
     let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
     let ghcup_dir = format!("{home_dir}/.ghcup");

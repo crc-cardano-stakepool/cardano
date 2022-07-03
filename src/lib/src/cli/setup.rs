@@ -9,7 +9,6 @@ use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 
 pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
-    log::info!("Installing {component}");
     set_confirm(confirm);
     if !is_bin_installed(component).await? {
         return check_confirm(component, confirm).await;
@@ -33,12 +32,12 @@ async fn check_confirm(component: &str, confirm: bool) -> Result<()> {
 }
 
 async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()> {
-    log::info!("Installing {component} or updating if there is a new version available");
     let installed = check_installed_version(component).await?;
     let latest = check_latest_version(component).await?;
     if !installed.eq(&latest) {
         return check_confirm(component, confirm).await;
     }
+    log::info!("Latest {component} v{installed} is already installed");
     Ok(())
 }
 
@@ -54,6 +53,7 @@ async fn proceed_install(component: &str, latest: &str) -> Result<()> {
 }
 
 async fn install(component: &str) -> Result<()> {
+    log::info!("Installing {component}");
     prepare_build().await?;
     build_component(component).await?;
     copy_binary(component).await?;
@@ -169,8 +169,9 @@ pub async fn check_install(component: &str) -> Result<()> {
     if let "cardano-node" = component {
         check_installed_version("cardano-cli").await?;
     }
-    check_installed_version(component).await?;
+    let version = check_installed_version(component).await?;
     source_shell().await?;
+    log::info!("Successfully installed {component} v{version}");
     Ok(())
 }
 
