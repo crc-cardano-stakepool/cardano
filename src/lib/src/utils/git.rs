@@ -1,27 +1,29 @@
 use crate::{
-    async_command, async_command_pipe, async_user_command, check_env, check_latest_version, get_component_path, set_env, CARDANO_NODE_URL,
+    absolute_ref_path_to_string, async_command, async_user_command, check_env, check_latest_version, get_component_path, set_env,
+    CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
-pub async fn check_repo(url: &str, absolute_path: &str) -> Result<()> {
-    log::info!("Cheking if {absolute_path} is a repository");
-    if Path::new(absolute_path).is_dir() {
-        log::debug!("{absolute_path} exists");
-        let repo_git_path = format!("{absolute_path}/.git");
-        if !Path::new(&repo_git_path).is_dir() {
-            log::debug!("{absolute_path} is a not git repository");
-            let cmd = format!("$(ls -A {absolute_path})");
-            let directory_content = async_command_pipe(&cmd).await?;
-            if directory_content.is_empty() {
+pub async fn check_repo<P: AsRef<Path>>(url: &str, absolute_path: P) -> Result<()> {
+    let path = absolute_ref_path_to_string(&absolute_path)?;
+    let path_ref = absolute_path.as_ref();
+    let mut path_buf = PathBuf::from(path_ref);
+    log::info!("Cheking if {path} is a repository");
+    if path_ref.is_dir() {
+        log::debug!("{path} exists");
+        path_buf.push(".git");
+        if !path_buf.is_dir() {
+            log::debug!("{path} is a not git repository");
+            if path_ref.read_dir()?.next().is_none() {
                 return clone_repo(url, absolute_path).await;
             }
-            log::debug!("{absolute_path} is not empty, skipping a clone");
+            log::debug!("{path} is not empty, skipping a clone");
         }
-        log::debug!("{absolute_path} is a git repository, skipping a clone");
+        log::debug!("{path} is a git repository, skipping a clone");
     }
-    log::debug!("{absolute_path} does not exist, cloning into it");
+    log::debug!("{path} does not exist, cloning into it");
     clone_repo(url, absolute_path).await
 }
 
@@ -29,6 +31,7 @@ pub async fn checkout_latest_release(component: &str) -> Result<()> {
     log::info!("Checking out the latest release of {component}");
     let version = check_latest_version(component).await?;
     let path = get_component_path(component)?;
+    let path = absolute_ref_path_to_string(&path)?;
     let cmd = format!("cd {path} && git checkout tags/{version}");
     fetch_tags(component).await?;
     async_command(&cmd).await?;
@@ -53,9 +56,10 @@ pub async fn clone_component(component: &str) -> Result<()> {
     Err(anyhow!("Failed cloning {component} repository"))
 }
 
-pub async fn clone_repo(url: &str, destination_path: &str) -> Result<()> {
-    log::info!("Cloning repo to {destination_path}");
-    let cmd = format!("git clone {url} {destination_path}");
+pub async fn clone_repo<P: AsRef<Path>>(url: &str, destination_path: P) -> Result<()> {
+    let path = absolute_ref_path_to_string(&destination_path)?;
+    log::info!("Cloning repo to {path}");
+    let cmd = format!("git clone {url} {path}");
     async_command(&cmd).await?;
     Ok(())
 }
@@ -63,6 +67,7 @@ pub async fn clone_repo(url: &str, destination_path: &str) -> Result<()> {
 pub async fn fetch_tags(component: &str) -> Result<()> {
     log::info!("Fetching the latest tags of the {component} source reposity of");
     let path = get_component_path(component)?;
+    let path = absolute_ref_path_to_string(&path)?;
     let cmd = format!("cd {path} && git fetch --all --recurse-submodules --tags");
     async_user_command(&cmd).await?;
     Ok(())

@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::{
     absolute_ref_path_to_string, async_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
@@ -82,6 +82,7 @@ pub async fn build_component(component: &str) -> Result<()> {
     clone_component(component).await?;
     let ghc_version = get_ghc_version().await?;
     let cabal = check_env("CABAL_BIN")?;
+    let cabal = PathBuf::from(&cabal);
     let project_file = get_project_file(component)?;
     let path = get_component_path(component)?;
     update_cabal(&path, &cabal).await?;
@@ -91,8 +92,10 @@ pub async fn build_component(component: &str) -> Result<()> {
     build(component, &path, &cabal).await
 }
 
-async fn update_cabal(path: &str, cabal_path: &str) -> Result<()> {
+async fn update_cabal<P: AsRef<Path>>(path: P, cabal_path: P) -> Result<()> {
     log::info!("Updating Cabal");
+    let path = absolute_ref_path_to_string(&path)?;
+    let cabal_path = absolute_ref_path_to_string(&cabal_path)?;
     let cmd = format!("cd {path} && {cabal_path} update");
     async_command(&cmd).await?;
     Ok(())
@@ -111,15 +114,21 @@ async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
     Ok(())
 }
 
-pub async fn configure_build(ghc_version: &str, path: &str, cabal: &str) -> Result<()> {
+pub async fn configure_build<P: AsRef<Path>>(ghc_version: &str, path: P, cabal: P) -> Result<()> {
     log::info!("Configuring build");
     let ghc = check_env("GHC_BIN")?;
+    let path = absolute_ref_path_to_string(&path)?;
+    let cabal = absolute_ref_path_to_string(&cabal)?;
     let cmd = format!("cd {path} && {cabal} configure --with-compiler={ghc}-{ghc_version}");
     async_command(&cmd).await?;
     Ok(())
 }
 
-pub async fn update_project_file(file_path: &str) -> Result<()> {
+pub async fn update_project_file<P: AsRef<Path>>(path: P) -> Result<()> {
+    let file_path = absolute_ref_path_to_string(&path)?;
+    if !path.as_ref().is_file() {
+        return Err(anyhow!("The path {file_path} is not a file"));
+    }
     log::info!("Updating the project file at {file_path}");
     let package = format!("echo \"package cardano-crypto-praos\" >> {file_path}");
     let libsodium_flag = format!("echo \"  flags: -external-libsodium-vrf\" >> {file_path}");
@@ -128,23 +137,26 @@ pub async fn update_project_file(file_path: &str) -> Result<()> {
     Ok(())
 }
 
-pub fn get_component_path(component: &str) -> Result<String> {
+pub fn get_component_path(component: &str) -> Result<PathBuf> {
     log::info!("Checking where the source reposity of {component} is");
-    let env = format!("{component}-dir");
+    let env = format!("{component}_dir");
     let converted = env.to_case(Case::UpperSnake);
     let path = check_env(&converted)?;
+    let path = PathBuf::from(&path);
     Ok(path)
 }
 
-pub fn get_project_file(component: &str) -> Result<String> {
+pub fn get_project_file(component: &str) -> Result<PathBuf> {
     log::info!("Getting the project file of the {component} source reposity");
-    let path = get_component_path(component)?;
-    let project_file = format!("{path}/cabal.project.local");
-    Ok(project_file)
+    let mut path = get_component_path(component)?;
+    path.push("cabal.project.local");
+    Ok(path)
 }
 
-async fn build(component: &str, path: &str, cabal: &str) -> Result<()> {
+async fn build<P: AsRef<Path>>(component: &str, path: P, cabal: P) -> Result<()> {
     log::info!("Building {component}");
+    let path = absolute_ref_path_to_string(&path)?;
+    let cabal = absolute_ref_path_to_string(&cabal)?;
     let cmd = format!("cd {path} && {cabal} build all");
     if process_success_inherit(&cmd).await? {
         log::debug!("Successfully built {component}");

@@ -49,10 +49,12 @@ pub fn check_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
         log::debug!("{path} is not a directory");
         return create_dir(absolute_path);
     }
+    log::debug!("The path {path} exists");
     Ok(())
 }
 
 pub fn check_work_dir() -> Result<impl AsRef<Path>> {
+    log::info!("Checking the working directory");
     let mut work_dir = dirs::config_dir()
         .ok_or_else(|| anyhow!("Failed to determine XDG_CONFIG_HOME"))
         .unwrap();
@@ -77,10 +79,13 @@ async fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     let install_dir = absolute_ref_path_to_string(install_dir.as_ref())?;
     log::info!("Copying to {install_dir}");
     let component = "cardano-node";
-    let path = get_component_path(component)?;
-    let bin_path = format!("{path}/scripts/bin-path.sh");
-    let node = format!("cd {path} && cp -p \"$({bin_path} cardano-node)\" {install_dir}");
-    let cli = format!("cd {path} && cp -p \"$({bin_path} cardano-cli)\" {install_dir}");
+    let mut path = get_component_path(component)?;
+    let parsed_path = absolute_ref_path_to_string(&path)?;
+    let bin_path = format!("{parsed_path}/scripts/bin-path.sh");
+    path.push("scripts");
+    path.push("bin-path.sh");
+    let node = format!("cd {parsed_path} && cp -p \"$({bin_path} cardano-node)\" {install_dir}");
+    let cli = format!("cd {parsed_path} && cp -p \"$({bin_path} cardano-cli)\" {install_dir}");
     let node_bin = format!("{install_dir}/cardano-node");
     let cli_bin = format!("{install_dir}/cardano-cli");
     async_command(&node).await?;
@@ -98,6 +103,7 @@ pub fn create_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
 }
 
 pub fn path_to_string(path: &Path) -> Result<String> {
+    log::info!("Parsing to absolute path to a string");
     if let Some(path) = path.to_str() {
         return Ok(path.to_string());
     }
@@ -105,6 +111,7 @@ pub fn path_to_string(path: &Path) -> Result<String> {
 }
 
 pub fn absolute_ref_path_to_string<P: AsRef<Path>>(absolute_path: P) -> Result<String> {
+    log::info!("Parsing to path to string if the path is absolute");
     let path = absolute_path.as_ref();
     if path.is_absolute() {
         return path_to_string(path);
@@ -112,11 +119,14 @@ pub fn absolute_ref_path_to_string<P: AsRef<Path>>(absolute_path: P) -> Result<S
     let path = path_to_string(path)?;
     Err(anyhow!("The path {path} is not absolute"))
 }
+
 pub fn get_bin_path(bin: &str) -> Result<PathBuf> {
-    let bin = absolute_ref_path_to_string(bin)?;
+    log::info!("Getting the path of the binary {bin}");
     if let Some(mut dir) = dirs::executable_dir() {
         dir.push(bin);
         let path = dir;
+        let parsed = absolute_ref_path_to_string(&path)?;
+        log::debug!("The path to the {bin} binary: {parsed}");
         return Ok(path);
     }
     Err(anyhow!("XDG_DATA_HOME is not set, failed to check if {bin} is installed"))
@@ -138,6 +148,7 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
     let cmd = format!("{path} --version | awk {} | head -n1", "'{print $2}'");
     let version = async_command_pipe(&cmd).await?;
     let installed_version: String = String::from(version.trim());
+
     Ok(installed_version)
 }
 
