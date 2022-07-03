@@ -3,29 +3,27 @@ use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::{
     collections::HashMap,
+    fs::create_dir_all,
     path::{Path, PathBuf},
 };
-use tokio::fs::create_dir_all;
 
-pub async fn check_dir(absolute_path: &str) -> Result<()> {
+pub fn check_dir(absolute_path: &str) -> Result<()> {
     if !Path::new(absolute_path).is_dir() {
-        create_dir(absolute_path).await
-    } else {
-        Ok(())
+        return create_dir(absolute_path);
     }
+    Ok(())
 }
 
 pub fn check_work_dir() -> Result<PathBuf> {
     let mut work_dir = dirs::config_dir()
-        .ok_or_else(|| anyhow!("Failed to determine XDG_DATA_CONFIG"))
+        .ok_or_else(|| anyhow!("Failed to determine XDG_CONFIG_HOME"))
         .unwrap();
     work_dir.push(".cardano");
     if let Some(path) = work_dir.to_str() {
         set_env("WORK_DIR", path);
-        Ok(work_dir)
-    } else {
-        Err(anyhow!("Failed to set working directory"))
+        return Ok(work_dir);
     }
+    Err(anyhow!("Failed to set working directory"))
 }
 
 pub async fn copy_binary(component: &str) -> Result<()> {
@@ -53,8 +51,8 @@ async fn copy_node_binaries(install_dir: &str) -> Result<()> {
     Ok(())
 }
 
-pub async fn create_dir(absolute_path: &str) -> Result<()> {
-    create_dir_all(absolute_path).await?;
+pub fn create_dir(absolute_path: &str) -> Result<()> {
+    create_dir_all(absolute_path)?;
     Ok(())
 }
 
@@ -66,7 +64,7 @@ pub fn is_dir(absolute_path: &str) -> bool {
     Path::new(absolute_path).is_dir()
 }
 
-pub async fn setup_work_dir() -> Result<()> {
+pub fn setup_work_dir() -> Result<()> {
     log::info!("Setting up working directory");
     let home_dir = dirs::home_dir().expect("Failed to read $HOME");
     let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
@@ -94,7 +92,7 @@ pub async fn setup_work_dir() -> Result<()> {
         ("secp256k1", &secp256k1_dir),
     ]);
     for (key, value) in map.iter() {
-        check_dir(value).await?;
+        check_dir(value)?;
         let mut env_key = format!("{key}-dir");
         env_key = env_key.to_case(Case::UpperSnake);
         set_env(&env_key, value);
@@ -137,9 +135,9 @@ pub async fn check_latest_version(component: &str) -> Result<String> {
 mod test {
     use super::*;
 
-    #[tokio::test]
-    async fn test_setup_work_dir() -> Result<()> {
-        setup_work_dir().await?;
+    #[test]
+    fn test_setup_work_dir() -> Result<()> {
+        setup_work_dir()?;
         Ok(())
     }
 

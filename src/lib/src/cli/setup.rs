@@ -60,7 +60,7 @@ async fn install(component: &str) -> Result<()> {
 
 pub async fn prepare_build() -> Result<()> {
     log::info!("Preparing build");
-    setup_work_dir().await?;
+    setup_work_dir()?;
     setup_packages().await?;
     setup_shell().await?;
     check_dependencies().await

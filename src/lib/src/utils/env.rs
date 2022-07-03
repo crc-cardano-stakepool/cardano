@@ -51,7 +51,7 @@ pub fn check_user() -> Result<String> {
 
 pub fn drop_privileges() -> Result<()> {
     if check_env("USER")? != "root" {
-        return Ok(())
+        return Ok(());
     }
     log::info!("Dropping root privileges");
     let user = check_user()?;
