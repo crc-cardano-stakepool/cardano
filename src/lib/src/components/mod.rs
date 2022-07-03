@@ -1,2 +1,2 @@
-pub mod node;
-pub use node::*;
+pub mod component;
+pub use component::*;

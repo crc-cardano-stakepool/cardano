@@ -242,7 +242,7 @@ impl Default for DiskInfo {
 
 impl DiskInfo {
     pub fn get_disk_info() -> Self {
-        log::info!("Getting disk info");
+        log::debug!("Getting disk info");
         let mut sys = System::new_all();
         sys.refresh_all();
         for disk in sys.disks() {
@@ -300,7 +300,7 @@ impl Default for MemoryInfo {
 
 impl MemoryInfo {
     pub fn get_memory_info() -> Self {
-        log::info!("Getting memory info");
+        log::debug!("Getting memory info");
         let memory = Self {
             available_memory_in_kb: MemoryInfo::get_available_memory_in_kb(),
         };
@@ -332,7 +332,7 @@ impl Default for CpuInfo {
 
 impl CpuInfo {
     pub fn get_cpu_info() -> Self {
-        log::info!("Getting CPU info");
+        log::debug!("Getting CPU info");
         let cpu = Self {
             cpu_frequency_in_mhz: CpuInfo::get_cpu_frequency(),
             vendor: CpuInfo::get_cpu_vendor(),

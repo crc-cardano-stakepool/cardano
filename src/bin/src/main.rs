@@ -6,7 +6,7 @@ use crate::{NodeArgs, NodeCommand, WalletArgs, WalletCommand};
 use anyhow::Result;
 use clap::{ColorChoice, CommandFactory, Parser, Subcommand};
 use clap_complete::{generate, Shell};
-use clap_verbosity_flag::Verbosity;
+use clap_verbosity_flag::{InfoLevel, Verbosity};
 
 pub mod node;
 pub use node::*;
@@ -22,7 +22,7 @@ pub struct Cli {
     #[clap(subcommand)]
     pub command: Option<CardanoCommand>,
     #[clap(flatten)]
-    verbose: Verbosity,
+    verbose: Verbosity<InfoLevel>,
 }
 
 impl Cli {

@@ -39,7 +39,6 @@ pub async fn checkout_latest_release(component: &str) -> Result<()> {
 }
 
 pub async fn clone_component(component: &str) -> Result<()> {
-    log::info!("Cloning {component}");
     let url = match component {
         "cardano-node" => Ok(CARDANO_NODE_URL),
         _ => Err(anyhow!("Unknown component {component}")),

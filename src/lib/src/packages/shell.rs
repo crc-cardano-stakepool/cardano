@@ -58,7 +58,7 @@ pub fn check_shell() -> String {
 }
 
 pub async fn export_shell_variables() -> Result<()> {
-    log::info!("Exporting shell variables");
+    log::debug!("Exporting shell variables");
     let envs = HashMap::from([("LD_LIBRARY_PATH", LD_LIBRARY_PATH), ("PKG_CONFIG_PATH", PKG_CONFIG_PATH)]);
     for (key, value) in envs.iter() {
         set_env(key, value);
@@ -114,7 +114,7 @@ pub async fn setup_shell() -> Result<()> {
 }
 
 pub async fn source_shell() -> Result<()> {
-    log::info!("Sourcing shell");
+    log::debug!("Sourcing shell");
     let shell_file = get_shell_profile_file().await?;
     let cmd = format!("source {shell_file}");
     async_command_pipe(&cmd).await?;
@@ -122,8 +122,8 @@ pub async fn source_shell() -> Result<()> {
 }
 
 pub async fn write_shell_config(value: &str) -> Result<()> {
-    log::info!("Writing shell config");
     let shell_profile_file = check_env("SHELL_PROFILE_FILE")?;
+    log::info!("Writing {value} to {shell_profile_file}");
     let append_string = format!("$(cat << 'EOF'\n{value}\nEOF\n)");
     let cmd = format!("echo \"{append_string}\" >> {shell_profile_file}");
     async_command(&cmd).await?;

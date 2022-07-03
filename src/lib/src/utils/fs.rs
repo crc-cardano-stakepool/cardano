@@ -8,7 +8,7 @@ use std::{
 };
 
 pub fn setup_work_dir() -> Result<()> {
-    log::info!("Setting up working directory");
+    log::debug!("Setting up working directory");
     check_work_dir()?;
     let work_dir = check_env("WORK_DIR")?;
     let ipc_dir = format!("{work_dir}/ipc");
@@ -44,7 +44,7 @@ pub fn setup_work_dir() -> Result<()> {
 
 pub fn check_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
     let path = path_to_string(absolute_path.as_ref())?;
-    log::info!("Checking {path}");
+    log::debug!("Checking {path}");
     if !absolute_path.as_ref().is_dir() {
         log::debug!("{path} is not a directory");
         return create_dir(absolute_path);
@@ -54,7 +54,7 @@ pub fn check_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
 }
 
 pub fn check_work_dir() -> Result<impl AsRef<Path>> {
-    log::info!("Checking the working directory");
+    log::debug!("Checking the working directory");
     let mut work_dir = dirs::config_dir()
         .ok_or_else(|| anyhow!("Failed to determine XDG_CONFIG_HOME"))
         .unwrap();
@@ -67,7 +67,7 @@ pub fn check_work_dir() -> Result<impl AsRef<Path>> {
 }
 
 pub async fn copy_binary(component: &str) -> Result<()> {
-    log::info!("Copying the built binaries of {component}");
+    log::debug!("Copying the built binaries of {component}");
     let install_dir = check_env("INSTALL_DIR")?;
     if component.eq("cardano-node") {
         copy_node_binaries(&install_dir).await?;
@@ -121,7 +121,7 @@ pub fn absolute_ref_path_to_string<P: AsRef<Path>>(absolute_path: P) -> Result<S
 }
 
 pub fn get_bin_path(bin: &str) -> Result<PathBuf> {
-    log::info!("Getting the path of the binary {bin}");
+    log::debug!("Getting the path of the binary {bin}");
     if let Some(mut dir) = dirs::executable_dir() {
         dir.push(bin);
         let path = dir;
@@ -148,7 +148,7 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
     let cmd = format!("{path} --version | awk {} | head -n1", "'{print $2}'");
     let version = async_command_pipe(&cmd).await?;
     let installed_version: String = String::from(version.trim());
-
+    log::info!("{component} v{installed_version} has been successfully installed");
     Ok(installed_version)
 }
 

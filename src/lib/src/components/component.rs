@@ -1,5 +1,5 @@
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum Components {
+pub enum Component {
     Node,
     Cli,
     Wallet,

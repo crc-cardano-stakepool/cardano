@@ -53,7 +53,7 @@ pub fn drop_privileges() -> Result<()> {
     if check_env("USER")? != "root" {
         return Ok(());
     }
-    log::info!("Dropping root privileges");
+    log::debug!("Dropping root privileges");
     let user = check_user()?;
     drop_root::set_user(&user)?;
     let user = check_env("USER")?;

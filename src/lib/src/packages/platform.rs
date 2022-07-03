@@ -2,7 +2,7 @@ use crate::{async_command, async_command_pipe, drop_privileges, pipe, process_su
 use anyhow::{anyhow, Result};
 
 pub async fn check_platform() -> Result<String> {
-    log::info!("Checking current platform");
+    log::debug!("Checking current platform");
     let platform = async_command_pipe("uname").await;
     match platform {
         Ok(platform) => Ok(platform),
@@ -11,7 +11,7 @@ pub async fn check_platform() -> Result<String> {
 }
 
 pub async fn setup_packages() -> Result<()> {
-    log::info!("Setting up required packages");
+    log::debug!("Setting up required packages");
     let output = check_platform().await?;
     let platform = output.as_str().trim();
     match platform {
@@ -42,7 +42,7 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
 }
 
 pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
-    log::info!("Checking {package}");
+    log::debug!("Checking {package}");
     match package_manager {
         "apt" => apt_install(package).await,
         "yum" => yum_install(package).await,
@@ -59,7 +59,7 @@ pub async fn update(package_manager: &str) -> Result<()> {
 }
 
 pub async fn apt_install(package: &str) -> Result<()> {
-    log::info!("Checking if {package} is installed");
+    log::debug!("Checking if {package} is installed");
     let cmd = format!("dpkg -s {}", package.trim());
     let piped_cmd = "grep installed";
     if let Ok(result) = pipe(&cmd, piped_cmd).await {
@@ -92,7 +92,7 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
 }
 
 pub async fn yum_install(package: &str) -> Result<()> {
-    log::info!("Checking if {package} is installed");
+    log::debug!("Checking if {package} is installed");
     let cmd = format!("rpm -q {package}");
     if !process_success(&cmd).await? {
         return install_package("yum", package).await;
