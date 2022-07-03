@@ -64,13 +64,11 @@ pub async fn apt_install(package: &str) -> Result<()> {
     let piped_cmd = "grep installed";
     if let Ok(result) = pipe(&cmd, piped_cmd).await {
         if result.trim().is_empty() {
-            install_package("apt", package).await
-        } else {
-            Ok(())
+            return install_package("apt", package).await;
         }
-    } else {
-        Err(anyhow!("Failed installing {package}"))
+        return Ok(());
     }
+    Err(anyhow!("Failed installing {package}"))
 }
 
 pub async fn install_package(package_manager: &str, package: &str) -> Result<()> {
@@ -96,10 +94,9 @@ pub async fn yum_install(package: &str) -> Result<()> {
     log::info!("Checking if {package} is installed");
     let cmd = format!("rpm -q {package}");
     if !process_success(&cmd).await? {
-        install_package("yum", package).await
-    } else {
-        Ok(())
+        return install_package("yum", package).await;
     }
+    Ok(())
 }
 
 #[cfg(test)]

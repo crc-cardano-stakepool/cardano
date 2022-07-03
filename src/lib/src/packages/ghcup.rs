@@ -7,13 +7,11 @@ pub async fn check_ghcup() -> Result<()> {
     let ghcup_bin = check_env("GHCUP_BIN")?;
     if is_dir(&ghcup_dir) {
         if file_exists(&ghcup_bin) {
-            Ok(())
-        } else {
-            Err(anyhow!("Failed installing GHCup"))
+            return Ok(());
         }
-    } else {
-        install_ghcup().await
+        return Err(anyhow!("Failed installing GHCup"));
     }
+    install_ghcup().await
 }
 
 pub async fn install_ghcup() -> Result<()> {

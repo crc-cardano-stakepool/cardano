@@ -10,38 +10,34 @@ pub async fn install_component(component: &str, confirm: bool) -> Result<()> {
     log::info!("Installing {component}");
     set_confirm(confirm);
     if !is_bin_installed(component).await? {
-        check_confirm(component, confirm).await
-    } else {
-        install_if_not_up_to_date(component, confirm).await
+        return check_confirm(component, confirm).await;
     }
+    install_if_not_up_to_date(component, confirm).await
 }
 
 pub fn set_confirm(confirm: bool) {
     if confirm {
-        set_env("CONFIRM", "true")
-    } else {
-        set_env("CONFIRM", "false")
+        return set_env("CONFIRM", "true");
     }
+    set_env("CONFIRM", "false")
 }
 
 async fn check_confirm(component: &str, confirm: bool) -> Result<()> {
     if confirm {
-        install(component).await
-    } else {
-        let latest = check_latest_version(component).await?;
-        proceed_install(component, &latest).await
+        return install(component).await;
     }
+    let latest = check_latest_version(component).await?;
+    proceed_install(component, &latest).await
 }
 
 async fn install_if_not_up_to_date(component: &str, confirm: bool) -> Result<()> {
     log::info!("Installing {component} or updating if there is a new version available");
     let installed = check_installed_version(component).await?;
     let latest = check_latest_version(component).await?;
-    if installed.eq(&latest) {
-        Ok(())
-    } else {
-        check_confirm(component, confirm).await
+    if !installed.eq(&latest) {
+        return check_confirm(component, confirm).await;
     }
+    Ok(())
 }
 
 async fn proceed_install(component: &str, latest: &str) -> Result<()> {
@@ -50,10 +46,9 @@ async fn proceed_install(component: &str, latest: &str) -> Result<()> {
     }
     let msg = format!("Do you want to install the latest {component} binary (v{latest})?");
     if proceed(&msg)? {
-        install(component).await
-    } else {
-        Ok(())
+        return install(component).await;
     }
+    Ok(())
 }
 
 async fn install(component: &str) -> Result<()> {
@@ -85,8 +80,8 @@ pub async fn build_component(component: &str) -> Result<()> {
     clone_component(component).await?;
     let ghc_version = get_ghc_version().await?;
     let cabal = check_env("CABAL_BIN")?;
-    let project_file = get_project_file(component).await?;
-    let path = get_component_path(component).await?;
+    let project_file = get_project_file(component)?;
+    let path = get_component_path(component)?;
     update_cabal(&path, &cabal).await?;
     check_project_file(&project_file).await?;
     configure_build(&ghc_version, &path, &cabal).await?;
@@ -107,11 +102,10 @@ async fn check_project_file(project_file: &str) -> Result<()> {
         log::warn!("Project file already exists, removing it");
         let cmd = format!("rm {project_file}");
         async_command(&cmd).await?;
-        Ok(())
-    } else {
-        log::debug!("Project file does not exist");
-        Ok(())
+        return Ok(());
     }
+    log::debug!("Project file does not exist");
+    Ok(())
 }
 
 pub async fn configure_build(ghc_version: &str, path: &str, cabal: &str) -> Result<()> {
@@ -131,7 +125,7 @@ pub async fn update_project_file(file_path: &str) -> Result<()> {
     Ok(())
 }
 
-pub async fn get_component_path(component: &str) -> Result<String> {
+pub fn get_component_path(component: &str) -> Result<String> {
     log::info!("Checking where the source reposity of {component} is");
     let env = format!("{component}-dir");
     let converted = env.to_case(Case::UpperSnake);
@@ -139,9 +133,9 @@ pub async fn get_component_path(component: &str) -> Result<String> {
     Ok(path)
 }
 
-pub async fn get_project_file(component: &str) -> Result<String> {
+pub fn get_project_file(component: &str) -> Result<String> {
     log::info!("Getting the project file of the {component} source reposity");
-    let path = get_component_path(component).await?;
+    let path = get_component_path(component)?;
     let project_file = format!("{path}/cabal.project.local");
     Ok(project_file)
 }
@@ -151,10 +145,9 @@ async fn build(component: &str, path: &str, cabal: &str) -> Result<()> {
     let cmd = format!("cd {path} && {cabal} build all");
     if process_success_inherit(&cmd).await? {
         log::debug!("Successfully built {component}");
-        Ok(())
-    } else {
-        Err(anyhow!("Failed building {component}"))
+        return Ok(());
     }
+    Err(anyhow!("Failed building {component}"))
 }
 
 pub async fn check_install(component: &str) -> Result<()> {

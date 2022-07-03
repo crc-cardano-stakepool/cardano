@@ -7,8 +7,8 @@ use crate::CARDANO_CONFIG_FILE_NAME;
 
 #[derive(Hash, Serialize, Debug, Eq, PartialEq)]
 pub struct Settings {
-    work_dir: PathBuf,
-    log_file: PathBuf,
+    pub work_dir: PathBuf,
+    pub log_file: PathBuf,
 }
 
 impl Default for Settings {

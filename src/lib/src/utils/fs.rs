@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, get_component_path, set_env};
+use crate::{async_command, async_command_pipe, check_env, check_user, get_component_path, set_env, CARDANO_NODE_RELEASE_URL};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::{
@@ -40,7 +40,7 @@ pub async fn copy_binary(component: &str) -> Result<()> {
 async fn copy_node_binaries(install_dir: &str) -> Result<()> {
     log::info!("Copying to {install_dir}");
     let component = "cardano-node";
-    let path = get_component_path(component).await?;
+    let path = get_component_path(component)?;
     let bin_path = format!("{path}/scripts/bin-path.sh");
     let node = format!("cd {path} && cp -p \"$({bin_path} cardano-node)\" {install_dir}");
     let cli = format!("cd {path} && cp -p \"$({bin_path} cardano-cli)\" {install_dir}");
@@ -101,23 +101,38 @@ pub async fn setup_work_dir() -> Result<()> {
     }
     Ok(())
 }
-//
-//pub fn chownr<P: AsRef<Path>>(path: P) -> Result<()> {
-//    let user = check_user()?;
-//    let nix_user = nix::unistd::User::from_name(&user)
-//        .map_err(|err| anyhow!("Failed to parse user {user}: {err}"))
-//        .unwrap();
-//    let nix_user = nix_user.ok_or_else(|| anyhow!("User {user} does not exist or is invalid")).unwrap();
-//    if path.as_ref().is_dir() {
-//        for entry in fs::read_dir(&path)? {
-//            let entry = entry?;
-//            chownr(entry.path().as_path())?;
-//        }
-//    }
-//    nix::unistd::chown(path.as_ref(), Some(nix_user.uid), Some(nix_user.gid))?;
-//    Ok(())
-//}
-//
+
+pub fn get_bin_path(bin: &str) -> Result<String> {
+    let user = check_user()?;
+    let path = format!("/home/{user}/.local/bin/{bin}");
+    Ok(path)
+}
+
+pub async fn is_bin_installed(bin: &str) -> Result<bool> {
+    log::debug!("Checking if {bin} is already installed");
+    let user = check_user()?;
+    let file = format!("/home/{user}/.local/bin/{bin}");
+    Ok(file_exists(&file))
+}
+
+pub async fn check_installed_version(component: &str) -> Result<String> {
+    log::info!("Checking installed version of {component}");
+    let component_bin_path = get_bin_path(component)?;
+    let cmd = format!("{component_bin_path} --version | awk {} | head -n1", "'{print $2}'");
+    let version = async_command_pipe(&cmd).await?;
+    let installed_version: String = String::from(version.trim());
+    Ok(installed_version)
+}
+
+pub async fn check_latest_version(component: &str) -> Result<String> {
+    log::info!("Checking latest {component} version");
+    let cmd = format!("curl -s {CARDANO_NODE_RELEASE_URL} | jq -r .tag_name");
+    log::debug!("Executing command: {cmd}");
+    let response = async_command_pipe(&cmd).await?;
+    log::debug!("Response: {response}");
+    Ok(String::from(response.trim()))
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -175,12 +190,6 @@ mod test {
     #[tokio::test]
     #[ignore]
     async fn test_change_dir() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_chownr() {
         unimplemented!();
     }
 }

@@ -23,10 +23,10 @@ pub async fn check_ghc() -> Result<()> {
         Ok(ghc) => {
             if compare_ghc(&ghc).await? {
                 log::info!("Installed GHC v{ghc} is correct");
-                Ok(())
-            } else {
-                install_ghc().await
+                return Ok(());
             }
+            log::warn!("GHC versions do not match");
+            install_ghc().await
         }
         Err(_) => install_ghc().await,
     }

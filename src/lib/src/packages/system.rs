@@ -7,15 +7,15 @@ use sysinfo::{CpuExt, DiskExt, System, SystemExt};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SystemRequirements {
-    min_cores: u8,
-    mainnet_min_free_disk_space_in_gb: u8,
-    mainnet_recommended_free_disk_space_in_gb: u8,
-    testnet_min_free_disk_space_in_gb: u8,
-    mainnet_min_free_ram_in_gb: u8,
-    testnet_min_free_ram_in_gb: u8,
-    processor: SupportedCpu,
-    min_processor_frequency_in_mhz: u16,
-    recommended_processor_frequency_in_mhz: u16,
+    pub min_cores: u8,
+    pub mainnet_min_free_disk_space_in_gb: u8,
+    pub mainnet_recommended_free_disk_space_in_gb: u8,
+    pub testnet_min_free_disk_space_in_gb: u8,
+    pub mainnet_min_free_ram_in_gb: u8,
+    pub testnet_min_free_ram_in_gb: u8,
+    pub processor: SupportedCpu,
+    pub min_processor_frequency_in_mhz: u16,
+    pub recommended_processor_frequency_in_mhz: u16,
 }
 
 impl Default for SystemRequirements {
@@ -176,8 +176,8 @@ impl SystemRequirements {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SupportedCpu {
-    intel: String,
-    amd: String,
+    pub intel: String,
+    pub amd: String,
 }
 
 impl Default for SupportedCpu {
@@ -191,10 +191,10 @@ impl Default for SupportedCpu {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SystemInfo {
-    name: String,
-    disk: DiskInfo,
-    memory: MemoryInfo,
-    cpu: CpuInfo,
+    pub name: String,
+    pub disk: DiskInfo,
+    pub memory: MemoryInfo,
+    pub cpu: CpuInfo,
 }
 
 impl Default for SystemInfo {
@@ -231,7 +231,7 @@ impl SystemInfo {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct DiskInfo {
-    available_space_in_b: u64,
+    pub available_space_in_b: u64,
 }
 
 impl Default for DiskInfo {
@@ -289,7 +289,7 @@ impl DiskInfo {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MemoryInfo {
-    available_memory_in_kb: u64,
+    pub available_memory_in_kb: u64,
 }
 
 impl Default for MemoryInfo {
@@ -319,9 +319,9 @@ impl MemoryInfo {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct CpuInfo {
-    cpu_frequency_in_mhz: u16,
-    vendor: String,
-    cores: u8,
+    pub cpu_frequency_in_mhz: u16,
+    pub vendor: String,
+    pub cores: u8,
 }
 
 impl Default for CpuInfo {

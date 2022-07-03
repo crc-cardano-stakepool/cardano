@@ -42,13 +42,14 @@ pub fn setup_env() -> Result<()> {
 
 pub fn check_user() -> Result<String> {
     log::info!("Checking user");
-    let user = match check_env("SUDO_USER") {
-        Ok(sudo_user) => sudo_user,
-        Err(_) => check_env("USER").unwrap(),
+    let user = check_env("USER")?;
+    let user = if user != "root" {
+        user
+    } else {
+        check_env("SUDO_USER")?
     };
     log::debug!("user: {user}");
     let user = user.trim().to_string();
-    set_env("RUNNER", &user);
     Ok(user.trim().to_string())
 }
 
@@ -103,11 +104,11 @@ mod test {
         Ok(())
     }
 
-    #[tokio::test]
-    async fn test_check_user() -> Result<()> {
+    #[test]
+    fn test_check_user() -> Result<()> {
         let user = check_user()?;
         log::debug!("user: {user}");
-        let user_env = check_env("RUNNER")?;
+        let user_env = check_env("USER")?;
         log::debug!("user_env: {user_env}");
         assert_eq!(user, user_env);
         Ok(())

@@ -51,11 +51,11 @@ async fn main() -> Result<()> {
     let log_file = read_setting("log_file")?;
     setup_logger(cli.verbose.log_level_filter(), true, log_file)?;
     human_panic::setup_panic!();
-    ctrlc::set_handler(|| println!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
+    ctrlc::set_handler(|| log::info!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
     let mut cmd = Cli::command();
     if let Some(generator) = cli.generator {
         let bin_name = cmd.get_name().to_string();
-        eprintln!("Generating completion file for {:?}...", generator);
+        log::info!("Generating completion file for {:?}...", generator);
         generate(generator, &mut cmd, bin_name, &mut std::io::stdout());
         Ok(())
     } else if let Some(command) = cli.command {

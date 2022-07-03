@@ -15,10 +15,9 @@ async fn check_ask_shell_confirm(shell_file: &str) -> Result<()> {
     let confirm = check_env("CONFIRM")?;
     let msg = format!("Do you want to automatically add the required PATH variables to {shell_file}");
     if confirm == "false" && proceed(&msg)? {
-        change_shell_config().await
-    } else {
-        export_shell_variables().await
+        return change_shell_config().await;
     }
+    export_shell_variables().await
 }
 
 pub async fn change_shell_config() -> Result<()> {

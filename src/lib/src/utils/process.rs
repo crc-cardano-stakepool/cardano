@@ -22,11 +22,7 @@ pub async fn async_command_pipe(command: &str) -> Result<String> {
     log::info!("Executing command: {command}");
     let process = Command::new("sh").arg("-c").arg(command).stdout(Stdio::piped()).output().await;
     match process {
-        Ok(output) => {
-            let output = String::from(String::from_utf8_lossy(&output.stdout)).trim().to_string();
-            log::debug!("Output: {output}");
-            Ok(output)
-        }
+        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout)).trim().to_string()),
         Err(e) => {
             log::error!("Command failed");
             Err(anyhow!("{e}"))
