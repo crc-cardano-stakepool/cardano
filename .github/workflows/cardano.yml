@@ -3,7 +3,7 @@ on:
   push:
     tags:
       - '*'
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
     types: [opened, synchronize]
