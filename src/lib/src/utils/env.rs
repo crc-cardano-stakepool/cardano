@@ -8,7 +8,7 @@ pub fn check_env(key: &str) -> Result<String> {
     log::debug!("Checking environment variable: {key}");
     match var(key) {
         Ok(val) => {
-            log::debug!("{key}={val}");
+            log::trace!("{key}={val}");
             Ok(val)
         }
         Err(e) => Err(anyhow!("Failed to check environment variable {key}: {e}")),

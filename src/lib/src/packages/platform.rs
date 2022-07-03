@@ -25,7 +25,7 @@ pub async fn setup_packages() -> Result<()> {
 }
 
 pub async fn install_distro_packages(distro: &str) -> Result<()> {
-    log::info!("Installing {distro} packages");
+    log::debug!("Checking {distro} packages to install a cardano node");
     match distro {
         "Ubuntu" | "Debian" | "Linux Mint" => {
             let package_manager = "apt";
