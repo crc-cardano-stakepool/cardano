@@ -44,12 +44,12 @@ pub fn setup_work_dir() -> Result<()> {
 
 pub fn check_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
     let path = path_to_string(absolute_path.as_ref())?;
-    log::debug!("Checking {path}");
+    log::trace!("Checking {path}");
     if !absolute_path.as_ref().is_dir() {
         log::debug!("{path} is not a directory");
         return create_dir(absolute_path);
     }
-    log::debug!("The path {path} exists");
+    log::trace!("The path {path} exists");
     Ok(())
 }
 
@@ -103,7 +103,7 @@ pub fn create_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
 }
 
 pub fn path_to_string(path: &Path) -> Result<String> {
-    log::debug!("Parsing the absolute path to a string");
+    log::trace!("Parsing the absolute path to a string");
     if let Some(path) = path.to_str() {
         return Ok(path.to_string());
     }
@@ -111,7 +111,7 @@ pub fn path_to_string(path: &Path) -> Result<String> {
 }
 
 pub fn absolute_ref_path_to_string<P: AsRef<Path>>(absolute_path: P) -> Result<String> {
-    log::debug!("Parsing the path to string if the path is absolute");
+    log::trace!("Parsing the path to string if the path is absolute");
     let path = absolute_path.as_ref();
     if path.is_absolute() {
         return path_to_string(path);

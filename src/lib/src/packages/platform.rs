@@ -25,7 +25,7 @@ pub async fn setup_packages() -> Result<()> {
 }
 
 pub async fn install_distro_packages(distro: &str) -> Result<()> {
-    log::info!("Installing {distro} packages");
+    log::debug!("Checking {distro} packages to install a cardano node");
     match distro {
         "Ubuntu" | "Debian" | "Linux Mint" => {
             let package_manager = "apt";
@@ -42,7 +42,7 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
 }
 
 pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
-    log::debug!("Checking {package}");
+    log::debug!("Checking if {package} is installed");
     match package_manager {
         "apt" => apt_install(package).await,
         "yum" => yum_install(package).await,
@@ -59,7 +59,6 @@ pub async fn update(package_manager: &str) -> Result<()> {
 }
 
 pub async fn apt_install(package: &str) -> Result<()> {
-    log::debug!("Checking if {package} is installed");
     let cmd = format!("dpkg -s {}", package.trim());
     let piped_cmd = "grep installed";
     if let Ok(result) = pipe(&cmd, piped_cmd).await {
@@ -92,7 +91,6 @@ pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Resul
 }
 
 pub async fn yum_install(package: &str) -> Result<()> {
-    log::debug!("Checking if {package} is installed");
     let cmd = format!("rpm -q {package}");
     if !process_success(&cmd).await? {
         return install_package("yum", package).await;

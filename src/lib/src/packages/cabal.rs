@@ -26,7 +26,7 @@ pub async fn check_installed_cabal() -> Result<String> {
         let cmd = format!("{cabal} -V | head -n1 | awk '{{print $3}}'");
         let installed_cabal = async_command_pipe(&cmd).await?;
         let installed_cabal = installed_cabal.trim().to_string();
-        log::debug!("Installed Cabal v{installed_cabal}");
+        log::debug!("Cabal v{installed_cabal} is installed");
         return Ok(installed_cabal);
     }
     Err(anyhow!("Cabal is not installed"))
@@ -52,10 +52,7 @@ pub async fn install_cabal() -> Result<()> {
 
 pub async fn get_cabal_version() -> Result<String> {
     log::debug!("Getting required Cabal version to build a cardano node");
-    let cmd = format!(
-        "curl -s {VERSIONS_URL} | tidy -i | grep '<code>cabal ' | {} | {} | {}",
-        "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"
-    );
+    let cmd = format!("curl -s {VERSIONS_URL} | tidy -i | grep '<code>cabal ' | awk '{{print $4}}' | awk -F '<' '{{print $1}}' | tail -n1");
     let cabal_version = async_command_pipe(&cmd).await?;
     let cabal_version = cabal_version.trim();
     log::debug!("Required Cabal version: {cabal_version}");

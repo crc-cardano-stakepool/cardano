@@ -43,10 +43,7 @@ pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
 
 pub async fn get_ghc_version() -> Result<String> {
     log::debug!("Getting the correct GHC version to build a cardano node");
-    let cmd = format!(
-        "curl -s {VERSIONS_URL} | tidy -i | grep '<code>ghc ' | {} | {} | {}",
-        "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"
-    );
+    let cmd = format!("curl -s {VERSIONS_URL} | tidy -i | grep '<code>ghc ' | awk '{{print $4}}' | awk -F '<' '{{print $1}}' | tail -n1");
     let ghc_version = async_command_pipe(&cmd).await?;
     let ghc_version = ghc_version.trim().to_string();
     Ok(ghc_version)

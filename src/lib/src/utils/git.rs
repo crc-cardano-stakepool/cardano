@@ -1,4 +1,6 @@
-use crate::{absolute_ref_path_to_string, async_command, check_env, check_latest_version, get_component_path, set_env, CARDANO_NODE_URL};
+use crate::{
+    absolute_ref_path_to_string, async_command, check_latest_version, check_work_dir, get_component_path, set_env, CARDANO_NODE_URL,
+};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::path::{Path, PathBuf};
@@ -42,8 +44,9 @@ pub async fn clone_component(component: &str) -> Result<()> {
         _ => Err(anyhow!("Unknown component {component}")),
     };
     if let Ok(url) = url {
-        let work_dir = check_env("WORK_DIR")?;
-        let cardano_component_dir = format!("{work_dir}/{component}");
+        let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
+        work_dir.push(component);
+        let cardano_component_dir = absolute_ref_path_to_string(&work_dir)?;
         let env_name = format!("{component}-dir");
         let converted = env_name.to_case(Case::UpperSnake);
         set_env(&converted, &cardano_component_dir);

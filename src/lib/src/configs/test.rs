@@ -3,7 +3,7 @@
 fn test_setup() {
     use crate::{setup_env, setup_logger, setup_work_dir, show_settings};
     use log::LevelFilter;
-    let _ = setup_logger(LevelFilter::Debug, false, "../../output.log");
+    let _ = setup_logger(LevelFilter::Trace, false, "../../output.log");
     log::debug!("Setting up tests");
     setup_work_dir().unwrap();
     setup_env().unwrap();

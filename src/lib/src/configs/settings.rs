@@ -1,9 +1,8 @@
+use crate::CARDANO_CONFIG_FILE_NAME;
 use anyhow::{anyhow, Result};
 use config::Config;
 use serde::Serialize;
 use std::{collections::HashMap, fs::File, io::Write, path::PathBuf, sync::RwLock};
-
-use crate::CARDANO_CONFIG_FILE_NAME;
 
 #[derive(Hash, Serialize, Debug, Eq, PartialEq)]
 pub struct Settings {
