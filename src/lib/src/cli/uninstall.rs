@@ -1,9 +1,9 @@
 use anyhow::Result;
-use log::info;
 
 pub async fn uninstall_component(component: &str) -> Result<()> {
     if component == "cardano-node" {
-        info!("Uninstalling cardano-node");
+        log::info!("Uninstalling cardano-node");
+        log::warn!("Not yet implemented");
     }
     Ok(())
 }

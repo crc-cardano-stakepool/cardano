@@ -148,7 +148,6 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
     let cmd = format!("{path} --version | awk {} | head -n1", "'{print $2}'");
     let version = async_command_pipe(&cmd).await?;
     let installed_version: String = String::from(version.trim());
-    log::info!("{component} v{installed_version} has been successfully installed");
     Ok(installed_version)
 }
 
