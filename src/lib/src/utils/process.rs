@@ -1,4 +1,3 @@
-use crate::{check_user, drop_privileges};
 use anyhow::{anyhow, Result};
 use std::process::{Command as Cmd, Stdio};
 use tokio::process::Command;
@@ -28,14 +27,6 @@ pub async fn async_command_pipe(command: &str) -> Result<String> {
             Err(anyhow!("{e}"))
         }
     }
-}
-
-pub async fn async_user_command(command: &str) -> Result<()> {
-    let user = check_user()?;
-    let cmd = format!("sudo su - {user} -c \"eval {command}\"");
-    async_command(&cmd).await?;
-    drop_privileges()?;
-    Ok(())
 }
 
 pub async fn is_program_installed(program: &str) -> Result<bool> {

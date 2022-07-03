@@ -154,9 +154,7 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
 pub async fn check_latest_version(component: &str) -> Result<String> {
     log::debug!("Checking latest {component} version");
     let cmd = format!("curl -s {CARDANO_NODE_RELEASE_URL} | jq -r .tag_name");
-    log::debug!("Executing command: {cmd}");
     let response = async_command_pipe(&cmd).await?;
-    log::debug!("Response: {response}");
     Ok(String::from(response.trim()))
 }
 

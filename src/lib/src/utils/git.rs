@@ -1,7 +1,4 @@
-use crate::{
-    absolute_ref_path_to_string, async_command, async_user_command, check_env, check_latest_version, get_component_path, set_env,
-    CARDANO_NODE_URL,
-};
+use crate::{absolute_ref_path_to_string, async_command, check_env, check_latest_version, get_component_path, set_env, CARDANO_NODE_URL};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::path::{Path, PathBuf};
@@ -30,6 +27,7 @@ pub async fn check_repo<P: AsRef<Path>>(url: &str, absolute_path: P) -> Result<(
 pub async fn checkout_latest_release(component: &str) -> Result<()> {
     log::debug!("Checking out the latest release of {component}");
     let version = check_latest_version(component).await?;
+    log::debug!("The latest version of {component} is {version}");
     let path = get_component_path(component)?;
     let path = absolute_ref_path_to_string(&path)?;
     let cmd = format!("cd {path} && git checkout tags/{version}");
@@ -68,7 +66,7 @@ pub async fn fetch_tags(component: &str) -> Result<()> {
     let path = get_component_path(component)?;
     let path = absolute_ref_path_to_string(&path)?;
     let cmd = format!("cd {path} && git fetch --all --recurse-submodules --tags");
-    async_user_command(&cmd).await?;
+    async_command(&cmd).await?;
     Ok(())
 }
 

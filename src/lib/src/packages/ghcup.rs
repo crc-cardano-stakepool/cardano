@@ -1,4 +1,4 @@
-use crate::{async_user_command, check_env, get_cabal_version, get_ghc_version, GHCUP_URL};
+use crate::{async_command, check_env, check_user, drop_privileges, get_cabal_version, get_ghc_version, GHCUP_URL};
 use anyhow::{anyhow, Result};
 use std::path::Path;
 
@@ -19,6 +19,7 @@ pub async fn check_ghcup() -> Result<()> {
 
 pub async fn install_ghcup() -> Result<()> {
     log::info!("Installing GHCup");
+    let user = check_user()?;
     let ghc_version = get_ghc_version().await?;
     let cabal_version = get_cabal_version().await?;
     let non_interactive = "export BOOTSTRAP_HASKELL_NONINTERACTIVE=1";
@@ -26,7 +27,9 @@ pub async fn install_ghcup() -> Result<()> {
     let cabal = format!("export BOOTSTRAP_HASKELL_CABAL_VERSION={cabal_version}");
     let call = format!("$(curl --proto '=https' --tlsv1.2 -sSf {GHCUP_URL})");
     let cmd = format!("\n{non_interactive}\n{ghc}\n{cabal}\n{call}");
-    async_user_command(&cmd).await?;
+    let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
+    async_command(&cmd).await?;
+    drop_privileges()?;
     Ok(())
 }
 
