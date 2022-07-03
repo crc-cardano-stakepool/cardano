@@ -8,27 +8,27 @@ use std::path::{Path, PathBuf};
 
 pub async fn check_repo<P: AsRef<Path>>(url: &str, absolute_path: P) -> Result<()> {
     let path = absolute_ref_path_to_string(&absolute_path)?;
-    let path_ref = absolute_path.as_ref();
-    let mut path_buf = PathBuf::from(path_ref);
-    log::info!("Cheking if {path} is a repository");
-    if !path_ref.is_dir() {
+    let mut path_buf = PathBuf::from(absolute_path.as_ref());
+    log::debug!("Checking if {path} is a repository");
+    if !path_buf.is_dir() {
         log::debug!("{path} does not exist, cloning into it");
         return clone_repo(url, absolute_path).await;
     }
-    log::debug!("{path} does not exist");
+    log::debug!("{path} exists");
     path_buf.push(".git");
     if path_buf.is_dir() {
         log::debug!("{path} is a git repository, skipping a clone");
         return Ok(());
     }
-    if path_ref.read_dir()?.next().is_none() {
+    path_buf.pop();
+    if path_buf.read_dir()?.next().is_none() {
         return clone_repo(url, absolute_path).await;
     }
     Ok(())
 }
 
 pub async fn checkout_latest_release(component: &str) -> Result<()> {
-    log::info!("Checking out the latest release of {component}");
+    log::debug!("Checking out the latest release of {component}");
     let version = check_latest_version(component).await?;
     let path = get_component_path(component)?;
     let path = absolute_ref_path_to_string(&path)?;

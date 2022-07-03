@@ -3,7 +3,7 @@ use anyhow::Result;
 use std::path::Path;
 
 pub async fn check_libsodium() -> Result<()> {
-    log::info!("Checking if libdsodium is installed");
+    log::debug!("Checking if libsodium is installed");
     let pc = Path::new("/usr/local/lib/pkgconfig/libsodium.pc");
     let so = Path::new("/usr/local/lib/libsodium.so");
     let so_23 = Path::new("/usr/local/lib/libsodium.so.23");

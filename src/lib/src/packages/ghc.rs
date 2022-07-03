@@ -3,7 +3,7 @@ use anyhow::{anyhow, Result};
 use std::path::Path;
 
 pub async fn check_installed_ghc() -> Result<String> {
-    log::info!("Checking GHC");
+    log::debug!("Checking GHC");
     let ghc = check_env("GHC_BIN")?;
     let ghc_path = Path::new(&ghc);
     if ghc_path.is_file() {
@@ -19,7 +19,7 @@ pub async fn check_installed_ghc() -> Result<String> {
 }
 
 pub async fn check_ghc() -> Result<()> {
-    log::info!("Installing GHC if it is not installed");
+    log::debug!("Installing GHC if it is not installed");
     let ghc = check_installed_ghc().await;
     match ghc {
         Ok(ghc) => {
@@ -35,14 +35,14 @@ pub async fn check_ghc() -> Result<()> {
 }
 
 pub async fn compare_ghc(installed_ghc: &str) -> Result<bool> {
-    log::info!("Comparing installed GHC v{installed_ghc} with the required GHC version to build a cardano node");
+    log::debug!("Comparing installed GHC v{installed_ghc} with the required GHC version to build a cardano node");
     let required = get_ghc_version().await?;
     let installed = installed_ghc.trim().to_string();
     Ok(installed.eq(&required))
 }
 
 pub async fn get_ghc_version() -> Result<String> {
-    log::info!("Getting the correct GHC version to build a cardano node");
+    log::debug!("Getting the correct GHC version to build a cardano node");
     let cmd = format!(
         "curl -s {VERSIONS_URL} | tidy -i | grep '<code>ghc ' | {} | {} | {}",
         "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"

@@ -3,7 +3,7 @@ use anyhow::{anyhow, Result};
 use std::path::Path;
 
 pub async fn check_cabal() -> Result<()> {
-    log::info!("Checking Cabal");
+    log::debug!("Checking Cabal");
     let cabal = check_installed_cabal().await;
     match cabal {
         Ok(cabal) => {
@@ -19,7 +19,7 @@ pub async fn check_cabal() -> Result<()> {
 }
 
 pub async fn check_installed_cabal() -> Result<String> {
-    log::info!("Checking if Cabal is installed");
+    log::debug!("Checking if Cabal is installed");
     let cabal = check_env("CABAL_BIN")?;
     let cabal_path = Path::new(&cabal);
     if cabal_path.is_file() {
@@ -33,7 +33,7 @@ pub async fn check_installed_cabal() -> Result<String> {
 }
 
 pub async fn compare_cabal(installed_cabal: &str) -> Result<bool> {
-    log::info!("Comparing installed Cabal v{installed_cabal} with required Cabal version to build a cardano node");
+    log::debug!("Comparing installed Cabal v{installed_cabal} with required Cabal version to build a cardano node");
     let required = get_cabal_version().await?;
     let installed = installed_cabal.trim().to_string();
     Ok(installed.eq(&required))
@@ -51,7 +51,7 @@ pub async fn install_cabal() -> Result<()> {
 }
 
 pub async fn get_cabal_version() -> Result<String> {
-    log::info!("Getting required Cabal version to build a cardano node");
+    log::debug!("Getting required Cabal version to build a cardano node");
     let cmd = format!(
         "curl -s {VERSIONS_URL} | tidy -i | grep '<code>cabal ' | {} | {} | {}",
         "awk '{print $4}'", "awk -F '<' '{print $1}'", "tail -n1"

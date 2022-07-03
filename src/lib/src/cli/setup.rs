@@ -102,7 +102,7 @@ async fn update_cabal<P: AsRef<Path>>(path: P, cabal_path: P) -> Result<()> {
 }
 
 async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
-    log::info!("Checking if the project file already exists");
+    log::debug!("Checking if the project file already exists");
     let path = absolute_ref_path_to_string(&project_file)?;
     if project_file.as_ref().is_file() {
         log::warn!("Project file already exists, removing it");
@@ -138,7 +138,7 @@ pub async fn update_project_file<P: AsRef<Path>>(path: P) -> Result<()> {
 }
 
 pub fn get_component_path(component: &str) -> Result<PathBuf> {
-    log::info!("Checking where the source reposity of {component} is");
+    log::debug!("Checking where the source reposity of {component} is");
     let env = format!("{component}_dir");
     let converted = env.to_case(Case::UpperSnake);
     let path = check_env(&converted)?;
@@ -147,7 +147,7 @@ pub fn get_component_path(component: &str) -> Result<PathBuf> {
 }
 
 pub fn get_project_file(component: &str) -> Result<PathBuf> {
-    log::info!("Getting the project file of the {component} source reposity");
+    log::debug!("Getting the project file of the {component} source reposity");
     let mut path = get_component_path(component)?;
     path.push("cabal.project.local");
     Ok(path)

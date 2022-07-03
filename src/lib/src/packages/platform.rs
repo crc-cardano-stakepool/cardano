@@ -66,6 +66,7 @@ pub async fn apt_install(package: &str) -> Result<()> {
         if result.trim().is_empty() {
             return install_package("apt", package).await;
         }
+        log::debug!("{package} is installed");
         return Ok(());
     }
     Err(anyhow!("Failed installing {package}"))
@@ -96,6 +97,7 @@ pub async fn yum_install(package: &str) -> Result<()> {
     if !process_success(&cmd).await? {
         return install_package("yum", package).await;
     }
+    log::debug!("{package} is installed");
     Ok(())
 }
 

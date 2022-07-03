@@ -3,7 +3,7 @@ use anyhow::Result;
 use std::path::Path;
 
 pub async fn check_secp256k1() -> Result<()> {
-    log::info!("Checking secp256k1");
+    log::debug!("Checking secp256k1");
     let pc = Path::new("/usr/local/lib/pkgconfig/libsecp256k1.pc");
     let so = Path::new("/usr/local/lib/libsecp256k1.so");
     let so_0 = Path::new("/usr/local/lib/libsecp256k1.so.0");

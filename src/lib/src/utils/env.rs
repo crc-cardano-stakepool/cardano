@@ -5,7 +5,7 @@ use std::{
 };
 
 pub fn check_env(key: &str) -> Result<String> {
-    log::info!("Checking environment variable: {key}");
+    log::debug!("Checking environment variable: {key}");
     match var(key) {
         Ok(val) => {
             log::debug!("{key}={val}");
@@ -41,7 +41,7 @@ pub fn setup_env() -> Result<()> {
 }
 
 pub fn check_user() -> Result<String> {
-    log::info!("Checking user");
+    log::debug!("Checking user");
     let user = check_env("USER")?;
     let user = if user != "root" { user } else { check_env("SUDO_USER")? };
     log::debug!("user: {user}");

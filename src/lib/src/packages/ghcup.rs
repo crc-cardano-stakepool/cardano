@@ -3,7 +3,7 @@ use anyhow::{anyhow, Result};
 use std::path::Path;
 
 pub async fn check_ghcup() -> Result<()> {
-    log::info!("Checking GHCup");
+    log::debug!("Checking GHCup");
     let ghcup_dir = check_env("GHCUP_DIR")?;
     let ghcup_bin = check_env("GHCUP_BIN")?;
     let ghcup_dir = Path::new(&ghcup_dir);

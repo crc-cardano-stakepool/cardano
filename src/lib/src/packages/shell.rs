@@ -44,7 +44,7 @@ pub async fn change_shell_config() -> Result<()> {
 }
 
 pub async fn check_shell_config_env(pattern: &str) -> Result<bool> {
-    log::info!("Checking if shell profile is already configured");
+    log::debug!("Checking if shell profile is already configured");
     let shell_profile_file = get_shell_profile_file().await?;
     let cmd = format!("grep -q {pattern} {shell_profile_file}");
     process_success(&cmd).await
@@ -67,13 +67,13 @@ pub async fn export_shell_variables() -> Result<()> {
 }
 
 pub async fn get_shell_profile_file() -> Result<String> {
-    log::info!("Getting shell profile");
+    log::debug!("Getting shell profile");
     match_shell(&check_shell())?;
     check_env("SHELL_PROFILE_FILE")
 }
 
 pub fn match_shell(shell: &str) -> Result<()> {
-    log::info!("Matching shell");
+    log::debug!("Matching shell");
     let home = check_env("HOME")?;
     if shell.contains("/zsh") {
         let shell_profile_file = format!("{home}/.zshrc");

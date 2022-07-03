@@ -103,7 +103,7 @@ pub fn create_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
 }
 
 pub fn path_to_string(path: &Path) -> Result<String> {
-    log::info!("Parsing to absolute path to a string");
+    log::debug!("Parsing the absolute path to a string");
     if let Some(path) = path.to_str() {
         return Ok(path.to_string());
     }
@@ -111,7 +111,7 @@ pub fn path_to_string(path: &Path) -> Result<String> {
 }
 
 pub fn absolute_ref_path_to_string<P: AsRef<Path>>(absolute_path: P) -> Result<String> {
-    log::info!("Parsing to path to string if the path is absolute");
+    log::debug!("Parsing the path to string if the path is absolute");
     let path = absolute_path.as_ref();
     if path.is_absolute() {
         return path_to_string(path);
@@ -142,7 +142,7 @@ pub async fn is_bin_installed(bin: &str) -> Result<bool> {
 }
 
 pub async fn check_installed_version(component: &str) -> Result<String> {
-    log::info!("Checking installed version of {component}");
+    log::debug!("Checking installed version of {component}");
     let component_bin_path = get_bin_path(component)?;
     let path = absolute_ref_path_to_string(component_bin_path)?;
     let cmd = format!("{path} --version | awk {} | head -n1", "'{print $2}'");
@@ -153,7 +153,7 @@ pub async fn check_installed_version(component: &str) -> Result<String> {
 }
 
 pub async fn check_latest_version(component: &str) -> Result<String> {
-    log::info!("Checking latest {component} version");
+    log::debug!("Checking latest {component} version");
     let cmd = format!("curl -s {CARDANO_NODE_RELEASE_URL} | jq -r .tag_name");
     log::debug!("Executing command: {cmd}");
     let response = async_command_pipe(&cmd).await?;

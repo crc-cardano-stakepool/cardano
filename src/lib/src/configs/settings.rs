@@ -72,7 +72,7 @@ pub fn show_settings() {
 }
 
 pub fn read_setting(key: &str) -> Result<String> {
-    log::info!("Reading setting {key}");
+    log::debug!("Reading setting {key}");
     let settings = read_settings();
     let setting = settings
         .get(key)
