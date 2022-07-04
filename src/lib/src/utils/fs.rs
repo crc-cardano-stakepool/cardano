@@ -88,11 +88,13 @@ pub fn absolute_ref_path_to_string<P: AsRef<Path>>(absolute_path: P) -> Result<S
     let path = absolute_path.as_ref();
     let parsed = path_to_string(path)?;
     if !path.exists() {
+        log::error!("The path {parsed} does not exist");
         return Err(anyhow!("The path {parsed} does not exist"));
     }
     if path.is_absolute() {
         return path_to_string(path);
     }
+    log::error!("The path {parsed} is not absolute");
     Err(anyhow!("The path {parsed} is not absolute"))
 }
 

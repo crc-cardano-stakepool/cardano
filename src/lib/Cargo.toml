@@ -20,6 +20,7 @@ dirs = "4.0.0"
 drop-root = "0.1.1"
 serde = "1.0.138"
 toml = "0.5.9"
+cardano-multiplatform-lib = "0.3.0"
 
 [dev-dependencies]
 ctor = "0.1.22"
