@@ -55,7 +55,7 @@ Currently supported operating systems
 ```sh
 sudo apt update -y
 sudo apt upgrade -y
-sudo apt install git build-essential -y
+sudo apt install git curl build-essential -y
 curl https://sh.rustup.rs -sSf | sh -s -- -y
 case ":${PATH}:" in
     *:"$HOME/.cargo/bin":*) ;;
