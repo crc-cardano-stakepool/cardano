@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_repo, drop_privileges, SECP256K1_URL, ShellConfig};
+use crate::{async_command, check_env, check_repo, drop_privileges, ShellConfig, SECP256K1_URL};
 use anyhow::Result;
 use std::path::Path;
 

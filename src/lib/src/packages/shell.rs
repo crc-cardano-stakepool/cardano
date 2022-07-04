@@ -57,22 +57,20 @@ impl ShellConfig {
                 return Shell::Zsh;
             }
         }
-        return Shell::Bash;
+        Shell::Bash
     }
 
     pub fn match_config_file(shell: Shell) -> PathBuf {
         match shell {
             Shell::Bash => {
-                let mut home = dirs::home_dir().expect("Read $HOME").to_path_buf();
-                home.push(".bashrc");
-                let config_file = home;
-                config_file
+                let mut config = dirs::home_dir().expect("Read $HOME");
+                config.push(".bashrc");
+                config
             }
             Shell::Zsh => {
-                let mut home = dirs::home_dir().expect("Read $HOME").to_path_buf();
-                home.push(".zshrc");
-                let config_file = home;
-                config_file
+                let mut config = dirs::home_dir().expect("Read $HOME");
+                config.push(".zshrc");
+                config
             }
         }
     }

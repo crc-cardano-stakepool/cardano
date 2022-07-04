@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_repo, drop_privileges, LIBSODIUM_URL, ShellConfig};
+use crate::{async_command, check_env, check_repo, drop_privileges, ShellConfig, LIBSODIUM_URL};
 use anyhow::Result;
 use std::path::Path;
 
