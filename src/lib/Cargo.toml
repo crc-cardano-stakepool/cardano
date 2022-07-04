@@ -8,7 +8,7 @@ description = "Library for managing cardano components"
 [dependencies]
 tokio = { version = "1.19.2", features = ["full"] }
 dialoguer = "0.10.1"
-anyhow = "1.0.57"
+anyhow = "1.0.58"
 convert_case = "0.5.0"
 log = "0.4.17"
 fern = { version = "0.6.1", features = ["colored"] }
@@ -18,7 +18,7 @@ lazy_static = "1.4.0"
 sysinfo = "0.24.5"
 dirs = "4.0.0"
 drop-root = "0.1.1"
-serde = "1.0.137"
+serde = "1.0.138"
 toml = "0.5.9"
 
 [dev-dependencies]

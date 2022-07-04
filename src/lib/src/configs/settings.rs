@@ -8,6 +8,17 @@ use std::{collections::HashMap, fs::File, io::Write, path::PathBuf, sync::RwLock
 pub struct Settings {
     pub work_dir: PathBuf,
     pub log_file: PathBuf,
+    pub ipc_dir: PathBuf,
+    pub cardano_dir: PathBuf,
+    pub config_dir: PathBuf,
+    pub mainnet_config_dir: PathBuf,
+    pub testnet_config_dir: PathBuf,
+    pub db_dir: PathBuf,
+    pub mainnet_db_dir: PathBuf,
+    pub testnet_db_dir: PathBuf,
+    pub libsodium_dir: PathBuf,
+    pub secp256k1_dir: PathBuf,
+    pub install_dir: PathBuf,
 }
 
 impl Default for Settings {
@@ -17,7 +28,42 @@ impl Default for Settings {
         work_dir.push(".cardano");
         let mut log_file = PathBuf::from(&work_dir);
         log_file.push("logs");
-        Self { work_dir, log_file }
+        let mut ipc_dir = PathBuf::from(&work_dir);
+        ipc_dir.push("ipc");
+        let mut cardano_dir = PathBuf::from(&work_dir);
+        cardano_dir.push("cardano");
+        let mut config_dir = PathBuf::from(&work_dir);
+        config_dir.push("config");
+        let mut mainnet_config_dir = PathBuf::from(&config_dir);
+        mainnet_config_dir.push("mainnet");
+        let mut testnet_config_dir = PathBuf::from(&config_dir);
+        testnet_config_dir.push("testnet");
+        let mut db_dir = PathBuf::from(&work_dir);
+        db_dir.push("db");
+        let mut mainnet_db_dir = PathBuf::from(&db_dir);
+        mainnet_db_dir.push("mainnet");
+        let mut testnet_db_dir = PathBuf::from(&db_dir);
+        testnet_db_dir.push("testnet");
+        let mut libsodium_dir = PathBuf::from(&work_dir);
+        libsodium_dir.push("libsodium");
+        let mut secp256k1_dir = PathBuf::from(&work_dir);
+        secp256k1_dir.push("secp256k1");
+        let install_dir = dirs::executable_dir().expect("Read XDG_BIN_HOME");
+        Self {
+            work_dir,
+            log_file,
+            ipc_dir,
+            cardano_dir,
+            config_dir,
+            mainnet_config_dir,
+            testnet_config_dir,
+            db_dir,
+            mainnet_db_dir,
+            testnet_db_dir,
+            libsodium_dir,
+            secp256k1_dir,
+            install_dir,
+        }
     }
 }
 
@@ -67,7 +113,7 @@ pub fn read_settings() -> HashMap<String, String> {
 
 pub fn show_settings() {
     let settings = read_settings();
-    log::debug!("{settings:?}");
+    log::debug!("{settings:#?}");
 }
 
 pub fn read_setting(key: &str) -> Result<String> {

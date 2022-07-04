@@ -19,6 +19,20 @@ pub const CARDANO_URL: &str = "https://github.com/crc-cardano-stakepool/cardano.
 pub const GHCUP_URL: &str = "https://get-ghcup.haskell.org";
 pub const VERSIONS_URL: &str = "https://developers.cardano.org/docs/get-started/installing-cardano-node";
 pub const SPINNERS: [&str; 6] = ["▹▹▹▹▹", "▸▹▹▹▹", "▹▸▹▹▹", "▹▹▸▹▹", "▹▹▹▸▹", "▹▹▹▹▸"];
+pub const DIRECTORIES: [&str; 12] = [
+    "work",
+    "ipc",
+    "cardano",
+    "config",
+    "mainnet_config",
+    "testnet_config",
+    "db",
+    "mainnet_db",
+    "testnet_db",
+    "libsodium",
+    "secp256k1",
+    "install",
+];
 pub const DEBIAN_PACKAGES: [&str; 21] = [
     "curl",
     "automake",
