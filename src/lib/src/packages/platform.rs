@@ -30,12 +30,12 @@ pub async fn install_distro_packages(distro: &str) -> Result<()> {
         "Ubuntu" | "Debian" | "Linux Mint" => {
             let package_manager = "apt";
             update(package_manager).await?;
-            install_packages(package_manager, &DEBIAN_PACKAGES).await
+            check_packages(package_manager, &DEBIAN_PACKAGES).await
         }
         "Fedora" | "Red Hat" | "CentOs" => {
             let package_manager = "yum";
             update(package_manager).await?;
-            install_packages(package_manager, &NON_DEBIAN_PACKAGES).await
+            check_packages(package_manager, &NON_DEBIAN_PACKAGES).await
         }
         _ => Err(anyhow!("Unsupported distro: {distro}")),
     }
@@ -52,9 +52,8 @@ pub async fn check_package(package_manager: &str, package: &str) -> Result<()> {
 
 pub async fn update(package_manager: &str) -> Result<()> {
     log::info!("Updating system with {package_manager}");
-    let cmd = format!("sudo {package_manager} update -y && sudo {package_manager} upgrade -y");
+    let cmd = format!("sudo {package_manager} update -y");
     async_command(&cmd).await?;
-    drop_privileges()?;
     Ok(())
 }
 
@@ -81,13 +80,12 @@ pub async fn install_package(package_manager: &str, package: &str) -> Result<()>
     }
 }
 
-pub async fn install_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
-    log::info!("Installing distro packages with {package_manager}");
+pub async fn check_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
+    log::debug!("Checking packages with {package_manager}");
     for package in packages {
         check_package(package_manager, package).await?;
     }
-    drop_privileges()?;
-    Ok(())
+    drop_privileges()
 }
 
 pub async fn yum_install(package: &str) -> Result<()> {

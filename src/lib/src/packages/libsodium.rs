@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_repo, drop_privileges, export_shell_variables, LIBSODIUM_URL};
+use crate::{async_command, check_env, check_repo, drop_privileges, ShellConfig, LIBSODIUM_URL};
 use anyhow::Result;
 use std::path::Path;
 
@@ -26,7 +26,7 @@ pub async fn install_libsodium() -> Result<()> {
     let cmd = format!("cd {libsodium_path} && sudo make install");
     async_command(&cmd).await?;
     drop_privileges()?;
-    export_shell_variables().await?;
+    ShellConfig::export_shell_variables().await?;
     Ok(())
 }
 

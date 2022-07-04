@@ -246,7 +246,7 @@ impl DiskInfo {
         let mut sys = System::new_all();
         sys.refresh_all();
         for disk in sys.disks() {
-            log::info!("Found disk: {disk:#?}");
+            log::debug!("Found disk: {disk:#?}");
             let disk_type = disk.type_();
             log::debug!("Disk type: {:?}", disk_type);
             let file_system = disk.file_system().to_vec();
