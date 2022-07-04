@@ -1,4 +1,4 @@
-use crate::{async_command, check_env, check_repo, drop_privileges, export_shell_variables, SECP256K1_URL};
+use crate::{async_command, check_env, check_repo, drop_privileges, SECP256K1_URL, ShellConfig};
 use anyhow::Result;
 use std::path::Path;
 
@@ -29,7 +29,7 @@ pub async fn install_secp256k1() -> Result<()> {
     async_command(&cmd).await?;
     async_command("sudo ldconfig").await?;
     drop_privileges()?;
-    export_shell_variables().await?;
+    ShellConfig::export_shell_variables().await?;
     Ok(())
 }
 

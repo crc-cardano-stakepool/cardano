@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use crate::{
     absolute_ref_path_to_string, async_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
     check_latest_version, check_libsodium, check_secp256k1, clone_component, copy_binary, get_ghc_version, is_bin_installed, proceed,
-    process_success_inherit, set_env, setup_packages, setup_shell, setup_work_dir, source_shell, SystemRequirements,
+    process_success_inherit, set_env, setup_packages, setup_work_dir, SystemRequirements, ShellConfig,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -64,7 +64,7 @@ pub async fn prepare_build() -> Result<()> {
     log::info!("Preparing build");
     setup_work_dir()?;
     setup_packages().await?;
-    setup_shell().await?;
+    ShellConfig::setup_shell().await?;
     check_dependencies().await
 }
 
@@ -170,7 +170,7 @@ pub async fn check_install(component: &str) -> Result<()> {
         check_installed_version("cardano-cli").await?;
     }
     let version = check_installed_version(component).await?;
-    source_shell().await?;
+    ShellConfig::source_shell().await?;
     log::info!("Successfully installed {component} v{version}");
     Ok(())
 }
