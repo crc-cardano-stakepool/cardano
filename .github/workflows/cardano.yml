@@ -27,8 +27,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Fix Cache
-        run: rm ~/.config/.cardano/cardano.toml
       - name: Cache Cardano
         uses: actions/cache@v3
         with:
@@ -37,6 +35,8 @@ jobs:
             ~/.cabal/packages
             ~/.cabal/store
           key: ${{ matrix.os }}-${{ matrix.target }}-cardano
+      - name: Fix Cache
+        run: rm ~/.config/.cardano/cardano.toml
       - name: Cache Rust
         uses: Swatinem/rust-cache@v1
       - name: Install Rust Toolchain
