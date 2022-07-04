@@ -18,7 +18,23 @@ pub const SECP256K1_URL: &str = "https://github.com/bitcoin-core/secp256k1.git";
 pub const CARDANO_URL: &str = "https://github.com/crc-cardano-stakepool/cardano.git";
 pub const GHCUP_URL: &str = "https://get-ghcup.haskell.org";
 pub const VERSIONS_URL: &str = "https://developers.cardano.org/docs/get-started/installing-cardano-node";
+pub const CONFIG_BASE_URL: &str = "https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1";
+pub const CONFIG_FILES: [&str; 5] = ["config", "byron-genesis", "shelley-genesis", "alonzo-genesis", "topology"];
 pub const SPINNERS: [&str; 6] = ["▹▹▹▹▹", "▸▹▹▹▹", "▹▸▹▹▹", "▹▹▸▹▹", "▹▹▹▸▹", "▹▹▹▹▸"];
+pub const DIRECTORIES: [&str; 12] = [
+    "work",
+    "ipc",
+    "cardano",
+    "config",
+    "mainnet_config",
+    "testnet_config",
+    "db",
+    "mainnet_db",
+    "testnet_db",
+    "libsodium",
+    "secp256k1",
+    "install",
+];
 pub const DEBIAN_PACKAGES: [&str; 21] = [
     "curl",
     "automake",
