@@ -45,8 +45,6 @@ jobs:
           override: true
           default: true
           components: rustfmt, clippy
-      - name: Fix Cache
-        run: rm ~/.config/.cardano/cardano.toml
       - name: Format
         uses: actions-rs/cargo@v1.0.1
         with:

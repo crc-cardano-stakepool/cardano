@@ -26,7 +26,7 @@ rm "$NODE"
 rm "$CLI"
 rm -rf "$GHCUP"
 rm -rf "$CABAL"
-rm -rf "$CARDANO"
+sudo rm -rf "$CARDANO"
 sudo rm $LIBSODIUM_A
 sudo rm $LIBSODIUM_SA
 sudo rm $LIBSODIUM_23_3_0

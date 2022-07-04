@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use crate::{
     absolute_ref_path_to_string, async_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
     check_latest_version, check_libsodium, check_secp256k1, clone_component, copy_binary, get_ghc_version, is_bin_installed, proceed,
-    process_success_inherit, set_env, setup_packages, ShellConfig, SystemRequirements,
+    process_success_inherit, set_env, setup_packages, ShellConfig, SystemRequirements, path_to_string,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -102,7 +102,7 @@ async fn update_cabal<P: AsRef<Path>>(path: P, cabal_path: P) -> Result<()> {
 
 async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
     log::debug!("Checking if the project file already exists");
-    let path = absolute_ref_path_to_string(&project_file)?;
+    let path = path_to_string(project_file.as_ref())?;
     if project_file.as_ref().is_file() {
         log::warn!("Project file already exists, removing it");
         let cmd = format!("rm {path}");
