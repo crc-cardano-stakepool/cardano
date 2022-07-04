@@ -1,12 +1,13 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_latest_version, check_work_dir, get_component_path, set_env, CARDANO_NODE_URL,
+    absolute_ref_path_to_string, async_command, check_latest_version, check_work_dir, get_component_path, path_to_string, set_env,
+    CARDANO_NODE_URL,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::path::{Path, PathBuf};
 
 pub async fn check_repo<P: AsRef<Path>>(url: &str, absolute_path: P) -> Result<()> {
-    let path = absolute_ref_path_to_string(&absolute_path)?;
+    let path = path_to_string(absolute_path.as_ref())?;
     let mut path_buf = PathBuf::from(absolute_path.as_ref());
     log::debug!("Checking if {path} is a repository");
     if !path_buf.is_dir() {
@@ -46,7 +47,7 @@ pub async fn clone_component(component: &str) -> Result<()> {
     if let Ok(url) = url {
         let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
         work_dir.push(component);
-        let cardano_component_dir = absolute_ref_path_to_string(&work_dir)?;
+        let cardano_component_dir = path_to_string(&work_dir)?;
         let env_name = format!("{component}-dir");
         let converted = env_name.to_case(Case::UpperSnake);
         set_env(&converted, &cardano_component_dir);
@@ -57,7 +58,7 @@ pub async fn clone_component(component: &str) -> Result<()> {
 }
 
 pub async fn clone_repo<P: AsRef<Path>>(url: &str, destination_path: P) -> Result<()> {
-    let path = absolute_ref_path_to_string(&destination_path)?;
+    let path = path_to_string(destination_path.as_ref())?;
     log::info!("Cloning repo to {path}");
     let cmd = format!("git clone {url} {path}");
     async_command(&cmd).await?;
