@@ -1,5 +1,5 @@
 extern crate lib;
-use lib::{read_setting, setup_logger, update_cli};
+use lib::{read_setting, setup_env, setup_logger, setup_work_dir, update_cli};
 
 use crate::{NodeArgs, NodeCommand, WalletArgs, WalletCommand};
 
@@ -52,6 +52,8 @@ async fn main() -> Result<()> {
     setup_logger(cli.verbose.log_level_filter(), true, log_file)?;
     human_panic::setup_panic!();
     ctrlc::set_handler(|| log::info!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
+    setup_work_dir()?;
+    setup_env()?;
     let mut cmd = Cli::command();
     if let Some(generator) = cli.generator {
         let bin_name = cmd.get_name().to_string();

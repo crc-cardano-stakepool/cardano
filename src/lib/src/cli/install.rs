@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use crate::{
     absolute_ref_path_to_string, async_command, check_cabal, check_env, check_ghc, check_ghcup, check_installed_version,
     check_latest_version, check_libsodium, check_secp256k1, clone_component, copy_binary, get_ghc_version, is_bin_installed, proceed,
-    process_success_inherit, set_env, setup_packages, setup_work_dir, ShellConfig, SystemRequirements,
+    process_success_inherit, set_env, setup_packages, ShellConfig, SystemRequirements,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -62,7 +62,6 @@ async fn install(component: &str) -> Result<()> {
 
 pub async fn prepare_build() -> Result<()> {
     log::info!("Preparing build");
-    setup_work_dir()?;
     setup_packages().await?;
     ShellConfig::setup_shell().await?;
     check_dependencies().await
