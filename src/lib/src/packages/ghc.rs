@@ -63,7 +63,7 @@ pub async fn install_ghc() -> Result<()> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::set_env;
+    use crate::{set_env, GHC_VERSION};
 
     #[tokio::test]
     #[ignore]
@@ -74,7 +74,7 @@ mod test {
     #[tokio::test]
     async fn test_get_ghc_version() -> Result<()> {
         let version = get_ghc_version().await?;
-        assert_eq!(version, "8.10.7");
+        assert_eq!(version, GHC_VERSION);
         Ok(())
     }
 
@@ -87,7 +87,9 @@ mod test {
     #[tokio::test]
     #[ignore]
     async fn test_compare_ghc() -> Result<()> {
-        compare_ghc("8.10.7").await?;
+        assert_eq!(compare_ghc(GHC_VERSION).await?, true);
+        assert_eq!(compare_ghc("8.10.2").await?, false);
+        assert_eq!(compare_ghc("8.10.4").await?, false);
         Ok(())
     }
 

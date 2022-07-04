@@ -77,7 +77,6 @@ pub async fn copy_binary(component: &str) -> Result<()> {
 
 async fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     let install_dir = absolute_ref_path_to_string(install_dir.as_ref())?;
-    log::info!("Copying to {install_dir}");
     let component = "cardano-node";
     let mut path = get_component_path(component)?;
     let parsed_path = absolute_ref_path_to_string(&path)?;
@@ -88,7 +87,9 @@ async fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     let cli = format!("cd {parsed_path} && cp -p \"$({bin_path} cardano-cli)\" {install_dir}");
     let node_bin = format!("{install_dir}/cardano-node");
     let cli_bin = format!("{install_dir}/cardano-cli");
+    log::info!("Copying built cardano-node binary to {node_bin}");
     async_command(&node).await?;
+    log::info!("Copying built cardano-cli binary to {cli_bin}");
     async_command(&cli).await?;
     set_env("CARDANO_NODE_BIN", &node_bin);
     set_env("CARDANO_CLI_BIN", &cli_bin);

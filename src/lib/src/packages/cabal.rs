@@ -4,11 +4,11 @@ use std::path::Path;
 
 pub async fn check_cabal() -> Result<()> {
     log::debug!("Checking Cabal");
-    let cabal = check_installed_cabal().await;
-    match cabal {
-        Ok(cabal) => {
-            if compare_cabal(&cabal).await? {
-                log::info!("Correct Cabal version is installed");
+    let version = check_installed_cabal().await;
+    match version {
+        Ok(version) => {
+            if compare_cabal(&version).await? {
+                log::info!("Installed Cabal v{version} is correct");
                 return Ok(());
             }
             log::warn!("Cabal versions do not match");
@@ -61,6 +61,8 @@ pub async fn get_cabal_version() -> Result<String> {
 
 #[cfg(test)]
 mod test {
+    use crate::CABAL_VERSION;
+
     use super::*;
 
     #[tokio::test]
@@ -79,17 +81,15 @@ mod test {
 
     #[tokio::test]
     async fn test_compare_cabal() -> Result<()> {
-        let version = "3.6.2.0";
-        assert_eq!(compare_cabal(version).await?, true);
-        let version = "3.6.0.0";
-        assert_eq!(compare_cabal(version).await?, false);
+        assert_eq!(compare_cabal(CABAL_VERSION).await?, true);
+        assert_eq!(compare_cabal("3.6.0.0").await?, false);
         Ok(())
     }
 
     #[tokio::test]
     async fn test_get_cabal_version() -> Result<()> {
         let version = get_cabal_version().await?;
-        assert_eq!(version, "3.6.2.0");
+        assert_eq!(version, CABAL_VERSION);
         Ok(())
     }
 
