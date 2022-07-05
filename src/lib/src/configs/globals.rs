@@ -15,6 +15,7 @@ pub const CARDANO_CONFIG_FILE_NAME: &str = "cardano.toml";
 pub const CARDANO_WALLET_URL: &str = "https://github.com/input-output-hk/cardano-wallet.git";
 pub const CARDANO_NODE_URL: &str = "https://github.com/input-output-hk/cardano-node.git";
 pub const CARDANO_NODE_RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-node/releases/latest";
+pub const CARDANO_WALLET_RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-wallet/releases/latest";
 pub const LIBSODIUM_URL: &str = "https://github.com/input-output-hk/libsodium.git";
 pub const SECP256K1_URL: &str = "https://github.com/bitcoin-core/secp256k1.git";
 pub const CARDANO_URL: &str = "https://github.com/crc-cardano-stakepool/cardano.git";

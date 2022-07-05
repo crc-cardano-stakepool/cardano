@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{install_wallet, proceed, set_confirm, setup_wallet, uninstall_wallet};
+use lib::{check_latest_version, install_wallet, proceed, set_confirm, setup_wallet, uninstall_wallet, Component};
 
 #[derive(Debug, Args)]
 pub struct WalletArgs {
@@ -13,7 +13,11 @@ pub enum WalletCommand {
     /// Setup the system with cardano-wallet build dependencies
     Setup,
     /// Installs cardano-wallet
-    Install { confirm: bool },
+    Install {
+        /// Confirm prompts automatically
+        #[clap(short = 'y', long = "yes", value_parser, action)]
+        confirm: bool,
+    },
     /// Uninstalls cardano-wallet
     Uninstall,
 }
@@ -23,10 +27,12 @@ impl WalletCommand {
         match cmd.command {
             WalletCommand::Install { confirm } => {
                 set_confirm(confirm);
-                setup_wallet().await?;
-                if !confirm && proceed("Do you want to install the latest cardano-wallet binary?")? {
+                let version = check_latest_version(Component::Wallet).await?;
+                let msg = format!("Do you want to install the latest cardano-wallet {version} binary?");
+                if !confirm && proceed(&msg)? {
                     return install_wallet().await;
                 }
+                setup_wallet().await?;
                 install_wallet().await
             }
             WalletCommand::Uninstall => uninstall_wallet().await,

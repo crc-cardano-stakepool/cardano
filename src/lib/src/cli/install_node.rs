@@ -28,7 +28,7 @@ pub async fn build_node() -> Result<()> {
     build(Component::Node, &path, &cabal).await
 }
 
-async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
+pub async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
     log::debug!("Checking if the project file already exists");
     let path = path_to_string(project_file.as_ref())?;
     if project_file.as_ref().is_file() {
@@ -92,16 +92,18 @@ pub async fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     let bin_path = format!("{parsed_path}/scripts/bin-path.sh");
     path.push("scripts");
     path.push("bin-path.sh");
-    let node = format!("cd {parsed_path} && cp -p \"$({bin_path} cardano-node)\" {install_dir}");
-    let cli = format!("cd {parsed_path} && cp -p \"$({bin_path} cardano-cli)\" {install_dir}");
-    let node_bin = format!("{install_dir}/cardano-node");
-    let cli_bin = format!("{install_dir}/cardano-cli");
-    log::info!("Copying built cardano-node binary to {node_bin}");
-    async_command(&node).await?;
-    log::info!("Copying built cardano-cli binary to {cli_bin}");
-    async_command(&cli).await?;
-    set_env("CARDANO_NODE_BIN", &node_bin);
-    set_env("CARDANO_CLI_BIN", &cli_bin);
+    let components = ["cardano-node", "cardano-cli"];
+    for component in components {
+        let cmd = format!("cd {parsed_path} && cp -p \"$({bin_path} {component})\" {install_dir}");
+        let path = format!("{install_dir}/{component}");
+        if component.eq("cardano-node") {
+            set_env("CARDANO_NODE_BIN", &path);
+        } else {
+            set_env("CARDANO_CLI_BIN", &path);
+        }
+        log::info!("Copying built {component} binary to {path}");
+        async_command(&cmd).await?;
+    }
     Ok(())
 }
 

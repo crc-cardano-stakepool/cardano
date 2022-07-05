@@ -1,7 +1,7 @@
 use crate::{Run, RunCommand};
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{install_node, set_confirm, setup_node, uninstall_component};
+use lib::{check_latest_version, install_node, install_wallet, proceed, set_confirm, setup_node, uninstall_component, Component};
 
 #[derive(Debug, Args)]
 pub struct NodeArgs {
@@ -31,6 +31,11 @@ impl NodeCommand {
             NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
             NodeCommand::Install { confirm } => {
                 set_confirm(confirm);
+                let version = check_latest_version(Component::Node).await?;
+                let msg = format!("Do you want to install the latest cardano-node v{version} binary?");
+                if !confirm && proceed(&msg)? {
+                    return install_wallet().await;
+                }
                 setup_node().await?;
                 install_node().await
             }

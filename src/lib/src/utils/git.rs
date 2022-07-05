@@ -40,21 +40,22 @@ pub async fn checkout_latest_release(component: Component) -> Result<()> {
 }
 
 pub fn get_component_dir(component: Component) -> Result<String> {
-    let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
-    work_dir.push(component_to_string(component));
-    let cardano_component_dir = path_to_string(&work_dir)?;
     let component = component_to_string(component);
+    log::debug!("Setting the directory for {component}");
+    let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
+    work_dir.push(&component);
+    let component_dir = path_to_string(&work_dir)?;
     let env_name = format!("{component}-dir");
     let converted = env_name.to_case(Case::UpperSnake);
-    set_env(&converted, &cardano_component_dir);
-    Ok(cardano_component_dir)
+    set_env(&converted, &component_dir);
+    Ok(component_dir)
 }
 
 pub async fn clone_component(component: Component) -> Result<()> {
     let component_dir = get_component_dir(component)?;
     let url = get_component_url(component);
     check_repo(url, &component_dir).await?;
-    return checkout_latest_release(component).await;
+    checkout_latest_release(component).await
 }
 
 pub async fn clone_repo<P: AsRef<Path>>(url: &str, destination_path: P) -> Result<()> {

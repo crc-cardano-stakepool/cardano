@@ -1,4 +1,6 @@
-use crate::{check_env, component_to_string, copy_node_binaries, match_component, read_setting, set_env, Component, DIRECTORIES};
+use crate::{
+    check_env, component_to_string, copy_node_binaries, copy_wallet_binary, match_component, read_setting, set_env, Component, DIRECTORIES,
+};
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
 use std::{
@@ -47,10 +49,6 @@ pub async fn copy_binary(component: Component) -> Result<()> {
     }
 }
 
-async fn copy_wallet_binary<P: AsRef<Path>>(_install_dir: P) -> Result<()> {
-    Ok(())
-}
-
 pub fn create_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
     create_dir_all(&absolute_path)?;
     let path = absolute_ref_path_to_string(&absolute_path)?;
@@ -83,20 +81,16 @@ pub fn absolute_ref_path_to_string<P: AsRef<Path>>(absolute_path: P) -> Result<S
 
 pub fn get_bin_path(bin: &str) -> Result<PathBuf> {
     log::debug!("Getting the path of the binary {bin}");
-    if let Some(mut dir) = dirs::executable_dir() {
-        dir.push(bin);
-        let path = dir;
+    if let Some(mut path) = dirs::executable_dir() {
+        path.push(bin);
+        if !path.exists() {
+            return Err(anyhow!("The {bin} binary was not found"));
+        }
         let parsed = absolute_ref_path_to_string(&path)?;
         log::debug!("The path to the {bin} binary: {parsed}");
         return Ok(path);
     }
     Err(anyhow!("XDG_BIN_HOME is not set, failed to check if {bin} is installed"))
-}
-
-pub fn get_db_path() -> Result<()> {
-    let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
-    work_dir.push("config");
-    Ok(())
 }
 
 #[cfg(test)]

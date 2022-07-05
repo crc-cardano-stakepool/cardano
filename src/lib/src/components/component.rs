@@ -1,6 +1,6 @@
 use crate::{
-    absolute_ref_path_to_string, async_command_pipe, build_node, build_wallet, check_env, get_bin_path, install_node, install_wallet,
-    read_setting, CARDANO_NODE_RELEASE_URL, CARDANO_NODE_URL, CARDANO_WALLET_URL,
+    absolute_ref_path_to_string, async_command_pipe, build_node, build_wallet, check_env, get_bin_path, get_component_dir, install_node,
+    install_wallet, read_setting, CARDANO_NODE_RELEASE_URL, CARDANO_NODE_URL, CARDANO_WALLET_RELEASE_URL, CARDANO_WALLET_URL,
 };
 use anyhow::Result;
 use convert_case::{Case, Casing};
@@ -11,6 +11,14 @@ pub enum Component {
     Node,
     Cli,
     Wallet,
+}
+
+pub fn get_component_release_url(component: Component) -> &'static str {
+    match component {
+        Component::Node => CARDANO_NODE_RELEASE_URL,
+        Component::Cli => CARDANO_NODE_RELEASE_URL,
+        Component::Wallet => CARDANO_WALLET_RELEASE_URL,
+    }
 }
 
 pub fn get_component_url(component: Component) -> &'static str {
@@ -82,13 +90,28 @@ pub async fn check_installed_version(component: Component) -> Result<String> {
 }
 
 pub async fn check_latest_version(component: Component) -> Result<String> {
-    let component = component_to_string(component);
-    log::debug!("Checking latest {component} version");
-    let cmd = format!("curl -s {CARDANO_NODE_RELEASE_URL} | jq -r .tag_name");
-    let response = async_command_pipe(&cmd).await?;
-    let response = String::from(response.trim());
-    log::debug!("The latest version of {component} is {response}");
-    Ok(response)
+    match component {
+        Component::Wallet => {
+            let path = get_component_dir(component)?;
+            let cmd = format!("cd {path} && git describe --tags --abbrev=0");
+            let component = component_to_string(component);
+            log::debug!("Checking latest {component} version");
+            let response = async_command_pipe(&cmd).await?;
+            let response = String::from(response.trim());
+            log::debug!("The latest version of {component} is {response}");
+            Ok(response)
+        }
+        _ => {
+            let url = get_component_release_url(component);
+            let component = component_to_string(component);
+            log::debug!("Checking latest {component} version");
+            let cmd = format!("curl -s {url} | jq -r .tag_name");
+            let response = async_command_pipe(&cmd).await?;
+            let response = String::from(response.trim());
+            log::debug!("The latest version of {component} is {response}");
+            Ok(response)
+        }
+    }
 }
 
 pub async fn check_installed_component(component: Component) -> Result<()> {

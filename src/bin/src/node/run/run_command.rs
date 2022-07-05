@@ -25,16 +25,22 @@ pub enum RunCommand {
 
 #[derive(Debug, Args)]
 pub struct RunArgs {
+    /// The port on which the node will be listening to incoming connections
     #[clap(long, value_parser = clap::value_parser!(u16).range(1..), default_value_t = 3001)]
     pub port: u16,
-    #[clap(long, parse(from_os_str))]
-    pub db: Option<PathBuf>,
+    /// The IP of the node, other relays will connect to this IP
     #[clap(long, value_parser, default_value_t = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)))]
     pub host: IpAddr,
-    #[clap(long, parse(from_os_str))]
-    pub topology: Option<PathBuf>,
+    /// Points to the socket that is used by the components for inter process communication
     #[clap(long, parse(from_os_str))]
     pub socket: Option<PathBuf>,
+    /// Points to the path where the blockchain will be stored
+    #[clap(long, parse(from_os_str))]
+    pub db: Option<PathBuf>,
+    /// Points to the topology.json which contains a list of network peers that the node will connect to
+    #[clap(long, parse(from_os_str))]
+    pub topology: Option<PathBuf>,
+    /// Points to the config.json which contains general node settings i.e. logging and versioning
     #[clap(long, parse(from_os_str))]
     pub config: Option<PathBuf>,
 }
