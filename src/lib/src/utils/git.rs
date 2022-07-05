@@ -1,8 +1,8 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_latest_version, check_work_dir, get_component_path, path_to_string, set_env,
-    CARDANO_NODE_URL,
+    absolute_ref_path_to_string, async_command, check_latest_version, check_work_dir, component_to_string, get_component_path,
+    get_component_url, path_to_string, set_env, Component,
 };
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use convert_case::{Case, Casing};
 use std::path::{Path, PathBuf};
 
@@ -27,34 +27,35 @@ pub async fn check_repo<P: AsRef<Path>>(url: &str, absolute_path: P) -> Result<(
     Ok(())
 }
 
-pub async fn checkout_latest_release(component: &str) -> Result<()> {
-    log::debug!("Checking out the latest release of {component}");
+pub async fn checkout_latest_release(component: Component) -> Result<()> {
     let version = check_latest_version(component).await?;
-    log::debug!("The latest version of {component} is {version}");
     let path = get_component_path(component)?;
     let path = absolute_ref_path_to_string(&path)?;
     let cmd = format!("cd {path} && git checkout tags/{version}");
     fetch_tags(component).await?;
+    let component = component_to_string(component);
+    log::debug!("Checking out the latest release of {component}");
     async_command(&cmd).await?;
     Ok(())
 }
 
-pub async fn clone_component(component: &str) -> Result<()> {
-    let url = match component {
-        "cardano-node" => Ok(CARDANO_NODE_URL),
-        _ => Err(anyhow!("Unknown component {component}")),
-    };
-    if let Ok(url) = url {
-        let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
-        work_dir.push(component);
-        let cardano_component_dir = path_to_string(&work_dir)?;
-        let env_name = format!("{component}-dir");
-        let converted = env_name.to_case(Case::UpperSnake);
-        set_env(&converted, &cardano_component_dir);
-        check_repo(url, &cardano_component_dir).await?;
-        return checkout_latest_release(component).await;
-    }
-    Err(anyhow!("Failed cloning {component} repository"))
+pub fn get_component_dir(component: Component) -> Result<String> {
+    let component = component_to_string(component);
+    log::debug!("Setting the directory for {component}");
+    let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
+    work_dir.push(&component);
+    let component_dir = path_to_string(&work_dir)?;
+    let env_name = format!("{component}-dir");
+    let converted = env_name.to_case(Case::UpperSnake);
+    set_env(&converted, &component_dir);
+    Ok(component_dir)
+}
+
+pub async fn clone_component(component: Component) -> Result<()> {
+    let component_dir = get_component_dir(component)?;
+    let url = get_component_url(component);
+    check_repo(url, &component_dir).await?;
+    checkout_latest_release(component).await
 }
 
 pub async fn clone_repo<P: AsRef<Path>>(url: &str, destination_path: P) -> Result<()> {
@@ -65,17 +66,20 @@ pub async fn clone_repo<P: AsRef<Path>>(url: &str, destination_path: P) -> Resul
     Ok(())
 }
 
-pub async fn fetch_tags(component: &str) -> Result<()> {
-    log::info!("Fetching the latest tags of the {component} source reposity of");
+pub async fn fetch_tags(component: Component) -> Result<()> {
     let path = get_component_path(component)?;
     let path = absolute_ref_path_to_string(&path)?;
     let cmd = format!("cd {path} && git fetch --all --recurse-submodules --tags");
+    let component = component_to_string(component);
+    log::info!("Fetching the latest tags of the {component} source reposity of");
     async_command(&cmd).await?;
     Ok(())
 }
 
 #[cfg(test)]
 mod test {
+    use crate::CARDANO_NODE_VERSION;
+
     use super::*;
     #[tokio::test]
     #[ignore]
@@ -104,8 +108,8 @@ mod test {
     }
     #[tokio::test]
     async fn test_check_latest_version() -> Result<()> {
-        let version = check_latest_version("cardano-node").await?;
-        assert_eq!(version, "1.35.0");
+        let version = check_latest_version(Component::Node).await?;
+        assert_eq!(version, CARDANO_NODE_VERSION);
         Ok(())
     }
     #[tokio::test]

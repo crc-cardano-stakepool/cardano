@@ -61,6 +61,21 @@ pub fn drop_privileges() -> Result<()> {
     Ok(())
 }
 
+pub fn set_confirm(confirm: bool) {
+    if confirm {
+        return set_env("CONFIRM", "true");
+    }
+    set_env("CONFIRM", "false")
+}
+
+pub fn check_confirm() -> Result<bool> {
+    let confirm = check_env("CONFIRM")?;
+    if confirm.eq("true") {
+        return Ok(true);
+    }
+    Ok(false)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

@@ -1,7 +1,9 @@
 pub mod dialog;
 pub use dialog::*;
-pub mod install;
-pub use install::*;
+pub mod install_node;
+pub use install_node::*;
+pub mod install_wallet;
+pub use install_wallet::*;
 pub mod uninstall;
 pub use uninstall::*;
 pub mod update;
@@ -10,3 +12,5 @@ pub mod sync;
 pub use sync::*;
 pub mod run;
 pub use run::*;
+pub mod setup;
+pub use setup::*;

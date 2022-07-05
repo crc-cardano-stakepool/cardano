@@ -16,7 +16,6 @@ anyhow = "1.0.58"
 tokio = { version = "1.19.2", features = ["full"] }
 log = "0.4.17"
 clap-verbosity-flag = "1.0.1"
-cardano-multiplatform-lib = "0.3.0"
 
 [dev-dependencies]
 assert_cmd = "2.0.4"
