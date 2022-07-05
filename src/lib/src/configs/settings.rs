@@ -9,11 +9,11 @@ pub struct Settings {
     pub work_dir: PathBuf,
     pub log_file: PathBuf,
     pub ipc_dir: PathBuf,
+    pub node_socket_path: PathBuf,
     pub cardano_dir: PathBuf,
     pub config_dir: PathBuf,
     pub mainnet_config_dir: PathBuf,
     pub testnet_config_dir: PathBuf,
-    pub db_dir: PathBuf,
     pub mainnet_db_dir: PathBuf,
     pub testnet_db_dir: PathBuf,
     pub libsodium_dir: PathBuf,
@@ -30,6 +30,8 @@ impl Default for Settings {
         log_file.push("logs");
         let mut ipc_dir = PathBuf::from(&work_dir);
         ipc_dir.push("ipc");
+        let mut node_socket_path = PathBuf::from(&ipc_dir);
+        node_socket_path.push("node.socket");
         let mut cardano_dir = PathBuf::from(&work_dir);
         cardano_dir.push("cardano");
         let mut config_dir = PathBuf::from(&work_dir);
@@ -38,12 +40,10 @@ impl Default for Settings {
         mainnet_config_dir.push("mainnet");
         let mut testnet_config_dir = PathBuf::from(&config_dir);
         testnet_config_dir.push("testnet");
-        let mut db_dir = PathBuf::from(&work_dir);
-        db_dir.push("db");
-        let mut mainnet_db_dir = PathBuf::from(&db_dir);
-        mainnet_db_dir.push("mainnet");
-        let mut testnet_db_dir = PathBuf::from(&db_dir);
-        testnet_db_dir.push("testnet");
+        let mut mainnet_db_dir = PathBuf::from(&mainnet_config_dir);
+        mainnet_db_dir.push("db");
+        let mut testnet_db_dir = PathBuf::from(&testnet_config_dir);
+        testnet_db_dir.push("db");
         let mut libsodium_dir = PathBuf::from(&work_dir);
         libsodium_dir.push("libsodium");
         let mut secp256k1_dir = PathBuf::from(&work_dir);
@@ -53,11 +53,11 @@ impl Default for Settings {
             work_dir,
             log_file,
             ipc_dir,
+            node_socket_path,
             cardano_dir,
             config_dir,
             mainnet_config_dir,
             testnet_config_dir,
-            db_dir,
             mainnet_db_dir,
             testnet_db_dir,
             libsodium_dir,

@@ -2,8 +2,8 @@ use anyhow::{anyhow, Result};
 use cardano_multiplatform_lib::NetworkIdKind;
 use clap::{Args, Subcommand};
 use lib::{
-    absolute_ref_path_to_string, async_command, check_installed_version, check_latest_version, install_component, is_bin_installed,
-    path_to_string, read_setting, CONFIG_BASE_URL, CONFIG_FILES,
+    async_command, check_config_files, check_installed_version, check_latest_version, download_snapshot, get_config, get_db, get_topology,
+    install_component, is_bin_installed, path_to_string, proceed, read_setting,
 };
 use std::{
     net::{IpAddr, Ipv4Addr},
@@ -52,9 +52,9 @@ impl RunCommand {
             NetworkIdKind::Mainnet => "mainnet",
             NetworkIdKind::Testnet => "testnet",
         };
-        Self::check_config_files(net).await?;
+        check_config_files(net).await?;
         if config.db.is_none() {
-            config.db = Self::get_db(net)?;
+            config.db = get_db(net)?;
         } else {
             let path = config.db.as_ref().unwrap();
             if path.is_file() {
@@ -73,7 +73,7 @@ impl RunCommand {
             }
         }
         if config.topology.is_none() {
-            config.topology = Self::get_topology(net)?;
+            config.topology = get_topology(net)?;
         } else {
             let path = config.topology.as_ref().unwrap();
             if !path.is_dir() {
@@ -124,7 +124,7 @@ impl RunCommand {
             }
         }
         if config.config.is_none() {
-            config.config = Self::get_config(net)?;
+            config.config = get_config(net)?;
         } else {
             let path = config.config.as_ref().unwrap();
             if !path.is_dir() {
@@ -149,6 +149,9 @@ impl RunCommand {
             let version = check_latest_version("cardano-node").await?;
             let installed = check_installed_version("cardano-node").await?;
             if version.eq(&installed) {
+                if proceed("Do you want to download a daily snapshot of the ledger to speed up sync time significantly?")? {
+                    download_snapshot(net).await?;
+                }
                 log::info!("Proceeding to run node in {net}");
                 async_command(&command).await?;
             } else {
@@ -164,54 +167,7 @@ impl RunCommand {
         }
         Ok(())
     }
-    pub fn get_db(network: &str) -> Result<Option<PathBuf>> {
-        let key = format!("{network}_db_dir");
-        let path = read_setting(&key)?;
-        let db = PathBuf::from(&path);
-        if !db.exists() {
-            log::error!("Invalid db");
-            return Err(anyhow!("The path {path} does not exist"));
-        }
-        if !db.is_dir() {
-            log::error!("Invalid db");
-            return Err(anyhow!("The path {path} is not a directory"));
-        }
-        Ok(Some(db))
-    }
-    pub fn get_topology(network: &str) -> Result<Option<PathBuf>> {
-        let key = format!("{network}_config_dir");
-        let path = read_setting(&key)?;
-        let mut topology = PathBuf::from(&path);
-        let key = format!("{network}-topology.json");
-        topology.push(key);
-        let path = absolute_ref_path_to_string(&topology)?;
-        if !topology.exists() {
-            log::error!("Invalid topology");
-            return Err(anyhow!("The path {path} does not exist"));
-        }
-        if !topology.is_file() {
-            log::error!("Invalid topology");
-            return Err(anyhow!("The path {path} is not a file"));
-        }
-        Ok(Some(topology))
-    }
-    pub fn get_config(network: &str) -> Result<Option<PathBuf>> {
-        let key = format!("{network}_config_dir");
-        let path = read_setting(&key)?;
-        let mut config = PathBuf::from(&path);
-        let key = format!("{network}-config.json");
-        config.push(key);
-        let path = absolute_ref_path_to_string(&config)?;
-        if !config.exists() {
-            log::error!("Invalid config");
-            return Err(anyhow!("The path {path} does not exist"));
-        }
-        if !config.is_file() {
-            log::error!("Invalid config");
-            return Err(anyhow!("The path {path} is not a file"));
-        }
-        Ok(Some(config))
-    }
+
     pub fn parse_config_to_command(config: RunArgs) -> String {
         log::debug!("The parsed config to run node in testnet: {config:#?}");
         let port = config.port;
@@ -231,36 +187,5 @@ impl RunCommand {
             "
         );
         command
-    }
-
-    pub async fn check_config_files(network: &str) -> Result<()> {
-        log::debug!("Checking configuration files");
-        let key = format!("{network}_config_dir");
-        let path = read_setting(&key)?;
-        let db = PathBuf::from(&path);
-        if !db.exists() {
-            return Err(anyhow!("Configuration directory does not exist"));
-        }
-        for file in CONFIG_FILES {
-            Self::check_config_file(db.clone(), network, file).await?;
-        }
-        Ok(())
-    }
-
-    pub async fn check_config_file(mut db: PathBuf, network: &str, file: &str) -> Result<()> {
-        let download_path = path_to_string(&db)?;
-        let name = format!("{network}-{file}.json");
-        db.push(&name);
-        let file = path_to_string(&db)?;
-        log::debug!("Checking config file {file}");
-        if !db.exists() {
-            log::warn!("Config file {file} not found, downloading it");
-            let cmd = format!("wget {CONFIG_BASE_URL}/{name} -P {download_path}");
-            async_command(&cmd).await?;
-            log::info!("Downloaded config file {file} successfully");
-        }
-        log::debug!("Config file found");
-        db.pop();
-        Ok(())
     }
 }

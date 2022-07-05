@@ -6,3 +6,7 @@ pub mod uninstall;
 pub use uninstall::*;
 pub mod update;
 pub use update::*;
+pub mod sync;
+pub use sync::*;
+pub mod run;
+pub use run::*;
