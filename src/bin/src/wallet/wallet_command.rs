@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{check_latest_version, install_wallet, proceed, set_confirm, setup_wallet, uninstall_wallet, Component};
+use lib::{check_latest_wallet, setup_wallet, uninstall_wallet};
 
 #[derive(Debug, Args)]
 pub struct WalletArgs {
@@ -25,16 +25,7 @@ pub enum WalletCommand {
 impl WalletCommand {
     pub async fn exec(cmd: WalletArgs) -> Result<()> {
         match cmd.command {
-            WalletCommand::Install { confirm } => {
-                set_confirm(confirm);
-                let version = check_latest_version(Component::Wallet).await?;
-                let msg = format!("Do you want to install the latest cardano-wallet {version} binary?");
-                if !confirm && proceed(&msg)? {
-                    return install_wallet().await;
-                }
-                setup_wallet().await?;
-                install_wallet().await
-            }
+            WalletCommand::Install { confirm } => check_latest_wallet(confirm).await,
             WalletCommand::Uninstall => uninstall_wallet().await,
             WalletCommand::Setup => setup_wallet().await,
         }

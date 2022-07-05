@@ -1,10 +1,34 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_env, check_install, clone_component, component_to_string, copy_binary,
-    get_component_path, get_ghc_version, match_component, path_to_string, process_success_inherit, set_env, update_cabal, Component,
-    ShellConfig,
+    absolute_ref_path_to_string, async_command, check_env, check_install, check_installed_version, check_latest_version, clone_component,
+    component_to_string, copy_binary, get_component_path, get_ghc_version, is_component_installed, match_component, path_to_string,
+    proceed, process_success_inherit, set_confirm, set_env, setup_node, update_cabal, Component, ShellConfig,
 };
 use anyhow::{anyhow, Result};
 use std::path::{Path, PathBuf};
+
+pub async fn check_latest_node(confirm: bool) -> Result<()> {
+    if !is_component_installed(Component::Node)? {
+        return install_latest_node(confirm).await;
+    }
+    let installed = check_installed_version(Component::Node).await?;
+    let latest = check_latest_version(Component::Node).await?;
+    if installed.eq(&latest) {
+        log::info!("The cardano-node binary v{installed} is already up to date!");
+        return Ok(());
+    }
+    install_latest_node(confirm).await
+}
+
+pub async fn install_latest_node(confirm: bool) -> Result<()> {
+    set_confirm(confirm);
+    setup_node().await?;
+    let version = check_latest_version(Component::Node).await?;
+    let msg = format!("Do you want to install the latest cardano-node v{version} binary?");
+    if !confirm && proceed(&msg)? {
+        return install_node().await;
+    }
+    install_node().await
+}
 
 pub async fn install_node() -> Result<()> {
     build_node().await?;

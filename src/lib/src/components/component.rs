@@ -40,16 +40,24 @@ pub fn get_component_path(component: Component) -> Result<PathBuf> {
 }
 
 pub async fn check_install(component: Component) -> Result<()> {
-    if let Component::Node = component {
-        check_installed_version(Component::Cli).await?;
+    match component {
+        Component::Node => {
+            let version = check_installed_version(component).await?;
+            let component = component_to_string(component);
+            log::info!("Successfully installed {component} v{version}");
+            check_installed_version(Component::Cli).await?;
+        }
+        Component::Wallet => {
+            let version = check_installed_version(component).await?;
+            let component = component_to_string(component);
+            log::info!("Successfully installed {component} {version}");
+        }
+        _ => (),
     }
-    let version = check_installed_version(component).await?;
-    let component = component_to_string(component);
-    log::info!("Successfully installed {component} v{version}");
     Ok(())
 }
 
-pub async fn is_component_installed(component: Component) -> Result<bool> {
+pub fn is_component_installed(component: Component) -> Result<bool> {
     let bin = component_to_string(component);
     log::debug!("Checking if {bin} is already installed");
     let install_dir = read_setting("install_dir")?;
@@ -79,14 +87,28 @@ pub fn match_component(component: &str) -> Component {
 }
 
 pub async fn check_installed_version(component: Component) -> Result<String> {
-    let component = component_to_string(component);
-    let component_bin_path = get_bin_path(&component)?;
-    let path = absolute_ref_path_to_string(component_bin_path)?;
-    let cmd = format!("{path} --version | awk {} | head -n1", "'{print $2}'");
-    log::debug!("Checking installed version of {component}");
-    let version = async_command_pipe(&cmd).await?;
-    let installed_version: String = String::from(version.trim());
-    Ok(installed_version)
+    match component {
+        Component::Wallet => {
+            let component = component_to_string(component);
+            let component_bin_path = get_bin_path(&component)?;
+            let path = absolute_ref_path_to_string(component_bin_path)?;
+            let cmd = format!("{path} version | awk '{{print $1}}'");
+            log::debug!("Checking installed version of {component}");
+            let version = async_command_pipe(&cmd).await?;
+            let installed_version: String = String::from(version.trim());
+            Ok(installed_version)
+        }
+        _ => {
+            let component = component_to_string(component);
+            let component_bin_path = get_bin_path(&component)?;
+            let path = absolute_ref_path_to_string(component_bin_path)?;
+            let cmd = format!("{path} --version | awk '{{print $2}}' | head -n1");
+            log::debug!("Checking installed version of {component}");
+            let version = async_command_pipe(&cmd).await?;
+            let installed_version: String = String::from(version.trim());
+            Ok(installed_version)
+        }
+    }
 }
 
 pub async fn check_latest_version(component: Component) -> Result<String> {
@@ -115,7 +137,7 @@ pub async fn check_latest_version(component: Component) -> Result<String> {
 }
 
 pub async fn check_installed_component(component: Component) -> Result<()> {
-    if !is_component_installed(component).await? {
+    if !is_component_installed(component)? {
         return install_component(component).await;
     }
     install_if_not_up_to_date(component).await?;

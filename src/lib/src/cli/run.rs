@@ -197,7 +197,7 @@ pub fn handle_config(config: Option<PathBuf>, network: NetworkIdKind) -> Result<
 
 pub async fn run_node_if_installed(cmd: &str, network: NetworkIdKind, db: Option<PathBuf>) -> Result<()> {
     let network = &network_to_string(network);
-    if is_component_installed(Component::Node).await? {
+    if is_component_installed(Component::Node)? {
         let version = check_latest_version(Component::Node).await?;
         let installed = check_installed_version(Component::Node).await?;
         if version.eq(&installed) {
