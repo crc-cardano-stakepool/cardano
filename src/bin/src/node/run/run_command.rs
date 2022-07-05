@@ -143,13 +143,15 @@ impl RunCommand {
             }
         }
         log::debug!("The config to run node in {net}: {config:#?}");
-        let command = RunCommand::parse_config_to_command(config);
+        let command = RunCommand::parse_config_to_command(&config);
         log::debug!("The command to run a cardano node in {net}: {command}");
         if is_bin_installed("cardano-node").await? {
             let version = check_latest_version("cardano-node").await?;
             let installed = check_installed_version("cardano-node").await?;
             if version.eq(&installed) {
-                if proceed("Do you want to download a daily snapshot of the ledger to speed up sync time significantly?")? {
+                if config.db.as_ref().unwrap().read_dir()?.next().is_none()
+                    && proceed("Do you want to download a daily snapshot of the ledger to speed up sync time significantly?")?
+                {
                     download_snapshot(net).await?;
                 }
                 log::info!("Proceeding to run node in {net}");
@@ -168,14 +170,14 @@ impl RunCommand {
         Ok(())
     }
 
-    pub fn parse_config_to_command(config: RunArgs) -> String {
+    pub fn parse_config_to_command(config: &RunArgs) -> String {
         log::debug!("The parsed config to run node in testnet: {config:#?}");
         let port = config.port;
         let host = config.host;
-        let net_config = path_to_string(&config.config.expect("Valid config")).unwrap();
-        let db = path_to_string(&config.db.expect("Valid database path")).unwrap();
-        let socket = path_to_string(&config.socket.expect("Valid socket path")).unwrap();
-        let topology = path_to_string(&config.topology.expect("Valid topology path")).unwrap();
+        let net_config = path_to_string(config.config.as_ref().expect("Valid config")).unwrap();
+        let db = path_to_string(config.db.as_ref().expect("Valid database path")).unwrap();
+        let socket = path_to_string(config.socket.as_ref().expect("Valid socket path")).unwrap();
+        let topology = path_to_string(config.topology.as_ref().expect("Valid topology path")).unwrap();
         let command = format!(
             "cardano-node run \
             --topology {topology} \
