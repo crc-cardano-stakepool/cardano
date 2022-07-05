@@ -1,15 +1,17 @@
 use crate::{
-    async_command, get_config, get_db, path_to_string, CARDANO_BLOCKCHAIN_CSNAPSHOT_BASE_URL, CARDANO_BLOCKCHAIN_CSNAPSHOT_DATA_URL,
-    CARDANO_BLOCKCHAIN_CSNAPSHOT_DOWNLOAD_URL,
+    async_command, get_config, get_db, match_network, network_to_string, path_to_string, CARDANO_BLOCKCHAIN_CSNAPSHOT_BASE_URL,
+    CARDANO_BLOCKCHAIN_CSNAPSHOT_DATA_URL, CARDANO_BLOCKCHAIN_CSNAPSHOT_DOWNLOAD_URL,
 };
 use anyhow::Result;
+use cardano_multiplatform_lib::NetworkIdKind;
 
-pub async fn download_snapshot(network: &str) -> Result<()> {
+pub async fn download_snapshot(network: NetworkIdKind) -> Result<()> {
+    let network = network_to_string(network);
     log::info!("Downloading ledger snapshot from {CARDANO_BLOCKCHAIN_CSNAPSHOT_BASE_URL}");
-    let mut path = get_config(network)?.unwrap();
+    let mut path = get_config(match_network(&network))?.unwrap();
     path.pop();
     let db_path = path_to_string(&path)?;
-    let mut download_path = get_db(network)?.unwrap();
+    let mut download_path = get_db(match_network(&network))?.unwrap();
     let name = format!("{network}-snapshot.tar.lz4");
     download_path.push(name);
     let download_path = path_to_string(&download_path)?;
@@ -32,12 +34,10 @@ mod test {
     #[tokio::test]
     #[ignore]
     async fn test_download_snapshot() -> Result<()> {
-        let network = "testnet";
-        check_config_files(network).await?;
-        download_snapshot(network).await?;
-        let network = "mainnet";
-        check_config_files(network).await?;
-        download_snapshot(network).await?;
+        check_config_files(NetworkIdKind::Testnet).await?;
+        download_snapshot(NetworkIdKind::Testnet).await?;
+        check_config_files(NetworkIdKind::Mainnet).await?;
+        download_snapshot(NetworkIdKind::Mainnet).await?;
         Ok(())
     }
 }

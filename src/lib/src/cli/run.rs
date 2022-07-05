@@ -1,8 +1,13 @@
-use crate::{absolute_ref_path_to_string, async_command, path_to_string, read_setting, CONFIG_BASE_URL, CONFIG_FILES};
+use crate::{
+    absolute_ref_path_to_string, async_command, check_installed_version, check_latest_version, download_snapshot, install_component,
+    is_bin_installed, match_network, network_to_string, path_to_string, proceed, read_setting, CONFIG_BASE_URL, CONFIG_FILES,
+};
 use anyhow::{anyhow, Result};
-use std::path::PathBuf;
+use cardano_multiplatform_lib::NetworkIdKind;
+use std::{net::IpAddr, path::PathBuf};
 
-pub fn get_db(network: &str) -> Result<Option<PathBuf>> {
+pub fn get_db(network: NetworkIdKind) -> Result<Option<PathBuf>> {
+    let network = &network_to_string(network);
     let key = format!("{network}_db_dir");
     let path = read_setting(&key)?;
     let db = PathBuf::from(&path);
@@ -16,7 +21,9 @@ pub fn get_db(network: &str) -> Result<Option<PathBuf>> {
     }
     Ok(Some(db))
 }
-pub fn get_topology(network: &str) -> Result<Option<PathBuf>> {
+
+pub fn get_topology(network: NetworkIdKind) -> Result<Option<PathBuf>> {
+    let network = &network_to_string(network);
     let key = format!("{network}_config_dir");
     let path = read_setting(&key)?;
     let mut topology = PathBuf::from(&path);
@@ -33,7 +40,9 @@ pub fn get_topology(network: &str) -> Result<Option<PathBuf>> {
     }
     Ok(Some(topology))
 }
-pub fn get_config(network: &str) -> Result<Option<PathBuf>> {
+
+pub fn get_config(network: NetworkIdKind) -> Result<Option<PathBuf>> {
+    let network = &network_to_string(network);
     let key = format!("{network}_config_dir");
     let path = read_setting(&key)?;
     let mut config = PathBuf::from(&path);
@@ -51,7 +60,8 @@ pub fn get_config(network: &str) -> Result<Option<PathBuf>> {
     Ok(Some(config))
 }
 
-pub async fn check_config_files(network: &str) -> Result<()> {
+pub async fn check_config_files(network: NetworkIdKind) -> Result<()> {
+    let network = &network_to_string(network);
     log::debug!("Checking configuration files");
     let key = format!("{network}_config_dir");
     let path = read_setting(&key)?;
@@ -60,12 +70,13 @@ pub async fn check_config_files(network: &str) -> Result<()> {
         return Err(anyhow!("Configuration directory does not exist"));
     }
     for file in CONFIG_FILES {
-        check_config_file(db.clone(), network, file).await?;
+        check_config_file(db.clone(), match_network(network), file).await?;
     }
     Ok(())
 }
 
-pub async fn check_config_file(mut db: PathBuf, network: &str, file: &str) -> Result<()> {
+pub async fn check_config_file(mut db: PathBuf, network: NetworkIdKind, file: &str) -> Result<()> {
+    let network = &network_to_string(network);
     let download_path = path_to_string(&db)?;
     let name = format!("{network}-{file}.json");
     db.push(&name);
@@ -80,4 +91,157 @@ pub async fn check_config_file(mut db: PathBuf, network: &str, file: &str) -> Re
     log::debug!("Config file found");
     db.pop();
     Ok(())
+}
+
+pub fn handle_db(db: Option<PathBuf>, network: NetworkIdKind) -> Result<Option<PathBuf>> {
+    if db.is_none() {
+        return get_db(network);
+    }
+    let path = db.as_ref().unwrap();
+    if path.is_file() {
+        log::error!("Invalid db argument");
+        return Err(anyhow!("Database path can not be a file"));
+    }
+    if !path.is_absolute() {
+        log::error!("Invalid db argument");
+        let path = path_to_string(path)?;
+        return Err(anyhow!("Not an absolute path: {path}"));
+    }
+    if !path.exists() {
+        log::error!("Invalid db argument");
+        let path = path_to_string(path)?;
+        return Err(anyhow!("Invalid path does not exist: {path}"));
+    }
+    Ok(db)
+}
+
+pub fn handle_topology(topology: Option<PathBuf>, network: NetworkIdKind) -> Result<Option<PathBuf>> {
+    if topology.is_none() {
+        return get_topology(network);
+    }
+    let path = topology.as_ref().unwrap();
+    if !path.is_dir() {
+        log::error!("Invalid topology argument");
+        return Err(anyhow!("Topology path can not be a file"));
+    }
+    if !path.is_absolute() {
+        log::error!("Invalid topology argument");
+        let path = path_to_string(path)?;
+        return Err(anyhow!("Not an absolute path: {path}"));
+    }
+    if !path.exists() {
+        log::error!("Invalid topology argument");
+        let path = path_to_string(path)?;
+        return Err(anyhow!("Invalid path does not exist: {path}"));
+    }
+    Ok(topology)
+}
+
+pub fn handle_socket(socket: Option<PathBuf>) -> Result<Option<PathBuf>> {
+    if socket.is_none() {
+        let path = read_setting("ipc_dir")?;
+        let mut socket = PathBuf::from(&path);
+        if !socket.exists() {
+            log::error!("Invalid socket");
+            return Err(anyhow!("The path {path} does not exist"));
+        }
+        socket.push("node.socket");
+        return Ok(Some(socket));
+    }
+    let mut path = socket.clone().unwrap();
+    if path.is_dir() {
+        log::error!("Invalid socket argument");
+        return Err(anyhow!("Socket can not be a directory"));
+    }
+    if !path.is_absolute() {
+        log::error!("Invalid socket argument");
+        let path = path_to_string(&path)?;
+        return Err(anyhow!("Not an absolute path: {path}"));
+    }
+    path.pop();
+    if !path.exists() {
+        log::error!("Invalid socket argument");
+        let path = path_to_string(&path)?;
+        return Err(anyhow!("Invalid path: {path}"));
+    }
+    if path.is_file() {
+        log::error!("Invalid socket argument");
+        let path = path_to_string(&path)?;
+        return Err(anyhow!("Invalid path: {path}"));
+    }
+    Ok(socket)
+}
+
+pub fn handle_config(config: Option<PathBuf>, network: NetworkIdKind) -> Result<Option<PathBuf>> {
+    if config.is_none() {
+        return get_config(network);
+    }
+    let path = config.as_ref().unwrap();
+    if !path.is_dir() {
+        log::error!("Invalid config argument");
+        return Err(anyhow!("Config path can not be a directory"));
+    }
+    if !path.is_absolute() {
+        log::error!("Invalid config argument");
+        let path = path_to_string(path)?;
+        return Err(anyhow!("Not an absolute path: {path}"));
+    }
+    if !path.exists() {
+        log::error!("Invalid config argument");
+        let path = path_to_string(path)?;
+        return Err(anyhow!("Invalid path does not exist: {path}"));
+    }
+    Ok(config)
+}
+
+pub async fn run_node_if_installed(cmd: &str, network: NetworkIdKind, db: Option<PathBuf>) -> Result<()> {
+    let network = &network_to_string(network);
+    if is_bin_installed("cardano-node").await? {
+        let version = check_latest_version("cardano-node").await?;
+        let installed = check_installed_version("cardano-node").await?;
+        if version.eq(&installed) {
+            if db.as_ref().unwrap().read_dir()?.next().is_none()
+                && proceed("Do you want to download a daily snapshot of the ledger to speed up sync time significantly?")?
+            {
+                download_snapshot(match_network(network)).await?;
+            }
+            log::info!("Proceeding to run node in {network}");
+            async_command(cmd).await?;
+        } else {
+            log::error!("The installed cardano-node v{installed} is outdated");
+            log::error!("Please update to the latest version {version}");
+            install_component("cardano-node", false).await?;
+            async_command(cmd).await?;
+        }
+    } else {
+        install_component("cardano-node", false).await?;
+        async_command(cmd).await?;
+    }
+    Ok(())
+}
+
+pub fn parse_config_to_command(
+    port: u16,
+    host: IpAddr,
+    config: Option<PathBuf>,
+    db: &Option<PathBuf>,
+    socket: Option<PathBuf>,
+    topology: Option<PathBuf>,
+) -> String {
+    let net_config = path_to_string(config.as_ref().expect("Valid config")).unwrap();
+    let db = path_to_string(db.as_ref().expect("Valid database path")).unwrap();
+    let socket = path_to_string(socket.as_ref().expect("Valid socket path")).unwrap();
+    let topology = path_to_string(topology.as_ref().expect("Valid topology path")).unwrap();
+    let cmd = format!(
+        "cardano-node run \
+            --topology {topology} \
+            --database-path {db} \
+            --socket-path {socket} \
+            --host-addr {host} \
+            --port {port} \
+            --config {net_config} \
+            "
+    );
+    log::debug!("The command to run a cardano node: {cmd}");
+    cmd
 }
