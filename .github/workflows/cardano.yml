@@ -35,7 +35,7 @@ jobs:
             ~/.cabal/packages
             ~/.cabal/store
           key: ${{ matrix.os }}-${{ matrix.target }}-node-1.35.0
-          restore-keys: ${{ matrix.os }}-${{ matrix.target }}-
+          restore-keys: ${{ matrix.os }}-${{ matrix.target }}-node-1.35.0
       - name: Fix Cache
         run: rm ~/.config/.cardano/cardano.toml
       - name: Cache Rust
