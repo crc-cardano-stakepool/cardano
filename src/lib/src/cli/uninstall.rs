@@ -8,6 +8,12 @@ pub async fn uninstall_component(component: &str) -> Result<()> {
     Ok(())
 }
 
+pub async fn uninstall_wallet() -> Result<()> {
+    log::info!("Uninstalling cardano-wallet");
+    log::warn!("Not yet implemented");
+    Ok(())
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

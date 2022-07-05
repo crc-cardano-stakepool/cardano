@@ -26,7 +26,7 @@ pub async fn install_libsodium() -> Result<()> {
     let cmd = format!("cd {libsodium_path} && sudo make install");
     async_command(&cmd).await?;
     drop_privileges()?;
-    ShellConfig::export_shell_variables().await?;
+    ShellConfig::source_shell().await?;
     Ok(())
 }
 

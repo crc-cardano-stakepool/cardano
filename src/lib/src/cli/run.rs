@@ -1,6 +1,7 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_installed_version, check_latest_version, download_snapshot, install_component,
-    is_bin_installed, match_network, network_to_string, path_to_string, proceed, read_setting, CONFIG_BASE_URL, CONFIG_FILES,
+    absolute_ref_path_to_string, async_command, check_installed_version, check_latest_version, download_snapshot, install_node,
+    is_component_installed, match_network, network_to_string, path_to_string, proceed, read_setting, Component, CONFIG_BASE_URL,
+    CONFIG_FILES,
 };
 use anyhow::{anyhow, Result};
 use cardano_multiplatform_lib::NetworkIdKind;
@@ -196,9 +197,9 @@ pub fn handle_config(config: Option<PathBuf>, network: NetworkIdKind) -> Result<
 
 pub async fn run_node_if_installed(cmd: &str, network: NetworkIdKind, db: Option<PathBuf>) -> Result<()> {
     let network = &network_to_string(network);
-    if is_bin_installed("cardano-node").await? {
-        let version = check_latest_version("cardano-node").await?;
-        let installed = check_installed_version("cardano-node").await?;
+    if is_component_installed(Component::Node).await? {
+        let version = check_latest_version(Component::Node).await?;
+        let installed = check_installed_version(Component::Node).await?;
         if version.eq(&installed) {
             if db.as_ref().unwrap().read_dir()?.next().is_none()
                 && proceed("Do you want to download a daily snapshot of the ledger to speed up sync time significantly?")?
@@ -210,11 +211,11 @@ pub async fn run_node_if_installed(cmd: &str, network: NetworkIdKind, db: Option
         } else {
             log::error!("The installed cardano-node v{installed} is outdated");
             log::error!("Please update to the latest version {version}");
-            install_component("cardano-node", false).await?;
+            install_node().await?;
             async_command(cmd).await?;
         }
     } else {
-        install_component("cardano-node", false).await?;
+        install_node().await?;
         async_command(cmd).await?;
     }
     Ok(())

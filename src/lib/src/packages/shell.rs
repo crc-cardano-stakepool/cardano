@@ -1,9 +1,6 @@
-use crate::{
-    absolute_ref_path_to_string, async_command_pipe, check_env, proceed, process_success, read_setting, set_env, setup_env,
-    LD_LIBRARY_PATH, PKG_CONFIG_PATH,
-};
+use crate::{absolute_ref_path_to_string, async_command_pipe, check_env, process_success, read_setting, set_env, setup_env};
 use anyhow::{anyhow, Result};
-use std::{collections::HashMap, io::Write, path::PathBuf};
+use std::{io::Write, path::PathBuf};
 
 #[derive(Debug, Copy, Clone)]
 pub enum Shell {
@@ -78,18 +75,8 @@ impl ShellConfig {
     pub async fn setup_shell() -> Result<()> {
         log::info!("Setting up shell");
         let shell = ShellConfig::default();
-        shell.check_ask_shell_confirm().await?;
+        shell.change_shell_config().await?;
         setup_env()
-    }
-
-    async fn check_ask_shell_confirm(&self) -> Result<()> {
-        let confirm = check_env("CONFIRM")?;
-        let config_file = absolute_ref_path_to_string(&self.config_file).unwrap();
-        let msg = format!("Do you want to automatically add the required PATH variables to {config_file}");
-        if confirm == "false" && proceed(&msg)? {
-            return self.change_shell_config().await;
-        }
-        ShellConfig::export_shell_variables().await
     }
 
     pub async fn change_shell_config(&self) -> Result<()> {
@@ -108,15 +95,6 @@ impl ShellConfig {
             }
         }
         Ok(())
-    }
-
-    pub async fn export_shell_variables() -> Result<()> {
-        log::debug!("Exporting shell variables");
-        let envs = HashMap::from([("LD_LIBRARY_PATH", LD_LIBRARY_PATH), ("PKG_CONFIG_PATH", PKG_CONFIG_PATH)]);
-        for (key, value) in envs.iter() {
-            set_env(key, value);
-        }
-        ShellConfig::source_shell().await
     }
 
     pub async fn check_shell_config_env(&self, pattern: &str) -> Result<bool> {

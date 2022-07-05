@@ -29,7 +29,7 @@ pub async fn install_secp256k1() -> Result<()> {
     async_command(&cmd).await?;
     async_command("sudo ldconfig").await?;
     drop_privileges()?;
-    ShellConfig::export_shell_variables().await?;
+    ShellConfig::source_shell().await?;
     Ok(())
 }
 

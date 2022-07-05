@@ -1,8 +1,8 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
 use lib::{
-    check_config_files, handle_config, handle_db, handle_socket, handle_topology, match_network, parse_config_to_command,
-    run_node_if_installed,
+    check_config_files, handle_config, handle_db, handle_socket, handle_topology, match_network, parse_config_to_command, proceed,
+    run_node_if_installed, SystemRequirements,
 };
 use std::{
     net::{IpAddr, Ipv4Addr},
@@ -47,6 +47,9 @@ impl RunCommand {
         }
     }
     pub async fn run_node(config: RunArgs, network: &str) -> Result<()> {
+        if !SystemRequirements::check_requirements() && !proceed("Do you still want to run the node anyway?")? {
+            return Ok(());
+        }
         let network = match_network(network);
         check_config_files(network).await?;
         let port = config.port;
