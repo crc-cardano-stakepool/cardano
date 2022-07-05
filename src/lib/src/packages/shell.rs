@@ -1,6 +1,6 @@
 use crate::{
-    absolute_ref_path_to_string, async_command_pipe, check_env, proceed, process_success, set_env, setup_env, LD_LIBRARY_PATH,
-    PKG_CONFIG_PATH,
+    absolute_ref_path_to_string, async_command_pipe, check_env, proceed, process_success, read_setting, set_env, setup_env,
+    LD_LIBRARY_PATH, PKG_CONFIG_PATH,
 };
 use anyhow::{anyhow, Result};
 use std::{collections::HashMap, io::Write, path::PathBuf};
@@ -93,22 +93,15 @@ impl ShellConfig {
     }
 
     pub async fn change_shell_config(&self) -> Result<()> {
-        let patterns = vec![
-            "LD_LIBRARY_PATH",
-            "PKG_CONFIG_PATH",
-            "CARDANO_NODE_SOCKET_PATH",
-            ".local/bin",
-            ".cabal/bin",
-            ".ghcup/bin",
-        ];
+        let patterns = vec!["LD_LIBRARY_PATH", "PKG_CONFIG_PATH", ".local/bin", ".cabal/bin", ".ghcup/bin"];
         let paths = vec![
             "export LD_LIBRARY_PATH=\"/usr/local/lib:$LD_LIBRARY_PATH\"",
             "export PKG_CONFIG_PATH=\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\"",
-            "export CARDANO_NODE_SOCKET_PATH=\"$HOME/.cardano/ipc/node.socket\"",
             "export PATH=\"$HOME/.local/bin:$PATH\"",
             "export PATH=\"$HOME/.cabal/bin:$PATH\"",
             "export PATH=\"$HOME/.ghcup/bin:$PATH\"",
         ];
+        self.write_node_socket_path().await?;
         for (pattern, path) in patterns.iter().zip(paths.iter()) {
             if !self.check_shell_config_env(pattern).await? {
                 self.write_shell_config(path);
@@ -147,6 +140,15 @@ impl ShellConfig {
             .unwrap();
     }
 
+    pub async fn write_node_socket_path(&self) -> Result<()> {
+        let node_socket_path = read_setting("node_socket_path")?;
+        let value = format!("export CARDANO_NODE_SOCKET_PATH={node_socket_path}");
+        if !self.check_shell_config_env("CARDANO_NODE_SOCKET_PATH").await? {
+            self.write_shell_config(&value);
+        }
+        Ok(())
+    }
+
     pub async fn source_shell() -> Result<()> {
         log::debug!("Sourcing shell");
         let config_file = check_env("SHELL_CONFIG_FILE")?;
@@ -158,12 +160,21 @@ impl ShellConfig {
 
 #[cfg(test)]
 mod test {
-    // use super::*;
+    use crate::ShellConfig;
+
+    use super::*;
 
     #[tokio::test]
     #[ignore]
     async fn test_write_shell_config() {
         unimplemented!();
+    }
+
+    #[tokio::test]
+    async fn test_write_note_socket_path() -> Result<()> {
+        let shell = ShellConfig::default();
+        shell.write_node_socket_path().await?;
+        Ok(())
     }
 
     #[tokio::test]
