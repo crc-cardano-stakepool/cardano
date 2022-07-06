@@ -1,5 +1,5 @@
 use crate::{
-    absolute_ref_path_to_string, async_command_pipe, build_node, build_wallet, check_env, get_bin_path, get_component_dir, install_node,
+    absolute_ref_path_to_string, async_command_pipe, build_node, build_wallet, check_env, get_bin_path, set_component_dir, install_node,
     install_wallet, read_setting, CARDANO_NODE_RELEASE_URL, CARDANO_NODE_URL, CARDANO_WALLET_RELEASE_URL, CARDANO_WALLET_URL,
 };
 use anyhow::Result;
@@ -114,7 +114,7 @@ pub async fn check_installed_version(component: Component) -> Result<String> {
 pub async fn check_latest_version(component: Component) -> Result<String> {
     match component {
         Component::Wallet => {
-            let path = get_component_dir(component)?;
+            let path = set_component_dir(component)?;
             let cmd = format!("cd {path} && git describe --tags --abbrev=0");
             let component = component_to_string(component);
             log::debug!("Checking latest {component} version");

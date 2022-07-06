@@ -1,7 +1,7 @@
 use crate::{
     async_command, build, check_env, check_install, check_installed_version, check_latest_version, check_project_file, clone_component,
-    configure_build, copy_binary, get_component_dir, get_component_path, get_ghc_version, get_project_file, is_component_installed,
-    path_to_string, proceed, set_confirm, setup_wallet, update_cabal, Component, ShellConfig,
+    configure_build, copy_binary, get_component_path, get_ghc_version, get_project_file, is_component_installed, path_to_string, proceed,
+    set_component_dir, set_confirm, setup_wallet, update_cabal, Component, ShellConfig,
 };
 use anyhow::Result;
 use std::path::{Path, PathBuf};
@@ -54,9 +54,14 @@ pub async fn build_wallet() -> Result<()> {
 pub async fn copy_wallet_binary<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     let install_dir = path_to_string(install_dir.as_ref())?;
     log::info!("Installing the built cardano-wallet binary to {install_dir}");
-    let path = get_component_dir(Component::Wallet)?;
-    let cmd =
-        format!("cd {path} && cabal install cardano-wallet --install-method=copy --overwrite-policy=always --installdir={install_dir}");
+    let path = set_component_dir(Component::Wallet)?;
+    let cmd = format!(
+        "cd {path} && \
+            cabal install cardano-wallet \
+            --install-method=copy \
+            --overwrite-policy=always \
+            --installdir={install_dir}"
+    );
     async_command(&cmd).await?;
     Ok(())
 }

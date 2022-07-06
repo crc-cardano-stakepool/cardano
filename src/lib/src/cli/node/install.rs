@@ -57,14 +57,21 @@ pub async fn build_node() -> Result<()> {
 
 pub async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
     log::debug!("Checking if the project file already exists");
-    let path = path_to_string(project_file.as_ref())?;
-    if project_file.as_ref().is_file() {
+    let file = project_file.as_ref();
+    let path = path_to_string(file)?;
+    log::debug!("Project file: {path}");
+    let file_name = file.file_name().unwrap().to_str().unwrap();
+    log::debug!("File name: {file_name}");
+    if !file.is_file() {
+        log::debug!("Project file {path} is not a file");
+        return Ok(());
+    }
+    if file_name.eq("cabal.project.local") {
         log::warn!("Project file already exists, removing it");
         let cmd = format!("rm {path}");
         async_command(&cmd).await?;
         return Ok(());
     }
-    log::debug!("Project file does not exist");
     Ok(())
 }
 
@@ -90,11 +97,7 @@ pub fn update_project_file<P: AsRef<Path>>(path: P) -> Result<()> {
         .open(path)
         .map_err(|err| anyhow!("Failed to open {file_path}: {err}"))
         .unwrap();
-    let value = "package cardano-crypto-praos";
-    writeln!(f, "{value}")
-        .map_err(|err| anyhow!("Failed to write {value} to {file_path}: {err}"))
-        .unwrap();
-    let value = "  flags: -external-libsodium-vrf";
+    let value = "package cardano-crypto-praos\n  flags: -external-libsodium-vrf\n";
     writeln!(f, "{value}")
         .map_err(|err| anyhow!("Failed to write {value} to {file_path}: {err}"))
         .unwrap();
@@ -149,10 +152,12 @@ mod test {
     use std::io::{Read, Seek, SeekFrom};
     use tempfile::NamedTempFile;
 
+    use crate::set_component_dir;
+
     use super::*;
 
-    #[tokio::test]
-    async fn test_update_project_file() {
+    #[test]
+    fn test_update_project_file() {
         let mut project_file = NamedTempFile::new().unwrap();
         update_project_file(&project_file).unwrap();
         project_file.seek(SeekFrom::Start(0)).unwrap();
@@ -160,6 +165,28 @@ mod test {
         project_file.read_to_string(&mut buf).unwrap();
         let expected = format!("package cardano-crypto-praos\n  flags: -external-libsodium-vrf\n");
         assert_eq!(expected, buf);
+    }
+
+    #[test]
+    fn test_get_project_file() {
+        let component = Component::Node;
+        set_component_dir(component).unwrap();
+        let mut path = get_component_path(component).unwrap();
+        path.push("cabal.project.local");
+        let project_file = get_project_file(component).unwrap();
+        assert_eq!(path, project_file)
+    }
+
+    #[tokio::test]
+    async fn test_check_project_file() {
+        let file_name = "cabal.project.local";
+        let dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_path = dir.path().join(file_name);
+        let project_file_name = file_path.file_name().unwrap().to_str().unwrap();
+        std::fs::File::create(&file_path).unwrap();
+        assert_eq!(file_name, project_file_name);
+        check_project_file(&file_path).await.unwrap();
+        assert!(!file_path.exists());
     }
 
     #[tokio::test]
@@ -173,13 +200,6 @@ mod test {
     async fn test_install_component() {
         unimplemented!();
     }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_check_project_file() {
-        unimplemented!();
-    }
-
     #[tokio::test]
     #[ignore]
     async fn test_get_component_path() {
