@@ -1,9 +1,11 @@
 use crate::{
-    absolute_ref_path_to_string, async_command_pipe, build_address, build_node,
-    build_wallet, check_env, get_bin_path, install_address, install_node,
-    install_wallet, read_setting, set_component_dir,
-    CARDANO_ADDRESS_RELEASE_URL, CARDANO_ADDRESS_URL, CARDANO_NODE_RELEASE_URL,
-    CARDANO_NODE_URL, CARDANO_WALLET_RELEASE_URL, CARDANO_WALLET_URL,
+    absolute_ref_path_to_string, async_command_pipe, build_address,
+    build_bech32, build_node, build_wallet, check_env, get_bin_path,
+    install_address, install_bech32, install_node, install_wallet,
+    read_setting, set_component_dir, CARDANO_ADDRESS_RELEASE_URL,
+    CARDANO_ADDRESS_URL, CARDANO_BECH32_RELEASE_URL, CARDANO_BECH32_URL,
+    CARDANO_NODE_RELEASE_URL, CARDANO_NODE_URL, CARDANO_WALLET_RELEASE_URL,
+    CARDANO_WALLET_URL,
 };
 use anyhow::Result;
 use convert_case::{Case, Casing};
@@ -15,6 +17,7 @@ pub enum Component {
     Cli,
     Wallet,
     Address,
+    Bech32,
 }
 
 pub fn get_component_release_url(component: Component) -> &'static str {
@@ -23,6 +26,7 @@ pub fn get_component_release_url(component: Component) -> &'static str {
         Component::Cli => CARDANO_NODE_RELEASE_URL,
         Component::Wallet => CARDANO_WALLET_RELEASE_URL,
         Component::Address => CARDANO_ADDRESS_RELEASE_URL,
+        Component::Bech32 => CARDANO_BECH32_RELEASE_URL,
     }
 }
 
@@ -32,6 +36,7 @@ pub fn get_component_url(component: Component) -> &'static str {
         Component::Cli => CARDANO_NODE_URL,
         Component::Wallet => CARDANO_WALLET_URL,
         Component::Address => CARDANO_ADDRESS_URL,
+        Component::Bech32 => CARDANO_BECH32_URL,
     }
 }
 
@@ -47,7 +52,7 @@ pub fn get_component_path(component: Component) -> Result<PathBuf> {
 
 pub async fn check_install(component: Component) -> Result<()> {
     match component {
-        Component::Node => {
+        Component::Node | Component::Address | Component::Bech32 => {
             let version = check_installed_version(component).await?;
             let component = component_to_string(component);
             log::info!("Successfully installed {component} v{version}");
@@ -78,6 +83,7 @@ pub fn component_to_string(component: Component) -> String {
         Component::Cli => "cardano-cli".to_string(),
         Component::Wallet => "cardano-wallet".to_string(),
         Component::Address => "cardano-address".to_string(),
+        Component::Bech32 => "bech32".to_string(),
     }
 }
 
@@ -87,6 +93,7 @@ pub fn match_component(component: &str) -> Component {
         "cardano-cli" => Component::Cli,
         "cardano-wallet" => Component::Wallet,
         "cardano-address" => Component::Address,
+        "bech32" => Component::Bech32,
         _ => {
             log::error!("Unknown component!");
             panic!("Mismatched component")
@@ -159,6 +166,7 @@ pub async fn install_component(component: Component) -> Result<()> {
         Component::Cli => install_node().await,
         Component::Wallet => install_wallet().await,
         Component::Address => install_address().await,
+        Component::Bech32 => install_bech32().await,
     }
 }
 
@@ -179,5 +187,6 @@ pub async fn build_component(component: Component) -> Result<()> {
         Component::Cli => build_node().await,
         Component::Wallet => build_wallet().await,
         Component::Address => build_address().await,
+        Component::Bech32 => build_bech32().await,
     }
 }

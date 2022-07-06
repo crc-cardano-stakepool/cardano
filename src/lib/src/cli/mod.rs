@@ -4,5 +4,7 @@ pub mod wallet;
 pub use wallet::*;
 pub mod update;
 pub use update::*;
+pub mod bech32;
+pub use bech32::*;
 pub mod address;
 pub use address::*;

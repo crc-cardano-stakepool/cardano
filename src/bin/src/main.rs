@@ -14,6 +14,8 @@ pub mod wallet;
 pub use wallet::*;
 pub mod address;
 pub use address::*;
+pub mod bech32;
+pub use bech32::*;
 
 #[derive(Debug, Parser)]
 #[clap(about = "Manage cardano components", version, color = ColorChoice::Never)]
@@ -37,6 +39,9 @@ impl Cli {
             CardanoCommand::Wallet(command) => {
                 WalletCommand::exec(command).await
             }
+            CardanoCommand::Bech32(command) => {
+                Bech32Command::exec(command).await
+            }
             CardanoCommand::Update => update_cli().await,
         }
     }
@@ -50,6 +55,8 @@ pub enum CardanoCommand {
     Wallet(WalletArgs),
     /// Manage cardano addresses
     Address(AddressArgs),
+    /// Installs the bech32 CLI
+    Bech32(Bech32Args),
     /// Updates the CLI
     Update,
 }
