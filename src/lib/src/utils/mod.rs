@@ -8,3 +8,5 @@ pub mod process;
 pub use process::*;
 pub mod network;
 pub use network::*;
+pub mod dialog;
+pub use dialog::*;

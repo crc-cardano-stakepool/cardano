@@ -4,7 +4,10 @@ use crate::{
     proceed, process_success_inherit, set_confirm, set_env, setup_node, update_cabal, Component, ShellConfig,
 };
 use anyhow::{anyhow, Result};
-use std::path::{Path, PathBuf};
+use std::{
+    io::Write,
+    path::{Path, PathBuf},
+};
 
 pub async fn check_latest_node(confirm: bool) -> Result<()> {
     if !is_component_installed(Component::Node)? {
@@ -48,7 +51,7 @@ pub async fn build_node() -> Result<()> {
     update_cabal(&path, &cabal).await?;
     check_project_file(&project_file).await?;
     configure_build(&ghc_version, &path, &cabal).await?;
-    update_project_file(&project_file).await?;
+    update_project_file(&project_file)?;
     build(Component::Node, &path, &cabal).await
 }
 
@@ -75,16 +78,26 @@ pub async fn configure_build<P: AsRef<Path>>(ghc_version: &str, path: P, cabal: 
     Ok(())
 }
 
-pub async fn update_project_file<P: AsRef<Path>>(path: P) -> Result<()> {
+pub fn update_project_file<P: AsRef<Path>>(path: P) -> Result<()> {
     let file_path = absolute_ref_path_to_string(&path)?;
     if !path.as_ref().is_file() {
         return Err(anyhow!("The path {file_path} is not a file"));
     }
     log::info!("Updating the project file at {file_path}");
-    let package = format!("echo \"package cardano-crypto-praos\" >> {file_path}");
-    let libsodium_flag = format!("echo \"  flags: -external-libsodium-vrf\" >> {file_path}");
-    async_command(&package).await?;
-    async_command(&libsodium_flag).await?;
+    let mut f = std::fs::File::options()
+        .write(true)
+        .append(true)
+        .open(path)
+        .map_err(|err| anyhow!("Failed to open {file_path}: {err}"))
+        .unwrap();
+    let value = "package cardano-crypto-praos";
+    writeln!(f, "{value}")
+        .map_err(|err| anyhow!("Failed to write {value} to {file_path}: {err}"))
+        .unwrap();
+    let value = "  flags: -external-libsodium-vrf";
+    writeln!(f, "{value}")
+        .map_err(|err| anyhow!("Failed to write {value} to {file_path}: {err}"))
+        .unwrap();
     Ok(())
 }
 
@@ -133,12 +146,20 @@ pub async fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
 
 #[cfg(test)]
 mod test {
-    // use super::*;
+    use std::io::{Read, Seek, SeekFrom};
+    use tempfile::NamedTempFile;
+
+    use super::*;
 
     #[tokio::test]
-    #[ignore]
     async fn test_update_project_file() {
-        unimplemented!();
+        let mut project_file = NamedTempFile::new().unwrap();
+        update_project_file(&project_file).unwrap();
+        project_file.seek(SeekFrom::Start(0)).unwrap();
+        let mut buf = String::new();
+        project_file.read_to_string(&mut buf).unwrap();
+        let expected = format!("package cardano-crypto-praos\n  flags: -external-libsodium-vrf\n");
+        assert_eq!(expected, buf);
     }
 
     #[tokio::test]

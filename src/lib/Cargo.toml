@@ -24,3 +24,4 @@ cardano-multiplatform-lib = "0.3.0"
 
 [dev-dependencies]
 ctor = "0.1.22"
+tempfile = "3.3.0"

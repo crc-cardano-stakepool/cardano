@@ -795,6 +795,7 @@ dependencies = [
  "log",
  "serde",
  "sysinfo",
+ "tempfile",
  "tokio",
  "toml",
 ]
