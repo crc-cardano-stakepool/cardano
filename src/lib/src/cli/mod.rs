@@ -4,3 +4,5 @@ pub mod wallet;
 pub use wallet::*;
 pub mod update;
 pub use update::*;
+pub mod address;
+pub use address::*;

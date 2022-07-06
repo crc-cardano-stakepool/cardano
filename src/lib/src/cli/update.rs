@@ -1,6 +1,8 @@
 use anyhow::Result;
 
-use crate::{async_command, check_env, check_repo, setup_work_dir, CARDANO_URL};
+use crate::{
+    async_command, check_env, check_repo, setup_work_dir, CARDANO_URL,
+};
 
 pub async fn update_cli() -> Result<()> {
     log::info!("Updating the CLI");

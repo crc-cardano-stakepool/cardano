@@ -1,7 +1,8 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_installed_version, check_latest_version, download_snapshot, install_node,
-    is_component_installed, match_network, network_to_string, path_to_string, proceed, read_setting, Component, CONFIG_BASE_URL,
-    CONFIG_FILES,
+    absolute_ref_path_to_string, async_command, check_installed_version,
+    check_latest_version, download_snapshot, install_node,
+    is_component_installed, match_network, network_to_string, path_to_string,
+    proceed, read_setting, Component, CONFIG_BASE_URL, CONFIG_FILES,
 };
 use anyhow::{anyhow, Result};
 use cardano_multiplatform_lib::NetworkIdKind;
@@ -47,8 +48,8 @@ pub fn get_config(network: NetworkIdKind) -> Result<Option<PathBuf>> {
     let key = format!("{network}_config_dir");
     let path = read_setting(&key)?;
     let mut config = PathBuf::from(&path);
-    let key = format!("{network}-config.json");
-    config.push(key);
+    let file_name = format!("{network}-config.json");
+    config.push(file_name);
     let path = absolute_ref_path_to_string(&config)?;
     if !config.exists() {
         log::error!("Invalid config");
@@ -76,7 +77,11 @@ pub async fn check_config_files(network: NetworkIdKind) -> Result<()> {
     Ok(())
 }
 
-pub async fn check_config_file(mut db: PathBuf, network: NetworkIdKind, file: &str) -> Result<()> {
+pub async fn check_config_file(
+    mut db: PathBuf,
+    network: NetworkIdKind,
+    file: &str,
+) -> Result<()> {
     let network = &network_to_string(network);
     let download_path = path_to_string(&db)?;
     let name = format!("{network}-{file}.json");
@@ -94,7 +99,10 @@ pub async fn check_config_file(mut db: PathBuf, network: NetworkIdKind, file: &s
     Ok(())
 }
 
-pub fn handle_db(db: Option<PathBuf>, network: NetworkIdKind) -> Result<Option<PathBuf>> {
+pub fn handle_db(
+    db: Option<PathBuf>,
+    network: NetworkIdKind,
+) -> Result<Option<PathBuf>> {
     if db.is_none() {
         return get_db(network);
     }
@@ -116,7 +124,10 @@ pub fn handle_db(db: Option<PathBuf>, network: NetworkIdKind) -> Result<Option<P
     Ok(db)
 }
 
-pub fn handle_topology(topology: Option<PathBuf>, network: NetworkIdKind) -> Result<Option<PathBuf>> {
+pub fn handle_topology(
+    topology: Option<PathBuf>,
+    network: NetworkIdKind,
+) -> Result<Option<PathBuf>> {
     if topology.is_none() {
         return get_topology(network);
     }
@@ -173,7 +184,10 @@ pub fn handle_socket(socket: Option<PathBuf>) -> Result<Option<PathBuf>> {
     Ok(socket)
 }
 
-pub fn handle_config(config: Option<PathBuf>, network: NetworkIdKind) -> Result<Option<PathBuf>> {
+pub fn handle_config(
+    config: Option<PathBuf>,
+    network: NetworkIdKind,
+) -> Result<Option<PathBuf>> {
     if config.is_none() {
         return get_config(network);
     }
@@ -195,14 +209,21 @@ pub fn handle_config(config: Option<PathBuf>, network: NetworkIdKind) -> Result<
     Ok(config)
 }
 
-pub async fn run_node_if_installed(cmd: &str, network: NetworkIdKind, db: Option<PathBuf>) -> Result<()> {
+pub async fn run_node_if_installed(
+    cmd: &str,
+    network: NetworkIdKind,
+    db: Option<PathBuf>,
+) -> Result<()> {
     let network = &network_to_string(network);
     if is_component_installed(Component::Node)? {
         let version = check_latest_version(Component::Node).await?;
         let installed = check_installed_version(Component::Node).await?;
         if version.eq(&installed) {
             if db.as_ref().unwrap().read_dir()?.next().is_none()
-                && proceed("Do you want to download a daily snapshot of the ledger to speed up sync time significantly?")?
+                && proceed(
+                    "Do you want to download a daily snapshot of \
+                        the ledger to speed up sync time significantly?",
+                )?
             {
                 download_snapshot(match_network(network)).await?;
             }
@@ -229,10 +250,14 @@ pub fn parse_config_to_command(
     socket: Option<PathBuf>,
     topology: Option<PathBuf>,
 ) -> String {
-    let net_config = path_to_string(config.as_ref().expect("Valid config")).unwrap();
+    let net_config =
+        path_to_string(config.as_ref().expect("Valid config")).unwrap();
     let db = path_to_string(db.as_ref().expect("Valid database path")).unwrap();
-    let socket = path_to_string(socket.as_ref().expect("Valid socket path")).unwrap();
-    let topology = path_to_string(topology.as_ref().expect("Valid topology path")).unwrap();
+    let socket =
+        path_to_string(socket.as_ref().expect("Valid socket path")).unwrap();
+    let topology =
+        path_to_string(topology.as_ref().expect("Valid topology path"))
+            .unwrap();
     let cmd = format!(
         "cardano-node run \
             --topology {topology} \

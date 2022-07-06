@@ -1,4 +1,7 @@
-use crate::{async_command, check_env, check_repo, drop_privileges, ShellConfig, LIBSODIUM_URL};
+use crate::{
+    async_command, check_env, check_repo, drop_privileges, ShellConfig,
+    LIBSODIUM_URL,
+};
 use anyhow::Result;
 use std::path::Path;
 
@@ -10,7 +13,13 @@ pub async fn check_libsodium() -> Result<()> {
     let so_23_3_0 = Path::new("/usr/local/lib/libsodium.so.23.3.0");
     let la = Path::new("/usr/local/lib/libsodium.la");
     let a = Path::new("/usr/local/lib/libsodium.a");
-    if !(pc.is_file() && so.is_file() && la.is_file() && so_23_3_0.is_file() && so_23.is_file() && a.is_file()) {
+    if !(pc.is_file()
+        && so.is_file()
+        && la.is_file()
+        && so_23_3_0.is_file()
+        && so_23.is_file()
+        && a.is_file())
+    {
         log::warn!("Libsodium is not installed");
         install_libsodium().await?;
     }

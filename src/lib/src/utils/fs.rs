@@ -1,5 +1,7 @@
 use crate::{
-    check_env, component_to_string, copy_node_binaries, copy_wallet_binary, match_component, read_setting, set_env, Component, DIRECTORIES,
+    check_env, component_to_string, copy_address_binary, copy_node_binaries,
+    copy_wallet_binary, match_component, read_setting, set_env, Component,
+    DIRECTORIES,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -46,6 +48,7 @@ pub async fn copy_binary(component: Component) -> Result<()> {
         Component::Node => copy_node_binaries(&install_dir).await,
         Component::Cli => copy_node_binaries(&install_dir).await,
         Component::Wallet => copy_wallet_binary(&install_dir).await,
+        Component::Address => copy_address_binary(&install_dir).await,
     }
 }
 
@@ -64,7 +67,9 @@ pub fn path_to_string(path: &Path) -> Result<String> {
     Err(anyhow!("Failed to parse path to string"))
 }
 
-pub fn absolute_ref_path_to_string<P: AsRef<Path>>(absolute_path: P) -> Result<String> {
+pub fn absolute_ref_path_to_string<P: AsRef<Path>>(
+    absolute_path: P,
+) -> Result<String> {
     log::trace!("Parsing the path to string if the path is absolute");
     let path = absolute_path.as_ref();
     let parsed = path_to_string(path)?;
@@ -90,7 +95,9 @@ pub fn get_bin_path(bin: &str) -> Result<PathBuf> {
         log::debug!("The path to the {bin} binary: {parsed}");
         return Ok(path);
     }
-    Err(anyhow!("XDG_BIN_HOME is not set, failed to check if {bin} is installed"))
+    Err(anyhow!(
+        "XDG_BIN_HOME is not set, failed to check if {bin} is installed"
+    ))
 }
 
 #[cfg(test)]

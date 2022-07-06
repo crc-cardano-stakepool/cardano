@@ -2,7 +2,9 @@ use crate::CARDANO_CONFIG_FILE_NAME;
 use anyhow::{anyhow, Result};
 use config::Config;
 use serde::Serialize;
-use std::{collections::HashMap, fs::File, io::Write, path::PathBuf, sync::RwLock};
+use std::{
+    collections::HashMap, fs::File, io::Write, path::PathBuf, sync::RwLock,
+};
 
 #[derive(Hash, Serialize, Debug, Eq, PartialEq)]
 pub struct Settings {
@@ -24,7 +26,8 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         log::debug!("Creating default settings");
-        let mut work_dir = dirs::config_dir().expect("Failed to read XDG_CONFIG_HOME");
+        let mut work_dir =
+            dirs::config_dir().expect("Failed to read XDG_CONFIG_HOME");
         work_dir.push(".cardano");
         let mut log_file = PathBuf::from(&work_dir);
         log_file.push("logs");
@@ -121,7 +124,9 @@ pub fn read_setting(key: &str) -> Result<String> {
     let settings = read_settings();
     let setting = settings
         .get(key)
-        .ok_or_else(|| anyhow!("Failed to read setting {key}: invalid or does not exist"))
+        .ok_or_else(|| {
+            anyhow!("Failed to read setting {key}: invalid or does not exist")
+        })
         .unwrap();
     Ok(setting.trim().to_string())
 }

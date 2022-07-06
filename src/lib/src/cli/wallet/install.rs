@@ -1,7 +1,9 @@
 use crate::{
-    async_command, build, check_env, check_install, check_installed_version, check_latest_version, check_project_file, clone_component,
-    configure_build, copy_binary, get_component_path, get_ghc_version, get_project_file, is_component_installed, path_to_string, proceed,
-    set_component_dir, set_confirm, setup_wallet, update_cabal, Component, ShellConfig,
+    async_command, build, check_env, check_install, check_installed_version,
+    check_latest_version, check_project_file, clone_component, configure_build,
+    copy_binary, get_component_path, get_ghc_version, get_project_file,
+    is_component_installed, path_to_string, proceed, set_component_dir,
+    set_confirm, setup_wallet, update_cabal, Component, ShellConfig,
 };
 use anyhow::Result;
 use std::path::{Path, PathBuf};
@@ -23,7 +25,9 @@ pub async fn install_latest_wallet(confirm: bool) -> Result<()> {
     set_confirm(confirm);
     setup_wallet().await?;
     let version = check_latest_version(Component::Wallet).await?;
-    let msg = format!("Do you want to install the latest cardano-wallet {version} binary?");
+    let msg = format!(
+        "Do you want to install the latest cardano-wallet {version} binary?"
+    );
     if !confirm && proceed(&msg)? {
         return install_wallet().await;
     }

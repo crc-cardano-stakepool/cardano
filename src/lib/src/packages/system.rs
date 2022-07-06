@@ -1,6 +1,8 @@
 use crate::{
-    MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB, MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB, MIN_CORES,
-    MIN_CPU_FREQUENCY_IN_MHZ, RECOMMENDED_CPU_FREQUENCY_IN_MHZ, TESTNET_MIN_FREE_DISK_SPACE_IN_GB, TESTNET_MIN_FREE_RAM_IN_GB,
+    MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB,
+    MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB, MIN_CORES,
+    MIN_CPU_FREQUENCY_IN_MHZ, RECOMMENDED_CPU_FREQUENCY_IN_MHZ,
+    TESTNET_MIN_FREE_DISK_SPACE_IN_GB, TESTNET_MIN_FREE_RAM_IN_GB,
 };
 use anyhow::anyhow;
 use sysinfo::{CpuExt, DiskExt, System, SystemExt};
@@ -22,14 +24,18 @@ impl Default for SystemRequirements {
     fn default() -> Self {
         Self {
             min_cores: MIN_CORES,
-            mainnet_min_free_disk_space_in_gb: MAINNET_MIN_FREE_DISK_SPACE_IN_GB,
-            mainnet_recommended_free_disk_space_in_gb: MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB,
-            testnet_min_free_disk_space_in_gb: TESTNET_MIN_FREE_DISK_SPACE_IN_GB,
+            mainnet_min_free_disk_space_in_gb:
+                MAINNET_MIN_FREE_DISK_SPACE_IN_GB,
+            mainnet_recommended_free_disk_space_in_gb:
+                MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB,
+            testnet_min_free_disk_space_in_gb:
+                TESTNET_MIN_FREE_DISK_SPACE_IN_GB,
             mainnet_min_free_ram_in_gb: MAINNET_MIN_FREE_RAM_IN_GB,
             testnet_min_free_ram_in_gb: TESTNET_MIN_FREE_RAM_IN_GB,
             processor: SupportedCpu::default(),
             min_processor_frequency_in_mhz: MIN_CPU_FREQUENCY_IN_MHZ,
-            recommended_processor_frequency_in_mhz: RECOMMENDED_CPU_FREQUENCY_IN_MHZ,
+            recommended_processor_frequency_in_mhz:
+                RECOMMENDED_CPU_FREQUENCY_IN_MHZ,
         }
     }
 }
@@ -42,12 +48,17 @@ impl SystemRequirements {
         let os_ok = SystemRequirements::check_os(&system, current.name);
         let cpu_ok = SystemRequirements::check_cpu(&system, current.cpu);
         let disk_ok = SystemRequirements::check_disk(&system, current.disk);
-        let memory_ok = SystemRequirements::check_memory(&system, current.memory);
+        let memory_ok =
+            SystemRequirements::check_memory(&system, current.memory);
         if os_ok && cpu_ok && disk_ok && memory_ok {
-            log::info!("System meets all the requirements to run a cardano-node!");
+            log::info!(
+                "System meets all the requirements to run a cardano-node!"
+            );
             return true;
         }
-        log::error!("System doesn't meet all the requirements to run a cardano-node");
+        log::error!(
+            "System doesn't meet all the requirements to run a cardano-node"
+        );
         false
     }
     pub fn check_os(&self, name: String) -> bool {
@@ -108,7 +119,9 @@ impl SystemRequirements {
     pub fn check_cpu_vendor(&self, vendor: String) -> bool {
         log::debug!("Checking CPU vendor");
         let supported_vendor = SupportedCpu::default();
-        if vendor.eq(&supported_vendor.intel) || vendor.eq(&supported_vendor.amd) {
+        if vendor.eq(&supported_vendor.intel)
+            || vendor.eq(&supported_vendor.amd)
+        {
             log::debug!("CPU vendor is supported");
             return true;
         }
@@ -133,19 +146,31 @@ impl SystemRequirements {
     pub fn check_disk(&self, disk: DiskInfo) -> bool {
         log::debug!("Checking disk");
         const GB_TO_B_CONVERSION_RATIO: u64 = 1073741824;
-        let test_net_min_free_disk_space_in_b = self.testnet_min_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
-        let mainnet_min_free_disk_space_in_b = self.mainnet_min_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
-        let mainnet_recommended_min_free_disk_space_in_b = self.mainnet_recommended_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
-        if disk.available_space_in_b >= mainnet_recommended_min_free_disk_space_in_b {
+        let test_net_min_free_disk_space_in_b =
+            self.testnet_min_free_disk_space_in_gb as u64
+                * GB_TO_B_CONVERSION_RATIO;
+        let mainnet_min_free_disk_space_in_b =
+            self.mainnet_min_free_disk_space_in_gb as u64
+                * GB_TO_B_CONVERSION_RATIO;
+        let mainnet_recommended_min_free_disk_space_in_b =
+            self.mainnet_recommended_free_disk_space_in_gb as u64
+                * GB_TO_B_CONVERSION_RATIO;
+        if disk.available_space_in_b
+            >= mainnet_recommended_min_free_disk_space_in_b
+        {
             log::debug!("Disk has enough space to run a cardano node in mainnet for future growth");
             return true;
         }
         if disk.available_space_in_b >= mainnet_min_free_disk_space_in_b {
-            log::debug!("Disk has enough space to run a cardano node in mainnet");
+            log::debug!(
+                "Disk has enough space to run a cardano node in mainnet"
+            );
             return true;
         }
         if disk.available_space_in_b >= test_net_min_free_disk_space_in_b {
-            log::debug!("Disk has enough space to run a cardano node in testnet");
+            log::debug!(
+                "Disk has enough space to run a cardano node in testnet"
+            );
             return true;
         }
         log::error!("Disk does not have enough space to run a cardano node");
@@ -157,14 +182,20 @@ impl SystemRequirements {
     pub fn check_memory(&self, memory: MemoryInfo) -> bool {
         log::debug!("Checking RAM");
         const GB_TO_KB_CONVERSION_RATIO: u64 = 1048576;
-        let testnet_free_ram_in_kb = self.testnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
-        let mainnet_free_ram_in_kb = self.mainnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
+        let testnet_free_ram_in_kb =
+            self.testnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
+        let mainnet_free_ram_in_kb =
+            self.mainnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
         if memory.available_memory_in_kb >= mainnet_free_ram_in_kb {
-            log::debug!("System has enough RAM to run a cardano node in mainnet");
+            log::debug!(
+                "System has enough RAM to run a cardano node in mainnet"
+            );
             return true;
         }
         if memory.available_memory_in_kb >= testnet_free_ram_in_kb {
-            log::debug!("System has enough RAM to run a cardano node in testnet");
+            log::debug!(
+                "System has enough RAM to run a cardano node in testnet"
+            );
             return true;
         }
         log::error!("System does not have enough RAM to run a cardano node");
@@ -251,7 +282,9 @@ impl DiskInfo {
             log::debug!("Disk type: {:?}", disk_type);
             let file_system = disk.file_system().to_vec();
             let file_system = String::from_utf8(file_system)
-                .map_err(|err| anyhow!("Failed to convert byte slice to string: {err}"))
+                .map_err(|err| {
+                    anyhow!("Failed to convert byte slice to string: {err}")
+                })
                 .unwrap();
             log::debug!("Disk filesystem: {:?}", file_system);
             let mount_point = disk.mount_point();
@@ -277,12 +310,19 @@ impl DiskInfo {
             .filter(|disk| {
                 let fs = disk.file_system().to_vec();
                 let fs = String::from_utf8(fs)
-                    .map_err(|err| anyhow!("Failed to convert byte slice to string: {err}"))
+                    .map_err(|err| {
+                        anyhow!("Failed to convert byte slice to string: {err}")
+                    })
                     .unwrap();
                 fs.eq("ext4") || fs.eq("btrfs")
             })
-            .fold(0, |available_space, disk| available_space + disk.available_space());
-        log::debug!("Total available useful disk space: {:?} B", available_space);
+            .fold(0, |available_space, disk| {
+                available_space + disk.available_space()
+            });
+        log::debug!(
+            "Total available useful disk space: {:?} B",
+            available_space
+        );
         available_space
     }
 }
@@ -347,13 +387,18 @@ impl CpuInfo {
         sys.refresh_all();
         let brand = sys.global_cpu_info().brand();
         log::debug!("CPU brand: {:?}", brand);
-        let ghz_str: Vec<&str> = brand.split_whitespace().filter(|substr| substr.contains("GHz")).collect();
+        let ghz_str: Vec<&str> = brand
+            .split_whitespace()
+            .filter(|substr| substr.contains("GHz"))
+            .collect();
         if ghz_str.len() == 1 {
             let ghz_parse = ghz_str[0]
                 .replace("GHz", "")
                 .replace('.', "")
                 .parse::<u16>()
-                .map_err(|err| anyhow!("Failed parsing {} to u16: {err}", ghz_str[0]))
+                .map_err(|err| {
+                    anyhow!("Failed parsing {} to u16: {err}", ghz_str[0])
+                })
                 .unwrap();
             log::debug!("Parsed to u16: {ghz_parse}");
             let cpu_frequency_in_mhz = ghz_parse * 10;

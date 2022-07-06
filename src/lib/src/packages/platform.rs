@@ -1,4 +1,7 @@
-use crate::{async_command, async_command_pipe, drop_privileges, pipe, process_success, SystemInfo, DEBIAN_PACKAGES, NON_DEBIAN_PACKAGES};
+use crate::{
+    async_command, async_command_pipe, drop_privileges, pipe, process_success,
+    SystemInfo, DEBIAN_PACKAGES, NON_DEBIAN_PACKAGES,
+};
 use anyhow::{anyhow, Result};
 
 pub async fn check_platform() -> Result<String> {
@@ -70,7 +73,10 @@ pub async fn apt_install(package: &str) -> Result<()> {
     Err(anyhow!("Failed installing {package}"))
 }
 
-pub async fn install_package(package_manager: &str, package: &str) -> Result<()> {
+pub async fn install_package(
+    package_manager: &str,
+    package: &str,
+) -> Result<()> {
     log::info!("Installing {package} with {package_manager}");
     let cmd = format!("sudo {package_manager} install {package} -y");
     let process = async_command(&cmd).await;
@@ -80,7 +86,10 @@ pub async fn install_package(package_manager: &str, package: &str) -> Result<()>
     }
 }
 
-pub async fn check_packages(package_manager: &str, packages: &[&str]) -> Result<()> {
+pub async fn check_packages(
+    package_manager: &str,
+    packages: &[&str],
+) -> Result<()> {
     log::debug!("Checking packages with {package_manager}");
     for package in packages {
         check_package(package_manager, package).await?;

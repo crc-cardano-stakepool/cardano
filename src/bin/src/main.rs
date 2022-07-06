@@ -12,6 +12,8 @@ pub mod node;
 pub use node::*;
 pub mod wallet;
 pub use wallet::*;
+pub mod address;
+pub use address::*;
 
 #[derive(Debug, Parser)]
 #[clap(about = "Manage cardano components", version, color = ColorChoice::Never)]
@@ -29,7 +31,12 @@ impl Cli {
     pub async fn exec(command: CardanoCommand) -> Result<()> {
         match command {
             CardanoCommand::Node(command) => NodeCommand::exec(command).await,
-            CardanoCommand::Wallet(command) => WalletCommand::exec(command).await,
+            CardanoCommand::Address(command) => {
+                AddressCommand::exec(command).await
+            }
+            CardanoCommand::Wallet(command) => {
+                WalletCommand::exec(command).await
+            }
             CardanoCommand::Update => update_cli().await,
         }
     }
@@ -41,6 +48,8 @@ pub enum CardanoCommand {
     Node(NodeArgs),
     /// Manage cardano wallets
     Wallet(WalletArgs),
+    /// Manage cardano addresses
+    Address(AddressArgs),
     /// Updates the CLI
     Update,
 }
@@ -51,7 +60,8 @@ async fn main() -> Result<()> {
     let log_file = read_setting("log_file")?;
     setup_logger(cli.verbose.log_level_filter(), true, log_file)?;
     human_panic::setup_panic!();
-    ctrlc::set_handler(|| log::info!("Initialize Ctrl-C handler")).expect("Error setting Ctrl-C handler");
+    ctrlc::set_handler(|| log::info!("Initialize Ctrl-C handler"))
+        .expect("Error setting Ctrl-C handler");
     setup_work_dir()?;
     setup_env()?;
     let mut cmd = Cli::command();

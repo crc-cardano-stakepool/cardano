@@ -1,4 +1,7 @@
-use crate::{absolute_ref_path_to_string, async_command, async_command_pipe, check_env, VERSIONS_URL};
+use crate::{
+    absolute_ref_path_to_string, async_command, async_command_pipe, check_env,
+    VERSIONS_URL,
+};
 use anyhow::{anyhow, Result};
 use std::path::Path;
 
@@ -59,7 +62,10 @@ pub async fn get_cabal_version() -> Result<String> {
     Ok(String::from(cabal_version))
 }
 
-pub async fn update_cabal<P: AsRef<Path>>(path: P, cabal_path: P) -> Result<()> {
+pub async fn update_cabal<P: AsRef<Path>>(
+    path: P,
+    cabal_path: P,
+) -> Result<()> {
     log::info!("Updating Cabal");
     let path = absolute_ref_path_to_string(&path)?;
     let cabal_path = absolute_ref_path_to_string(&cabal_path)?;

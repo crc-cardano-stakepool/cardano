@@ -12,21 +12,39 @@ pub const CARDANO_NODE_VERSION: &str = "1.35.0";
 pub const LD_LIBRARY_PATH: &str = "/usr/local/lib:$LD_LIBRARY_PATH";
 pub const PKG_CONFIG_PATH: &str = "/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH";
 pub const CARDANO_CONFIG_FILE_NAME: &str = "cardano.toml";
-pub const CARDANO_WALLET_URL: &str = "https://github.com/input-output-hk/cardano-wallet.git";
-pub const CARDANO_NODE_URL: &str = "https://github.com/input-output-hk/cardano-node.git";
-pub const CARDANO_NODE_RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-node/releases/latest";
+pub const CARDANO_WALLET_URL: &str =
+    "https://github.com/input-output-hk/cardano-wallet.git";
+pub const CARDANO_ADDRESS_URL: &str =
+    "https://github.com/input-output-hk/cardano-addresses.git";
+pub const CARDANO_NODE_URL: &str =
+    "https://github.com/input-output-hk/cardano-node.git";
+pub const CARDANO_NODE_RELEASE_URL: &str =
+    "https://api.github.com/repos/input-output-hk/cardano-node/releases/latest";
 pub const CARDANO_WALLET_RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-wallet/releases/latest";
-pub const LIBSODIUM_URL: &str = "https://github.com/input-output-hk/libsodium.git";
+pub const CARDANO_ADDRESS_RELEASE_URL: &str = "https://api.github.com/repos/input-output-hk/cardano-addresses/releases/latest";
+pub const LIBSODIUM_URL: &str =
+    "https://github.com/input-output-hk/libsodium.git";
 pub const SECP256K1_URL: &str = "https://github.com/bitcoin-core/secp256k1.git";
-pub const CARDANO_URL: &str = "https://github.com/crc-cardano-stakepool/cardano.git";
+pub const CARDANO_URL: &str =
+    "https://github.com/crc-cardano-stakepool/cardano.git";
 pub const GHCUP_URL: &str = "https://get-ghcup.haskell.org";
 pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_BASE_URL: &str = "https://csnapshots.io";
-pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_DOWNLOAD_URL: &str = "https://download.csnapshots.io";
-pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_DATA_URL: &str = "https://data.csnapshots.io";
-pub const VERSIONS_URL: &str = "https://developers.cardano.org/docs/get-started/installing-cardano-node";
+pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_DOWNLOAD_URL: &str =
+    "https://download.csnapshots.io";
+pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_DATA_URL: &str =
+    "https://data.csnapshots.io";
+pub const VERSIONS_URL: &str =
+    "https://developers.cardano.org/docs/get-started/installing-cardano-node";
 pub const CONFIG_BASE_URL: &str = "https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1";
-pub const CONFIG_FILES: [&str; 5] = ["config", "byron-genesis", "shelley-genesis", "alonzo-genesis", "topology"];
-pub const SPINNERS: [&str; 6] = ["▹▹▹▹▹", "▸▹▹▹▹", "▹▸▹▹▹", "▹▹▸▹▹", "▹▹▹▸▹", "▹▹▹▹▸"];
+pub const CONFIG_FILES: [&str; 5] = [
+    "config",
+    "byron-genesis",
+    "shelley-genesis",
+    "alonzo-genesis",
+    "topology",
+];
+pub const SPINNERS: [&str; 6] =
+    ["▹▹▹▹▹", "▸▹▹▹▹", "▹▸▹▹▹", "▹▹▸▹▹", "▹▹▹▸▹", "▹▹▹▹▸"];
 pub const DIRECTORIES: [&str; 11] = [
     "work",
     "ipc",

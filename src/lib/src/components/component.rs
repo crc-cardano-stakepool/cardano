@@ -1,6 +1,9 @@
 use crate::{
-    absolute_ref_path_to_string, async_command_pipe, build_node, build_wallet, check_env, get_bin_path, install_node, install_wallet,
-    read_setting, set_component_dir, CARDANO_NODE_RELEASE_URL, CARDANO_NODE_URL, CARDANO_WALLET_RELEASE_URL, CARDANO_WALLET_URL,
+    absolute_ref_path_to_string, async_command_pipe, build_address, build_node,
+    build_wallet, check_env, get_bin_path, install_address, install_node,
+    install_wallet, read_setting, set_component_dir,
+    CARDANO_ADDRESS_RELEASE_URL, CARDANO_ADDRESS_URL, CARDANO_NODE_RELEASE_URL,
+    CARDANO_NODE_URL, CARDANO_WALLET_RELEASE_URL, CARDANO_WALLET_URL,
 };
 use anyhow::Result;
 use convert_case::{Case, Casing};
@@ -11,6 +14,7 @@ pub enum Component {
     Node,
     Cli,
     Wallet,
+    Address,
 }
 
 pub fn get_component_release_url(component: Component) -> &'static str {
@@ -18,6 +22,7 @@ pub fn get_component_release_url(component: Component) -> &'static str {
         Component::Node => CARDANO_NODE_RELEASE_URL,
         Component::Cli => CARDANO_NODE_RELEASE_URL,
         Component::Wallet => CARDANO_WALLET_RELEASE_URL,
+        Component::Address => CARDANO_ADDRESS_RELEASE_URL,
     }
 }
 
@@ -26,6 +31,7 @@ pub fn get_component_url(component: Component) -> &'static str {
         Component::Node => CARDANO_NODE_URL,
         Component::Cli => CARDANO_NODE_URL,
         Component::Wallet => CARDANO_WALLET_URL,
+        Component::Address => CARDANO_ADDRESS_URL,
     }
 }
 
@@ -71,6 +77,7 @@ pub fn component_to_string(component: Component) -> String {
         Component::Node => "cardano-node".to_string(),
         Component::Cli => "cardano-cli".to_string(),
         Component::Wallet => "cardano-wallet".to_string(),
+        Component::Address => "cardano-address".to_string(),
     }
 }
 
@@ -79,6 +86,7 @@ pub fn match_component(component: &str) -> Component {
         "cardano-node" => Component::Node,
         "cardano-cli" => Component::Cli,
         "cardano-wallet" => Component::Wallet,
+        "cardano-address" => Component::Address,
         _ => {
             log::error!("Unknown component!");
             panic!("Mismatched component")
@@ -88,7 +96,7 @@ pub fn match_component(component: &str) -> Component {
 
 pub async fn check_installed_version(component: Component) -> Result<String> {
     match component {
-        Component::Wallet => {
+        Component::Wallet | Component::Address => {
             let component = component_to_string(component);
             let component_bin_path = get_bin_path(&component)?;
             let path = absolute_ref_path_to_string(component_bin_path)?;
@@ -102,7 +110,8 @@ pub async fn check_installed_version(component: Component) -> Result<String> {
             let component = component_to_string(component);
             let component_bin_path = get_bin_path(&component)?;
             let path = absolute_ref_path_to_string(component_bin_path)?;
-            let cmd = format!("{path} --version | awk '{{print $2}}' | head -n1");
+            let cmd =
+                format!("{path} --version | awk '{{print $2}}' | head -n1");
             log::debug!("Checking installed version of {component}");
             let version = async_command_pipe(&cmd).await?;
             let installed_version: String = String::from(version.trim());
@@ -149,6 +158,7 @@ pub async fn install_component(component: Component) -> Result<()> {
         Component::Node => install_node().await,
         Component::Cli => install_node().await,
         Component::Wallet => install_wallet().await,
+        Component::Address => install_address().await,
     }
 }
 
@@ -168,5 +178,6 @@ pub async fn build_component(component: Component) -> Result<()> {
         Component::Node => build_node().await,
         Component::Cli => build_node().await,
         Component::Wallet => build_wallet().await,
+        Component::Address => build_address().await,
     }
 }

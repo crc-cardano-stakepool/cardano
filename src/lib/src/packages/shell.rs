@@ -1,4 +1,7 @@
-use crate::{absolute_ref_path_to_string, async_command_pipe, check_env, process_success, read_setting, set_env, setup_env};
+use crate::{
+    absolute_ref_path_to_string, async_command_pipe, check_env,
+    process_success, read_setting, set_env, setup_env,
+};
 use anyhow::{anyhow, Result};
 use std::{io::Write, path::PathBuf};
 
@@ -18,7 +21,8 @@ impl Default for ShellConfig {
         let shell = Self::check_shell();
         let shell = Self::match_shell(&shell);
         let config_file = Self::match_config_file(shell);
-        let parsed_config_file = absolute_ref_path_to_string(&config_file).unwrap();
+        let parsed_config_file =
+            absolute_ref_path_to_string(&config_file).unwrap();
         set_env("SHELL_CONFIG_FILE", &parsed_config_file);
         Self { shell, config_file }
     }
@@ -40,7 +44,9 @@ impl ShellConfig {
         }
         if shell.contains("/sh") {
             if !check_env("BASH")
-                .map_err(|err| anyhow!("Failed to read $BASH environment variable: {err}"))
+                .map_err(|err| {
+                    anyhow!("Failed to read $BASH environment variable: {err}")
+                })
                 .unwrap()
                 .is_empty()
             {
@@ -80,7 +86,13 @@ impl ShellConfig {
     }
 
     pub async fn change_shell_config(&self) -> Result<()> {
-        let patterns = vec!["LD_LIBRARY_PATH", "PKG_CONFIG_PATH", ".local/bin", ".cabal/bin", ".ghcup/bin"];
+        let patterns = vec![
+            "LD_LIBRARY_PATH",
+            "PKG_CONFIG_PATH",
+            ".local/bin",
+            ".cabal/bin",
+            ".ghcup/bin",
+        ];
         let paths = vec![
             "export LD_LIBRARY_PATH=\"/usr/local/lib:$LD_LIBRARY_PATH\"",
             "export PKG_CONFIG_PATH=\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\"",
@@ -99,13 +111,15 @@ impl ShellConfig {
 
     pub async fn check_shell_config_env(&self, pattern: &str) -> Result<bool> {
         log::debug!("Checking shell configuration");
-        let config_file = absolute_ref_path_to_string(&self.config_file).unwrap();
+        let config_file =
+            absolute_ref_path_to_string(&self.config_file).unwrap();
         let cmd = format!("grep -q {pattern} {config_file}");
         process_success(&cmd).await
     }
 
     pub fn write_shell_config(&self, value: &str) {
-        let config_file = absolute_ref_path_to_string(&self.config_file).unwrap();
+        let config_file =
+            absolute_ref_path_to_string(&self.config_file).unwrap();
         log::info!("Writing {value} to {config_file}");
         let mut f = std::fs::File::options()
             .write(true)
@@ -114,14 +128,20 @@ impl ShellConfig {
             .map_err(|err| anyhow!("Failed to open {config_file}: {err}"))
             .unwrap();
         writeln!(f, "{value}")
-            .map_err(|err| anyhow!("Failed to write {value} to {config_file}: {err}"))
+            .map_err(|err| {
+                anyhow!("Failed to write {value} to {config_file}: {err}")
+            })
             .unwrap();
     }
 
     pub async fn write_node_socket_path(&self) -> Result<()> {
         let node_socket_path = read_setting("node_socket_path")?;
-        let value = format!("export CARDANO_NODE_SOCKET_PATH={node_socket_path}");
-        if !self.check_shell_config_env("CARDANO_NODE_SOCKET_PATH").await? {
+        let value =
+            format!("export CARDANO_NODE_SOCKET_PATH={node_socket_path}");
+        if !self
+            .check_shell_config_env("CARDANO_NODE_SOCKET_PATH")
+            .await?
+        {
             self.write_shell_config(&value);
         }
         Ok(())

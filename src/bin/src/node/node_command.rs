@@ -29,7 +29,9 @@ impl NodeCommand {
     pub async fn exec(cmd: NodeArgs) -> Result<()> {
         match cmd.command {
             NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
-            NodeCommand::Install { confirm } => check_latest_node(confirm).await,
+            NodeCommand::Install { confirm } => {
+                check_latest_node(confirm).await
+            }
             NodeCommand::Uninstall => uninstall_node().await,
             NodeCommand::Setup => setup_node().await,
         }

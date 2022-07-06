@@ -1,12 +1,16 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_latest_version, check_work_dir, component_to_string, get_component_path,
-    get_component_url, path_to_string, set_env, Component,
+    absolute_ref_path_to_string, async_command, check_latest_version,
+    check_work_dir, component_to_string, get_component_path, get_component_url,
+    path_to_string, set_env, Component,
 };
 use anyhow::Result;
 use convert_case::{Case, Casing};
 use std::path::{Path, PathBuf};
 
-pub async fn check_repo<P: AsRef<Path>>(url: &str, absolute_path: P) -> Result<()> {
+pub async fn check_repo<P: AsRef<Path>>(
+    url: &str,
+    absolute_path: P,
+) -> Result<()> {
     let path = path_to_string(absolute_path.as_ref())?;
     let mut path_buf = PathBuf::from(absolute_path.as_ref());
     log::debug!("Checking if {path} is a repository");
@@ -58,7 +62,10 @@ pub async fn clone_component(component: Component) -> Result<()> {
     checkout_latest_release(component).await
 }
 
-pub async fn clone_repo<P: AsRef<Path>>(url: &str, destination_path: P) -> Result<()> {
+pub async fn clone_repo<P: AsRef<Path>>(
+    url: &str,
+    destination_path: P,
+) -> Result<()> {
     let path = path_to_string(destination_path.as_ref())?;
     log::info!("Cloning repo to {path}");
     let cmd = format!("git clone {url} {path}");
@@ -69,9 +76,12 @@ pub async fn clone_repo<P: AsRef<Path>>(url: &str, destination_path: P) -> Resul
 pub async fn fetch_tags(component: Component) -> Result<()> {
     let path = get_component_path(component)?;
     let path = absolute_ref_path_to_string(&path)?;
-    let cmd = format!("cd {path} && git fetch --all --recurse-submodules --tags");
+    let cmd =
+        format!("cd {path} && git fetch --all --recurse-submodules --tags");
     let component = component_to_string(component);
-    log::info!("Fetching the latest tags of the {component} source reposity of");
+    log::info!(
+        "Fetching the latest tags of the {component} source reposity of"
+    );
     async_command(&cmd).await?;
     Ok(())
 }

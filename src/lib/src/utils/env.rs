@@ -11,7 +11,9 @@ pub fn check_env(key: &str) -> Result<String> {
             log::trace!("{key}={val}");
             Ok(val)
         }
-        Err(e) => Err(anyhow!("Failed to check environment variable {key}: {e}")),
+        Err(e) => {
+            Err(anyhow!("Failed to check environment variable {key}: {e}"))
+        }
     }
 }
 
@@ -43,7 +45,11 @@ pub fn setup_env() -> Result<()> {
 pub fn check_user() -> Result<String> {
     log::debug!("Checking user");
     let user = check_env("USER")?;
-    let user = if user != "root" { user } else { check_env("SUDO_USER")? };
+    let user = if user != "root" {
+        user
+    } else {
+        check_env("SUDO_USER")?
+    };
     log::debug!("user: {user}");
     let user = user.trim().to_string();
     Ok(user.trim().to_string())
@@ -102,7 +108,8 @@ mod test {
     fn test_setup_env() -> Result<()> {
         setup_env()?;
         let home_dir = dirs::home_dir().expect("Failed to read $HOME");
-        let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
+        let home_dir =
+            home_dir.to_str().expect("Failed to parse $HOME to string");
         let ghcup_dir = format!("{home_dir}/.ghcup");
         let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
         let ghc_bin = format!("{ghcup_dir}/bin/ghc");

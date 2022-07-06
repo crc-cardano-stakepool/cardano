@@ -25,7 +25,9 @@ pub enum WalletCommand {
 impl WalletCommand {
     pub async fn exec(cmd: WalletArgs) -> Result<()> {
         match cmd.command {
-            WalletCommand::Install { confirm } => check_latest_wallet(confirm).await,
+            WalletCommand::Install { confirm } => {
+                check_latest_wallet(confirm).await
+            }
             WalletCommand::Uninstall => uninstall_wallet().await,
             WalletCommand::Setup => setup_wallet().await,
         }

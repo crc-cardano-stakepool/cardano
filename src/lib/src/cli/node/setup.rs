@@ -1,4 +1,7 @@
-use crate::{check_cabal, check_ghc, check_ghcup, check_libsodium, check_secp256k1, setup_packages, ShellConfig};
+use crate::{
+    check_cabal, check_ghc, check_ghcup, check_libsodium, check_secp256k1,
+    setup_packages, ShellConfig,
+};
 use anyhow::Result;
 
 pub async fn setup_node() -> Result<()> {

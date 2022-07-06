@@ -1,7 +1,10 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_env, check_install, check_installed_version, check_latest_version, clone_component,
-    component_to_string, copy_binary, get_component_path, get_ghc_version, is_component_installed, match_component, path_to_string,
-    proceed, process_success_inherit, set_confirm, set_env, setup_node, update_cabal, Component, ShellConfig,
+    absolute_ref_path_to_string, async_command, check_env, check_install,
+    check_installed_version, check_latest_version, clone_component,
+    component_to_string, copy_binary, get_component_path, get_ghc_version,
+    is_component_installed, match_component, path_to_string, proceed,
+    process_success_inherit, set_confirm, set_env, setup_node, update_cabal,
+    Component, ShellConfig,
 };
 use anyhow::{anyhow, Result};
 use std::{
@@ -16,7 +19,9 @@ pub async fn check_latest_node(confirm: bool) -> Result<()> {
     let installed = check_installed_version(Component::Node).await?;
     let latest = check_latest_version(Component::Node).await?;
     if installed.eq(&latest) {
-        log::info!("The cardano-node binary v{installed} is already up to date!");
+        log::info!(
+            "The cardano-node binary v{installed} is already up to date!"
+        );
         return Ok(());
     }
     install_latest_node(confirm).await
@@ -26,7 +31,9 @@ pub async fn install_latest_node(confirm: bool) -> Result<()> {
     set_confirm(confirm);
     setup_node().await?;
     let version = check_latest_version(Component::Node).await?;
-    let msg = format!("Do you want to install the latest cardano-node v{version} binary?");
+    let msg = format!(
+        "Do you want to install the latest cardano-node v{version} binary?"
+    );
     if !confirm && proceed(&msg)? {
         return install_node().await;
     }
@@ -75,12 +82,18 @@ pub async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
     Ok(())
 }
 
-pub async fn configure_build<P: AsRef<Path>>(ghc_version: &str, path: P, cabal: P) -> Result<()> {
+pub async fn configure_build<P: AsRef<Path>>(
+    ghc_version: &str,
+    path: P,
+    cabal: P,
+) -> Result<()> {
     log::info!("Configuring build");
     let ghc = check_env("GHC_BIN")?;
     let path = absolute_ref_path_to_string(&path)?;
     let cabal = absolute_ref_path_to_string(&cabal)?;
-    let cmd = format!("cd {path} && {cabal} configure --with-compiler={ghc}-{ghc_version}");
+    let cmd = format!(
+        "cd {path} && {cabal} configure --with-compiler={ghc}-{ghc_version}"
+    );
     async_command(&cmd).await?;
     Ok(())
 }
@@ -103,7 +116,8 @@ pub fn update_project_file<P: AsRef<Path>>(path: P) -> Result<()> {
         .open(path)
         .map_err(|err| anyhow!("Failed to open {file_path}: {err}"))
         .unwrap();
-    let value = "package cardano-crypto-praos\n  flags: -external-libsodium-vrf";
+    let value =
+        "package cardano-crypto-praos\n  flags: -external-libsodium-vrf";
     writeln!(f, "{value}")
         .map_err(|err| anyhow!("Failed to write {value} to {file_path}: {err}"))
         .unwrap();
@@ -118,7 +132,11 @@ pub fn get_project_file(component: Component) -> Result<PathBuf> {
     Ok(path)
 }
 
-pub async fn build<P: AsRef<Path>>(component: Component, path: P, cabal: P) -> Result<()> {
+pub async fn build<P: AsRef<Path>>(
+    component: Component,
+    path: P,
+    cabal: P,
+) -> Result<()> {
     let component = component_to_string(component);
     log::info!("Building {component}");
     let path = absolute_ref_path_to_string(&path)?;
@@ -140,7 +158,9 @@ pub async fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     path.push("bin-path.sh");
     let components = ["cardano-node", "cardano-cli"];
     for component in components {
-        let cmd = format!("cd {parsed_path} && cp -p \"$({bin_path} {component})\" {install_dir}");
+        let cmd = format!(
+            "cd {parsed_path} && cp -p \"$({bin_path} {component})\" {install_dir}"
+        );
         let path = format!("{install_dir}/{component}");
         if component.eq("cardano-node") {
             set_env("CARDANO_NODE_BIN", &path);
@@ -174,7 +194,8 @@ mod test {
         let file_name = "cabal.project.local";
         let dir = tempfile::Builder::new().tempdir().unwrap();
         let file_path = dir.path().join(file_name);
-        let project_file_name = file_path.file_name().unwrap().to_str().unwrap();
+        let project_file_name =
+            file_path.file_name().unwrap().to_str().unwrap();
         std::fs::File::create(&file_path).unwrap();
         assert_eq!(file_name, project_file_name);
         check_project_file(&file_path).await.unwrap();
@@ -194,7 +215,9 @@ mod test {
         project_file.seek(SeekFrom::Start(0)).unwrap();
         let mut buf = String::new();
         project_file.read_to_string(&mut buf).unwrap();
-        let expected = format!("package cardano-crypto-praos\n  flags: -external-libsodium-vrf\n");
+        let expected = format!(
+            "package cardano-crypto-praos\n  flags: -external-libsodium-vrf\n"
+        );
         assert_eq!(expected, buf);
     }
 

@@ -19,9 +19,16 @@ pub async fn async_command(command: &str) -> Result<String> {
 
 pub async fn async_command_pipe(command: &str) -> Result<String> {
     log::debug!("Executing command: {command}");
-    let process = Command::new("sh").arg("-c").arg(command).stdout(Stdio::piped()).output().await;
+    let process = Command::new("sh")
+        .arg("-c")
+        .arg(command)
+        .stdout(Stdio::piped())
+        .output()
+        .await;
     match process {
-        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout)).trim().to_string()),
+        Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))
+            .trim()
+            .to_string()),
         Err(e) => {
             log::error!("Command failed");
             Err(anyhow!("{e}"))
@@ -51,7 +58,9 @@ pub async fn pipe(command: &str, pipe_command: &str) -> Result<String> {
             .spawn()?
             .wait_with_output();
         match process {
-            Ok(output) => Ok(String::from(String::from_utf8_lossy(&output.stdout))),
+            Ok(output) => {
+                Ok(String::from(String::from_utf8_lossy(&output.stdout)))
+            }
             Err(e) => Err(anyhow!("{e}")),
         }
     } else {
@@ -86,7 +95,10 @@ mod test {
 
     #[tokio::test]
     async fn test_async_command() -> Result<()> {
-        let output = async_command("echo 'expected to be printed on console' >/dev/null").await?;
+        let output = async_command(
+            "echo 'expected to be printed on console' >/dev/null",
+        )
+        .await?;
         assert_eq!(output, "");
         Ok(())
     }
@@ -102,7 +114,8 @@ mod test {
 
     #[tokio::test]
     async fn test_is_program_installed() -> Result<()> {
-        let result = is_program_installed("totally_not_an_installed_program").await?;
+        let result =
+            is_program_installed("totally_not_an_installed_program").await?;
         assert!(!result);
         let result = is_program_installed("ls").await?;
         assert!(result);
