@@ -1,6 +1,8 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{check_latest_address, setup_address, uninstall_address};
+use lib::{
+    check_latest_component, setup_component, uninstall_component, Component,
+};
 
 #[derive(Debug, Args)]
 pub struct AddressArgs {
@@ -26,10 +28,12 @@ impl AddressCommand {
     pub async fn exec(cmd: AddressArgs) -> Result<()> {
         match cmd.command {
             AddressCommand::Install { confirm } => {
-                check_latest_address(confirm).await
+                check_latest_component(Component::Address, confirm).await
             }
-            AddressCommand::Uninstall => uninstall_address().await,
-            AddressCommand::Setup => setup_address().await,
+            AddressCommand::Uninstall => {
+                uninstall_component(Component::Address)
+            }
+            AddressCommand::Setup => setup_component(Component::Address).await,
         }
     }
 }

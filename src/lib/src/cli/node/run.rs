@@ -1,6 +1,6 @@
 use crate::{
     absolute_ref_path_to_string, async_command, check_installed_version,
-    check_latest_version, download_snapshot, install_node,
+    check_latest_version, download_snapshot, install_component,
     is_component_installed, match_network, network_to_string, path_to_string,
     proceed, read_setting, Component, CONFIG_BASE_URL, CONFIG_FILES,
 };
@@ -229,16 +229,16 @@ pub async fn run_node_if_installed(
             }
             log::info!("Proceeding to run node in {network}");
             async_command(cmd).await?;
-        } else {
-            log::error!("The installed cardano-node v{installed} is outdated");
-            log::error!("Please update to the latest version {version}");
-            install_node().await?;
-            async_command(cmd).await?;
+            return Ok(());
         }
-    } else {
-        install_node().await?;
+        log::error!("The installed cardano-node v{installed} is outdated");
+        log::error!("Please update to the latest version {version}");
+        install_component(Component::Node).await?;
         async_command(cmd).await?;
+        return Ok(());
     }
+    install_component(Component::Node).await?;
+    async_command(cmd).await?;
     Ok(())
 }
 

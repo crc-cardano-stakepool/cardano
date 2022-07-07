@@ -1,7 +1,9 @@
 use crate::{Run, RunCommand};
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{check_latest_node, setup_node, uninstall_node};
+use lib::{
+    check_latest_component, setup_component, uninstall_component, Component,
+};
 
 #[derive(Debug, Args)]
 pub struct NodeArgs {
@@ -30,10 +32,10 @@ impl NodeCommand {
         match cmd.command {
             NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
             NodeCommand::Install { confirm } => {
-                check_latest_node(confirm).await
+                check_latest_component(Component::Node, confirm).await
             }
-            NodeCommand::Uninstall => uninstall_node().await,
-            NodeCommand::Setup => setup_node().await,
+            NodeCommand::Uninstall => uninstall_component(Component::Node),
+            NodeCommand::Setup => setup_component(Component::Node).await,
         }
     }
 }

@@ -58,7 +58,7 @@ pub fn set_component_dir(component: Component) -> Result<String> {
 pub async fn clone_component(component: Component) -> Result<()> {
     let component_dir = set_component_dir(component)?;
     let url = get_component_url(component);
-    check_repo(url, &component_dir).await?;
+    check_repo(&url, &component_dir).await?;
     checkout_latest_release(component).await
 }
 

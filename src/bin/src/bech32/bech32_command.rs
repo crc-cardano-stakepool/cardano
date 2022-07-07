@@ -1,6 +1,8 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{check_latest_bech32, setup_bech32, uninstall_bech32};
+use lib::{
+    check_latest_component, setup_component, uninstall_component, Component,
+};
 
 #[derive(Debug, Args)]
 pub struct Bech32Args {
@@ -26,10 +28,10 @@ impl Bech32Command {
     pub async fn exec(cmd: Bech32Args) -> Result<()> {
         match cmd.command {
             Bech32Command::Install { confirm } => {
-                check_latest_bech32(confirm).await
+                check_latest_component(Component::Bech32, confirm).await
             }
-            Bech32Command::Uninstall => uninstall_bech32().await,
-            Bech32Command::Setup => setup_bech32().await,
+            Bech32Command::Uninstall => uninstall_component(Component::Bech32),
+            Bech32Command::Setup => setup_component(Component::Bech32).await,
         }
     }
 }
