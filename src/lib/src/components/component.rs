@@ -19,38 +19,77 @@ pub enum Component {
     Bech32,
 }
 
-pub async fn check_latest_component(
+#[derive(Debug, Eq, PartialEq)]
+pub struct CardanoComponent {
+    component: Component,
+    name: String,
+    installed_version: String,
+    latest_version: String,
+    source_path: PathBuf,
+    bin_path: PathBuf,
+    url: String,
+    release_url: String,
+}
+
+impl CardanoComponent {
+    fn new(component: Component) -> Self {
+        let name = component_to_string(component);
+        let installed_version = check_installed_version(component).unwrap();
+        let latest_version = check_latest_version(component).unwrap();
+        let source_path = get_component_path(component).unwrap();
+        let bin_path = get_bin_path(&name).unwrap();
+        let url = get_component_url(component);
+        let release_url = get_component_release_url(component);
+        Self {
+            component,
+            name,
+            installed_version,
+            latest_version,
+            source_path,
+            bin_path,
+            url,
+            release_url,
+        }
+    }
+}
+impl Default for CardanoComponent {
+    fn default() -> Self {
+        Self::new(Component::Node)
+    }
+}
+
+pub fn check_latest_component(
     component: Component,
     confirm: bool,
 ) -> Result<()> {
     let component_str = component_to_string(component);
     log::info!("Checking {component_str}");
     if !is_component_installed(component)? {
-        return install_latest_component(component, confirm).await;
+        return install_latest_component(component, confirm);
     }
-    let installed = check_installed_version(component).await?;
-    let latest = check_latest_version(component).await?;
+    let installed = check_installed_version(component)?;
+    let latest = check_latest_version(component)?;
     if installed.eq(&latest) {
         let component = component_to_string(component);
         log::info!("The {component} binary is already up to date!");
         return Ok(());
     }
-    install_latest_component(component, confirm).await
+    install_latest_component(component, confirm)
 }
 
-pub async fn install_latest_component(
+pub fn install_latest_component(
     component: Component,
     confirm: bool,
 ) -> Result<()> {
     set_confirm(confirm);
-    setup_component(component).await?;
+    setup_component(component)?;
     let component_str = component_to_string(component);
     let msg =
         format!("Do you want to install the latest {component_str} binary?");
     if !confirm && proceed(&msg)? {
-        return install_component(component).await;
+        return install_component(component);
     }
-    install_component(component).await
+    install_component(component)
 }
 
 pub fn get_component_release_url(component: Component) -> String {
@@ -87,21 +126,21 @@ pub fn get_component_path(component: Component) -> Result<PathBuf> {
     Ok(path)
 }
 
-pub async fn check_install_success(component: Component) -> Result<()> {
+pub fn check_install_success(component: Component) -> Result<()> {
     match component {
         Component::Node | Component::Cli => {
-            let version = check_installed_version(component).await?;
+            let version = check_installed_version(component)?;
             let component = component_to_string(component);
             log::info!("Successfully installed {component} v{version}");
-            check_installed_version(Component::Cli).await?;
+            check_installed_version(Component::Cli)?;
         }
         Component::Address | Component::Bech32 => {
-            let version = check_installed_version(component).await?;
+            let version = check_installed_version(component)?;
             let component = component_to_string(component);
             log::info!("Successfully installed {component} v{version}");
         }
         Component::Wallet => {
-            let version = check_installed_version(component).await?;
+            let version = check_installed_version(component)?;
             let component = component_to_string(component);
             log::info!("Successfully installed {component} {version}");
         }
@@ -142,7 +181,7 @@ pub fn match_component(component: &str) -> Component {
     }
 }
 
-pub async fn check_installed_version(component: Component) -> Result<String> {
+pub fn check_installed_version(component: Component) -> Result<String> {
     let component_str = component_to_string(component);
     log::debug!("Checking installed version of {component_str}");
     let component_bin_path = get_bin_path(&component_str)?;
@@ -156,12 +195,12 @@ pub async fn check_installed_version(component: Component) -> Result<String> {
         }
         Component::Bech32 => format!("{path} --version"),
     };
-    let version = async_command_pipe(&cmd).await?;
+    let version = async_command_pipe(&cmd)?;
     let version = String::from(version.trim());
     Ok(version)
 }
 
-pub async fn check_latest_version(component: Component) -> Result<String> {
+pub fn check_latest_version(component: Component) -> Result<String> {
     let component_str = component_to_string(component);
     log::debug!("Checking latest {component_str} version");
     let cmd = match component {
@@ -174,60 +213,60 @@ pub async fn check_latest_version(component: Component) -> Result<String> {
             format!("curl -s {url} | jq -r .tag_name")
         }
     };
-    let response = async_command_pipe(&cmd).await?;
+    let response = async_command_pipe(&cmd)?;
     let response = String::from(response.trim());
     log::debug!("The latest version of {component_str} is {response}");
     Ok(response)
 }
 
-pub async fn check_installed_component(component: Component) -> Result<()> {
+pub fn check_installed_component(component: Component) -> Result<()> {
     if !is_component_installed(component)? {
-        return install_component(component).await;
+        return install_component(component);
     }
-    install_if_not_up_to_date(component).await?;
+    install_if_not_up_to_date(component)?;
     Ok(())
 }
 
-pub async fn install_component(component: Component) -> Result<()> {
-    build_component(component).await?;
-    copy_binary(component).await?;
-    check_install_success(component).await?;
-    ShellConfig::source_shell().await
+pub fn install_component(component: Component) -> Result<()> {
+    build_component(component)?;
+    copy_binary(component)?;
+    check_install_success(component)?;
+    ShellConfig::source_shell()
 }
 
-async fn install_if_not_up_to_date(component: Component) -> Result<()> {
-    let installed = check_installed_version(component).await?;
-    let latest = check_latest_version(component).await?;
+pub fn install_if_not_up_to_date(component: Component) -> Result<()> {
+    let installed = check_installed_version(component)?;
+    let latest = check_latest_version(component)?;
     if !installed.eq(&latest) {
-        return install_component(component).await;
+        return install_component(component);
     }
     let component = component_to_string(component);
     log::info!("Latest {component} {installed} is already installed");
     Ok(())
 }
 
-pub async fn build_component(component: Component) -> Result<()> {
+pub fn build_component(component: Component) -> Result<()> {
     let component_str = component_to_string(component);
     log::info!("Building {component_str}");
-    clone_component(component).await?;
-    let ghc_version = get_ghc_version().await?;
+    clone_component(component)?;
+    let ghc_version = get_ghc_version()?;
     let cabal = check_env("CABAL_BIN")?;
     let cabal = PathBuf::from(&cabal);
     let project_file = get_project_file(component)?;
     let path = get_component_path(component)?;
-    update_cabal(&path, &cabal).await?;
-    check_project_file(&project_file).await?;
-    configure_build(&ghc_version, &path, &cabal).await?;
+    update_cabal(&path, &cabal)?;
+    check_project_file(&project_file)?;
+    configure_build(&ghc_version, &path, &cabal)?;
     match component {
         Component::Node => {
             update_project_file(&project_file)?;
-            build(component, &path, &cabal).await
+            build(component, &path, &cabal)
         }
-        _ => build(component, &path, &cabal).await,
+        _ => build(component, &path, &cabal),
     }
 }
 
-pub async fn configure_build<P: AsRef<Path>>(
+pub fn configure_build<P: AsRef<Path>>(
     ghc_version: &str,
     path: P,
     cabal: P,
@@ -239,11 +278,11 @@ pub async fn configure_build<P: AsRef<Path>>(
     let cmd = format!(
         "cd {path} && {cabal} configure --with-compiler={ghc}-{ghc_version}"
     );
-    async_command(&cmd).await?;
+    async_command(&cmd)?;
     Ok(())
 }
 
-pub async fn build<P: AsRef<Path>>(
+pub fn build<P: AsRef<Path>>(
     component: Component,
     path: P,
     cabal: P,
@@ -253,35 +292,35 @@ pub async fn build<P: AsRef<Path>>(
     let path = absolute_ref_path_to_string(&path)?;
     let cabal = absolute_ref_path_to_string(&cabal)?;
     let cmd = format!("cd {path} && {cabal} build all");
-    if process_success_inherit(&cmd).await? {
+    if process_success_inherit(&cmd)? {
         log::debug!("Successfully built {component}");
         return Ok(());
     }
     Err(anyhow!("Failed building {component}"))
 }
 
-pub async fn setup_component(component: Component) -> Result<()> {
+pub fn setup_component(component: Component) -> Result<()> {
     log::info!("Setting up the system with build dependencies");
-    setup_packages().await?;
-    ShellConfig::setup_shell().await?;
-    check_component_dependencies(component).await?;
+    setup_packages()?;
+    ShellConfig::setup_shell()?;
+    check_component_dependencies(component)?;
     Ok(())
 }
 
-pub async fn check_component_dependencies(component: Component) -> Result<()> {
+pub fn check_component_dependencies(component: Component) -> Result<()> {
     log::info!("Checking build dependencies");
     match component {
         Component::Node => {
-            check_ghcup().await?;
-            check_ghc().await?;
-            check_cabal().await?;
-            check_libsodium().await?;
-            check_secp256k1().await
+            check_ghcup()?;
+            check_ghc()?;
+            check_cabal()?;
+            check_libsodium()?;
+            check_secp256k1()
         }
         _ => {
-            check_ghcup().await?;
-            check_ghc().await?;
-            check_cabal().await
+            check_ghcup()?;
+            check_ghc()?;
+            check_cabal()
         }
     }
 }
@@ -297,8 +336,8 @@ pub fn uninstall_component(component: Component) -> Result<()> {
 mod test {
     use super::*;
 
-    #[tokio::test]
-    async fn test_uninstall_component() {
+    #[test]
+    fn test_uninstall_component() {
         let result = uninstall_component(Component::Node).is_ok();
         assert!(result);
     }

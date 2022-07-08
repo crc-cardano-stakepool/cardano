@@ -30,19 +30,13 @@ pub struct Cli {
 }
 
 impl Cli {
-    pub async fn exec(command: CardanoCommand) -> Result<()> {
+    pub fn exec(command: CardanoCommand) -> Result<()> {
         match command {
-            CardanoCommand::Node(command) => NodeCommand::exec(command).await,
-            CardanoCommand::Address(command) => {
-                AddressCommand::exec(command).await
-            }
-            CardanoCommand::Wallet(command) => {
-                WalletCommand::exec(command).await
-            }
-            CardanoCommand::Bech32(command) => {
-                Bech32Command::exec(command).await
-            }
-            CardanoCommand::Update => update_cli().await,
+            CardanoCommand::Node(command) => NodeCommand::exec(command),
+            CardanoCommand::Address(command) => AddressCommand::exec(command),
+            CardanoCommand::Wallet(command) => WalletCommand::exec(command),
+            CardanoCommand::Bech32(command) => Bech32Command::exec(command),
+            CardanoCommand::Update => update_cli(),
         }
     }
 }
@@ -61,8 +55,7 @@ pub enum CardanoCommand {
     Update,
 }
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     let cli = Cli::parse();
     let log_file = read_setting("log_file")?;
     setup_logger(cli.verbose.log_level_filter(), true, log_file)?;
@@ -78,7 +71,7 @@ async fn main() -> Result<()> {
         generate(generator, &mut cmd, bin_name, &mut std::io::stdout());
         Ok(())
     } else if let Some(command) = cli.command {
-        Cli::exec(command).await
+        Cli::exec(command)
     } else {
         cmd.print_help()?;
         Ok(())

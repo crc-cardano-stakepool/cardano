@@ -28,14 +28,14 @@ pub enum NodeCommand {
 }
 
 impl NodeCommand {
-    pub async fn exec(cmd: NodeArgs) -> Result<()> {
+    pub fn exec(cmd: NodeArgs) -> Result<()> {
         match cmd.command {
-            NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
+            NodeCommand::Run(cmd) => RunCommand::exec(cmd),
             NodeCommand::Install { confirm } => {
-                check_latest_component(Component::Node, confirm).await
+                check_latest_component(Component::Node, confirm)
             }
             NodeCommand::Uninstall => uninstall_component(Component::Node),
-            NodeCommand::Setup => setup_component(Component::Node).await,
+            NodeCommand::Setup => setup_component(Component::Node),
         }
     }
 }

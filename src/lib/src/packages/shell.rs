@@ -78,14 +78,14 @@ impl ShellConfig {
         }
     }
 
-    pub async fn setup_shell() -> Result<()> {
+    pub fn setup_shell() -> Result<()> {
         log::info!("Setting up shell");
         let shell = ShellConfig::default();
-        shell.change_shell_config().await?;
+        shell.change_shell_config()?;
         setup_env()
     }
 
-    pub async fn change_shell_config(&self) -> Result<()> {
+    pub fn change_shell_config(&self) -> Result<()> {
         let patterns = vec![
             "LD_LIBRARY_PATH",
             "PKG_CONFIG_PATH",
@@ -100,21 +100,21 @@ impl ShellConfig {
             "export PATH=\"$HOME/.cabal/bin:$PATH\"",
             "export PATH=\"$HOME/.ghcup/bin:$PATH\"",
         ];
-        self.write_node_socket_path().await?;
+        self.write_node_socket_path()?;
         for (pattern, path) in patterns.iter().zip(paths.iter()) {
-            if !self.check_shell_config_env(pattern).await? {
+            if !self.check_shell_config_env(pattern)? {
                 self.write_shell_config(path);
             }
         }
         Ok(())
     }
 
-    pub async fn check_shell_config_env(&self, pattern: &str) -> Result<bool> {
+    pub fn check_shell_config_env(&self, pattern: &str) -> Result<bool> {
         log::debug!("Checking shell configuration");
         let config_file =
             absolute_ref_path_to_string(&self.config_file).unwrap();
         let cmd = format!("grep -q {pattern} {config_file}");
-        process_success(&cmd).await
+        process_success(&cmd)
     }
 
     pub fn write_shell_config(&self, value: &str) {
@@ -134,80 +134,34 @@ impl ShellConfig {
             .unwrap();
     }
 
-    pub async fn write_node_socket_path(&self) -> Result<()> {
+    pub fn write_node_socket_path(&self) -> Result<()> {
         let node_socket_path = read_setting("node_socket_path")?;
         let value =
             format!("export CARDANO_NODE_SOCKET_PATH={node_socket_path}");
-        if !self
-            .check_shell_config_env("CARDANO_NODE_SOCKET_PATH")
-            .await?
-        {
+        if !self.check_shell_config_env("CARDANO_NODE_SOCKET_PATH")? {
             self.write_shell_config(&value);
         }
         Ok(())
     }
 
-    pub async fn source_shell() -> Result<()> {
+    pub fn source_shell() -> Result<()> {
         log::debug!("Sourcing shell");
         let config_file = check_env("SHELL_CONFIG_FILE")?;
         let cmd = format!("source {}", config_file);
-        async_command_pipe(&cmd).await?;
+        async_command_pipe(&cmd)?;
         Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
+    use super::*;
     use crate::ShellConfig;
 
-    use super::*;
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_write_shell_config() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    async fn test_write_note_socket_path() -> Result<()> {
+    #[test]
+    fn test_write_note_socket_path() -> Result<()> {
         let shell = ShellConfig::default();
-        shell.write_node_socket_path().await?;
+        shell.write_node_socket_path()?;
         Ok(())
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_setup_shell() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_match_shell() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_change_shell_config() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_check_shell() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_check_shell_config_env() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_ask_shell_config() {
-        unimplemented!();
     }
 }

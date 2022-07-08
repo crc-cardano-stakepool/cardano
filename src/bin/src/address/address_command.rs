@@ -25,15 +25,15 @@ pub enum AddressCommand {
 }
 
 impl AddressCommand {
-    pub async fn exec(cmd: AddressArgs) -> Result<()> {
+    pub fn exec(cmd: AddressArgs) -> Result<()> {
         match cmd.command {
             AddressCommand::Install { confirm } => {
-                check_latest_component(Component::Address, confirm).await
+                check_latest_component(Component::Address, confirm)
             }
             AddressCommand::Uninstall => {
                 uninstall_component(Component::Address)
             }
-            AddressCommand::Setup => setup_component(Component::Address).await,
+            AddressCommand::Setup => setup_component(Component::Address),
         }
     }
 }

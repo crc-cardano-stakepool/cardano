@@ -5,7 +5,7 @@ use crate::{
 use anyhow::Result;
 use std::path::Path;
 
-pub async fn check_libsodium() -> Result<()> {
+pub fn check_libsodium() -> Result<()> {
     log::debug!("Checking if libsodium is installed");
     let pc = Path::new("/usr/local/lib/pkgconfig/libsodium.pc");
     let so = Path::new("/usr/local/lib/libsodium.so");
@@ -21,43 +21,25 @@ pub async fn check_libsodium() -> Result<()> {
         && a.is_file())
     {
         log::warn!("Libsodium is not installed");
-        install_libsodium().await?;
+        return install_libsodium();
     }
     Ok(())
 }
 
-pub async fn install_libsodium() -> Result<()> {
+pub fn install_libsodium() -> Result<()> {
     log::info!("Installing libsodium");
     let libsodium_path = check_env("LIBSODIUM_DIR")?;
-    check_repo(LIBSODIUM_URL, &libsodium_path).await?;
+    check_repo(LIBSODIUM_URL, &libsodium_path)?;
     let cmd = format!("cd {libsodium_path} && git checkout 66f017f1 && ./autogen.sh && ./configure && make");
-    async_command(&cmd).await?;
+    async_command(&cmd)?;
     let cmd = format!("cd {libsodium_path} && sudo make install");
-    async_command(&cmd).await?;
+    async_command(&cmd)?;
     drop_privileges()?;
-    ShellConfig::source_shell().await?;
+    ShellConfig::source_shell()?;
     Ok(())
 }
 
 #[cfg(test)]
 mod test {
     // use super::*;
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_install_libsodium() {
-        unimplemented!();
-    }
-
-    #[test]
-    #[ignore]
-    fn test_get_ghcup_install_url() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_check_libsodium() {
-        unimplemented!();
-    }
 }

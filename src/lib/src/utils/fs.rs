@@ -41,14 +41,14 @@ pub fn check_work_dir() -> Result<impl AsRef<Path>> {
     Ok(PathBuf::from(&path))
 }
 
-pub async fn copy_binary(component: Component) -> Result<()> {
+pub fn copy_binary(component: Component) -> Result<()> {
     let component = component_to_string(component);
     log::debug!("Copying the built binaries of {component}");
     let install_dir = check_env("INSTALL_DIR")?;
     let component_enum = match_component(&component);
     match component_enum {
-        Component::Node => copy_node_binaries(&install_dir).await,
-        Component::Cli => copy_node_binaries(&install_dir).await,
+        Component::Node => copy_node_binaries(&install_dir),
+        Component::Cli => copy_node_binaries(&install_dir),
         Component::Wallet | Component::Bech32 => {
             let install_dir = path_to_string(install_dir.as_ref())?;
             log::info!(
@@ -62,14 +62,14 @@ pub async fn copy_binary(component: Component) -> Result<()> {
             --overwrite-policy=always \
             --installdir={install_dir}"
             );
-            async_command(&cmd).await?;
+            async_command(&cmd)?;
             Ok(())
         }
-        Component::Address => copy_address_binary(&install_dir).await,
+        Component::Address => copy_address_binary(&install_dir),
     }
 }
 
-pub async fn copy_address_binary<P: AsRef<Path>>(install_dir: P) -> Result<()> {
+pub fn copy_address_binary<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     let install_dir = path_to_string(install_dir.as_ref())?;
     log::info!("Installing the built cardano-address binary to {install_dir}");
     let path = set_component_dir(Component::Address)?;
@@ -80,11 +80,11 @@ pub async fn copy_address_binary<P: AsRef<Path>>(install_dir: P) -> Result<()> {
             --overwrite-policy=always \
             --installdir={install_dir}"
     );
-    async_command(&cmd).await?;
+    async_command(&cmd)?;
     Ok(())
 }
 
-pub async fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
+pub fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     let install_dir = absolute_ref_path_to_string(install_dir.as_ref())?;
     let mut path = get_component_path(Component::Node)?;
     let parsed_path = absolute_ref_path_to_string(&path)?;
@@ -103,7 +103,7 @@ pub async fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
             set_env("CARDANO_CLI_BIN", &path);
         }
         log::info!("Copying built {component} binary to {path}");
-        async_command(&cmd).await?;
+        async_command(&cmd)?;
     }
     Ok(())
 }
@@ -155,7 +155,7 @@ pub fn get_bin_path(bin: &str) -> Result<PathBuf> {
     ))
 }
 
-pub async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
+pub fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
     log::debug!("Checking if the project file already exists");
     let file = project_file.as_ref();
     let path = path_to_string(file)?;
@@ -169,7 +169,7 @@ pub async fn check_project_file<P: AsRef<Path>>(project_file: P) -> Result<()> {
     if file_name.eq("cabal.project.local") {
         log::warn!("Project file already exists, removing it");
         let cmd = format!("rm {path}");
-        async_command(&cmd).await?;
+        async_command(&cmd)?;
         return Ok(());
     }
     Ok(())
@@ -228,20 +228,8 @@ mod test {
         Ok(())
     }
 
-    #[tokio::test]
-    #[ignore]
-    async fn test_create_dir() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_copy_binary() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    async fn test_check_work_dir() -> Result<()> {
+    #[test]
+    fn test_check_work_dir() -> Result<()> {
         let home = dirs::home_dir().unwrap();
         let home = home.to_str().unwrap();
         log::debug!("{home}");
@@ -253,19 +241,6 @@ mod test {
         assert_eq!(work_dir, result);
         Ok(())
     }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_check_dir() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_change_dir() {
-        unimplemented!();
-    }
-
     #[test]
     fn test_get_project_file() {
         let component = Component::Node;
@@ -276,8 +251,8 @@ mod test {
         assert_eq!(path, project_file)
     }
 
-    #[tokio::test]
-    async fn test_check_project_file() {
+    #[test]
+    fn test_check_project_file() {
         let file_name = "cabal.project.local";
         let dir = tempfile::Builder::new().tempdir().unwrap();
         let file_path = dir.path().join(file_name);
@@ -285,7 +260,7 @@ mod test {
             file_path.file_name().unwrap().to_str().unwrap();
         std::fs::File::create(&file_path).unwrap();
         assert_eq!(file_name, project_file_name);
-        check_project_file(&file_path).await.unwrap();
+        check_project_file(&file_path).unwrap();
         assert!(!file_path.exists());
     }
 

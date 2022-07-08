@@ -5,7 +5,7 @@ use crate::{
 use anyhow::{anyhow, Result};
 use std::path::Path;
 
-pub async fn check_ghcup() -> Result<()> {
+pub fn check_ghcup() -> Result<()> {
     log::debug!("Checking GHCup");
     let ghcup_dir = check_env("GHCUP_DIR")?;
     let ghcup_bin = check_env("GHCUP_BIN")?;
@@ -17,14 +17,14 @@ pub async fn check_ghcup() -> Result<()> {
         }
         return Err(anyhow!("Failed installing GHCup"));
     }
-    install_ghcup().await
+    install_ghcup()
 }
 
-pub async fn install_ghcup() -> Result<()> {
+pub fn install_ghcup() -> Result<()> {
     log::info!("Installing GHCup");
     let user = check_user()?;
-    let ghc_version = get_ghc_version().await?;
-    let cabal_version = get_cabal_version().await?;
+    let ghc_version = get_ghc_version()?;
+    let cabal_version = get_cabal_version()?;
     let non_interactive = "export BOOTSTRAP_HASKELL_NONINTERACTIVE=1";
     let ghc = format!("export BOOTSTRAP_HASKELL_GHC_VERSION={ghc_version}");
     let cabal =
@@ -32,7 +32,7 @@ pub async fn install_ghcup() -> Result<()> {
     let call = format!("$(curl --proto '=https' --tlsv1.2 -sSf {GHCUP_URL})");
     let cmd = format!("\n{non_interactive}\n{ghc}\n{cabal}\n{call}");
     let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
-    async_command(&cmd).await?;
+    async_command(&cmd)?;
     drop_privileges()?;
     Ok(())
 }
@@ -40,22 +40,4 @@ pub async fn install_ghcup() -> Result<()> {
 #[cfg(test)]
 mod test {
     // use super::*;
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_install_ghcup() {
-        unimplemented!();
-    }
-
-    #[test]
-    #[ignore]
-    fn test_get_ghcup_install_url() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_check_ghcup() {
-        unimplemented!();
-    }
 }

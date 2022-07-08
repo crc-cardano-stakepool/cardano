@@ -25,13 +25,13 @@ pub enum WalletCommand {
 }
 
 impl WalletCommand {
-    pub async fn exec(cmd: WalletArgs) -> Result<()> {
+    pub fn exec(cmd: WalletArgs) -> Result<()> {
         match cmd.command {
             WalletCommand::Install { confirm } => {
-                check_latest_component(Component::Wallet, confirm).await
+                check_latest_component(Component::Wallet, confirm)
             }
             WalletCommand::Uninstall => uninstall_component(Component::Wallet),
-            WalletCommand::Setup => setup_component(Component::Wallet).await,
+            WalletCommand::Setup => setup_component(Component::Wallet),
         }
     }
 }

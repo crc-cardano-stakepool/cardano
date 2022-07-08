@@ -25,13 +25,13 @@ pub enum Bech32Command {
 }
 
 impl Bech32Command {
-    pub async fn exec(cmd: Bech32Args) -> Result<()> {
+    pub fn exec(cmd: Bech32Args) -> Result<()> {
         match cmd.command {
             Bech32Command::Install { confirm } => {
-                check_latest_component(Component::Bech32, confirm).await
+                check_latest_component(Component::Bech32, confirm)
             }
             Bech32Command::Uninstall => uninstall_component(Component::Bech32),
-            Bech32Command::Setup => setup_component(Component::Bech32).await,
+            Bech32Command::Setup => setup_component(Component::Bech32),
         }
     }
 }

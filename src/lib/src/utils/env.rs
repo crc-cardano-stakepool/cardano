@@ -86,8 +86,8 @@ pub fn check_confirm() -> Result<bool> {
 mod test {
     use super::*;
 
-    #[tokio::test]
-    async fn test_check_env() -> Result<()> {
+    #[test]
+    fn test_check_env() -> Result<()> {
         let user = crate::check_user()?;
         let checked_env_user = check_env("USER")?;
         assert_eq!(user, checked_env_user);

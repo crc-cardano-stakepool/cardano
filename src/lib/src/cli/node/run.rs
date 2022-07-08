@@ -62,7 +62,7 @@ pub fn get_config(network: NetworkIdKind) -> Result<Option<PathBuf>> {
     Ok(Some(config))
 }
 
-pub async fn check_config_files(network: NetworkIdKind) -> Result<()> {
+pub fn check_config_files(network: NetworkIdKind) -> Result<()> {
     let network = &network_to_string(network);
     log::debug!("Checking configuration files");
     let key = format!("{network}_config_dir");
@@ -72,12 +72,12 @@ pub async fn check_config_files(network: NetworkIdKind) -> Result<()> {
         return Err(anyhow!("Configuration directory does not exist"));
     }
     for file in CONFIG_FILES {
-        check_config_file(db.clone(), match_network(network), file).await?;
+        check_config_file(db.clone(), match_network(network), file)?;
     }
     Ok(())
 }
 
-pub async fn check_config_file(
+pub fn check_config_file(
     mut db: PathBuf,
     network: NetworkIdKind,
     file: &str,
@@ -91,7 +91,7 @@ pub async fn check_config_file(
     if !db.exists() {
         log::warn!("Config file {file} not found, downloading it");
         let cmd = format!("wget {CONFIG_BASE_URL}/{name} -P {download_path}");
-        async_command(&cmd).await?;
+        async_command(&cmd)?;
         log::info!("Downloaded config file {file} successfully");
     }
     log::debug!("Config file found");
@@ -209,15 +209,15 @@ pub fn handle_config(
     Ok(config)
 }
 
-pub async fn run_node_if_installed(
+pub fn run_node_if_installed(
     cmd: &str,
     network: NetworkIdKind,
     db: Option<PathBuf>,
 ) -> Result<()> {
     let network = &network_to_string(network);
     if is_component_installed(Component::Node)? {
-        let version = check_latest_version(Component::Node).await?;
-        let installed = check_installed_version(Component::Node).await?;
+        let version = check_latest_version(Component::Node)?;
+        let installed = check_installed_version(Component::Node)?;
         if version.eq(&installed) {
             if db.as_ref().unwrap().read_dir()?.next().is_none()
                 && proceed(
@@ -225,20 +225,20 @@ pub async fn run_node_if_installed(
                         the ledger to speed up sync time significantly?",
                 )?
             {
-                download_snapshot(match_network(network)).await?;
+                download_snapshot(match_network(network))?;
             }
             log::info!("Proceeding to run node in {network}");
-            async_command(cmd).await?;
+            async_command(cmd)?;
             return Ok(());
         }
         log::error!("The installed cardano-node v{installed} is outdated");
         log::error!("Please update to the latest version {version}");
-        install_component(Component::Node).await?;
-        async_command(cmd).await?;
+        install_component(Component::Node)?;
+        async_command(cmd)?;
         return Ok(());
     }
-    install_component(Component::Node).await?;
-    async_command(cmd).await?;
+    install_component(Component::Node)?;
+    async_command(cmd)?;
     Ok(())
 }
 

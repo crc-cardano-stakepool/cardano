@@ -7,7 +7,7 @@ use crate::{
 use anyhow::Result;
 use cardano_multiplatform_lib::NetworkIdKind;
 
-pub async fn download_snapshot(network: NetworkIdKind) -> Result<()> {
+pub fn download_snapshot(network: NetworkIdKind) -> Result<()> {
     let network = network_to_string(network);
     log::info!(
         "Downloading ledger snapshot from \
@@ -27,7 +27,7 @@ pub async fn download_snapshot(network: NetworkIdKind) -> Result<()> {
          lz4 -dvc --no-sparse {download_path} | tar x -C {db_path} \
          "
     );
-    async_command(&cmd).await?;
+    async_command(&cmd)?;
     Ok(())
 }
 
@@ -36,13 +36,13 @@ mod test {
     use super::*;
     use crate::check_config_files;
 
-    #[tokio::test]
+    #[test]
     #[ignore]
-    async fn test_download_snapshot() -> Result<()> {
-        check_config_files(NetworkIdKind::Testnet).await?;
-        download_snapshot(NetworkIdKind::Testnet).await?;
-        check_config_files(NetworkIdKind::Mainnet).await?;
-        download_snapshot(NetworkIdKind::Mainnet).await?;
+    fn test_download_snapshot() -> Result<()> {
+        check_config_files(NetworkIdKind::Testnet)?;
+        download_snapshot(NetworkIdKind::Testnet)?;
+        check_config_files(NetworkIdKind::Mainnet)?;
+        download_snapshot(NetworkIdKind::Mainnet)?;
         Ok(())
     }
 }

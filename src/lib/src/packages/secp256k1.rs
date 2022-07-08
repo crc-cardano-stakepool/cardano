@@ -5,7 +5,7 @@ use crate::{
 use anyhow::Result;
 use std::path::Path;
 
-pub async fn check_secp256k1() -> Result<()> {
+pub fn check_secp256k1() -> Result<()> {
     log::debug!("Checking secp256k1");
     let pc = Path::new("/usr/local/lib/pkgconfig/libsecp256k1.pc");
     let so = Path::new("/usr/local/lib/libsecp256k1.so");
@@ -21,41 +21,29 @@ pub async fn check_secp256k1() -> Result<()> {
         && a.is_file())
     {
         log::warn!("secp256k1 is not installed");
-        install_secp256k1().await?;
+        install_secp256k1()?;
     }
     Ok(())
 }
 
-pub async fn install_secp256k1() -> Result<()> {
+pub fn install_secp256k1() -> Result<()> {
     log::info!("Installing secp256k1");
     let secp256k1_path = check_env("SECP_256_K_1_DIR")?;
-    check_repo(SECP256K1_URL, &secp256k1_path).await?;
+    check_repo(SECP256K1_URL, &secp256k1_path)?;
     let checkout = "git checkout ac83be33";
     let configure =
         "./configure --enable-module-schnorrsig --enable-experimental";
     let cmd = format!("cd {secp256k1_path} && {checkout} && ./autogen.sh && {configure} && make");
-    async_command(&cmd).await?;
+    async_command(&cmd)?;
     let cmd = format!("cd {secp256k1_path} && sudo make install");
-    async_command(&cmd).await?;
-    async_command("sudo ldconfig").await?;
+    async_command(&cmd)?;
+    async_command("sudo ldconfig")?;
     drop_privileges()?;
-    ShellConfig::source_shell().await?;
+    ShellConfig::source_shell()?;
     Ok(())
 }
 
 #[cfg(test)]
 mod test {
     // use super::*;
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_install_secp256k1() {
-        unimplemented!();
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_check_secp256k1() {
-        unimplemented!();
-    }
 }
