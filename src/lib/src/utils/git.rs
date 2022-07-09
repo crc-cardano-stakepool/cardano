@@ -41,15 +41,41 @@ pub fn checkout_latest_release(component: Component) -> Result<()> {
 }
 
 pub fn set_component_dir(component: Component) -> Result<String> {
-    let component = component_to_string(component);
-    log::debug!("Setting the directory for {component}");
-    let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
-    work_dir.push(&component);
-    let component_dir = path_to_string(&work_dir)?;
-    let env_name = format!("{component}-dir");
-    let converted = env_name.to_case(Case::UpperSnake);
-    set_env(&converted, &component_dir);
-    Ok(component_dir)
+    match component {
+        Component::Cli => {
+            let component = component_to_string(component);
+            log::debug!("Setting the directory for {component}");
+            let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
+            work_dir.push("cardano-node");
+            let component_dir = path_to_string(&work_dir)?;
+            let env_name = format!("{component}-dir");
+            let converted = env_name.to_case(Case::UpperSnake);
+            set_env(&converted, &component_dir);
+            Ok(component_dir)
+        }
+        Component::Address => {
+            let component = component_to_string(component);
+            log::debug!("Setting the directory for {component}");
+            let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
+            work_dir.push("cardano-addresses");
+            let component_dir = path_to_string(&work_dir)?;
+            let env_name = format!("{component}-dir");
+            let converted = env_name.to_case(Case::UpperSnake);
+            set_env(&converted, &component_dir);
+            Ok(component_dir)
+        }
+        _ => {
+            let component = component_to_string(component);
+            log::debug!("Setting the directory for {component}");
+            let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
+            work_dir.push(&component);
+            let component_dir = path_to_string(&work_dir)?;
+            let env_name = format!("{component}-dir");
+            let converted = env_name.to_case(Case::UpperSnake);
+            set_env(&converted, &component_dir);
+            Ok(component_dir)
+        }
+    }
 }
 
 pub fn clone_component(component: Component) -> Result<()> {

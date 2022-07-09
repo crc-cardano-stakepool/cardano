@@ -73,6 +73,16 @@ impl ShellConfig {
             Shell::Zsh => {
                 let mut config = dirs::home_dir().expect("Read $HOME");
                 config.push(".zshrc");
+                if !config.exists() {
+                    if let Ok(path) = check_env("ZDOTDIR") {
+                        let mut path = PathBuf::from(&path);
+                        path.push(".zshrc");
+                        if !path.exists() {
+                            panic!("Could not find .zshrc")
+                        }
+                        return path;
+                    }
+                }
                 config
             }
         }

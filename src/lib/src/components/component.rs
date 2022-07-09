@@ -1,8 +1,8 @@
 use crate::{
     absolute_ref_path_to_string, async_command, async_command_pipe,
     check_cabal, check_env, check_ghc, check_ghcup, check_libsodium,
-    check_project_file, check_secp256k1, clone_component, copy_binary,
-    get_bin_path, get_ghc_version, get_project_file, proceed,
+    check_project_file, check_repo, check_secp256k1, clone_component,
+    copy_binary, get_bin_path, get_ghc_version, get_project_file, proceed,
     process_success_inherit, read_setting, set_component_dir, set_confirm,
     setup_packages, update_cabal, update_project_file, ShellConfig,
 };
@@ -22,36 +22,43 @@ pub enum Component {
 #[derive(Debug, Eq, PartialEq)]
 pub struct CardanoComponent {
     component: Component,
-    name: String,
-    installed_version: String,
+    binary_name: String,
+    installed_version: Option<String>,
     latest_version: String,
     source_path: PathBuf,
-    bin_path: PathBuf,
-    url: String,
+    bin_path: Option<PathBuf>,
+    source_url: String,
     release_url: String,
 }
 
 impl CardanoComponent {
     fn new(component: Component) -> Self {
-        let name = component_to_string(component);
-        let installed_version = check_installed_version(component).unwrap();
+        let binary_name = component_to_string(component);
+        let installed_version = match check_installed_version(component) {
+            Ok(version) => Some(version),
+            Err(_) => None,
+        };
         let latest_version = check_latest_version(component).unwrap();
         let source_path = get_component_path(component).unwrap();
-        let bin_path = get_bin_path(&name).unwrap();
-        let url = get_component_url(component);
+        let bin_path = match get_bin_path(&binary_name) {
+            Ok(path) => Some(path),
+            Err(_) => None,
+        };
+        let source_url = get_component_url(component);
         let release_url = get_component_release_url(component);
         Self {
             component,
-            name,
+            binary_name,
             installed_version,
             latest_version,
             source_path,
             bin_path,
-            url,
+            source_url,
             release_url,
         }
     }
 }
+
 impl Default for CardanoComponent {
     fn default() -> Self {
         Self::new(Component::Node)
@@ -100,6 +107,12 @@ pub fn get_component_release_url(component: Component) -> String {
             log::debug!("{component} release url: {url}");
             url.to_string()
         }
+        Component::Cli => {
+            let component = component_to_string(component);
+            let url = "https://api.github.com/repos/input-output-hk/cardano-node/releases/latest";
+            log::debug!("{component} release url: {url}");
+            url.to_string()
+        }
         _ => {
             let component = component_to_string(component);
             let url = format!("https://api.github.com/repos/input-output-hk/{component}/releases/latest");
@@ -110,13 +123,32 @@ pub fn get_component_release_url(component: Component) -> String {
 }
 
 pub fn get_component_url(component: Component) -> String {
-    let component = component_to_string(component);
-    let url = format!("https://github.com/input-output-hk/{component}.git");
-    log::debug!("{component} git url: {url}");
-    url
+    match component {
+        Component::Address => {
+            let component = component_to_string(component);
+            let url =
+                "https://github.com/input-output-hk/cardano-addresses.git";
+            log::debug!("{component} git url: {url}");
+            url.to_string()
+        }
+        Component::Cli => {
+            let component = component_to_string(component);
+            let url = "https://github.com/input-output-hk/cardano-node.git";
+            log::debug!("{component} git url: {url}");
+            url.to_string()
+        }
+        _ => {
+            let component = component_to_string(component);
+            let url =
+                format!("https://github.com/input-output-hk/{component}.git");
+            log::debug!("{component} git url: {url}");
+            url
+        }
+    }
 }
 
 pub fn get_component_path(component: Component) -> Result<PathBuf> {
+    set_component_dir(component).unwrap();
     let component = component_to_string(component);
     log::debug!("Checking where the binary of {component} is");
     let env = format!("{component}_dir");
@@ -205,8 +237,11 @@ pub fn check_latest_version(component: Component) -> Result<String> {
     log::debug!("Checking latest {component_str} version");
     let cmd = match component {
         Component::Wallet => {
-            let path = set_component_dir(component)?;
-            format!("cd {path} && git describe --tags --abbrev=0")
+            let url = get_component_url(component);
+            let dir = set_component_dir(component)?;
+            let path = get_component_path(component)?;
+            check_repo(&url, path)?;
+            format!("cd {dir} && git describe --tags --abbrev=0")
         }
         _ => {
             let url = get_component_release_url(component);
@@ -335,6 +370,21 @@ pub fn uninstall_component(component: Component) -> Result<()> {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    #[ignore]
+    fn test_cardano_component() {
+        let node = CardanoComponent::new(Component::Node);
+        log::debug!("{node:#?}");
+        let wallet = CardanoComponent::new(Component::Wallet);
+        log::debug!("{wallet:#?}");
+        let cli = CardanoComponent::new(Component::Cli);
+        log::debug!("{cli:#?}");
+        let address = CardanoComponent::new(Component::Address);
+        log::debug!("{address:#?}");
+        let bech32 = CardanoComponent::new(Component::Bech32);
+        log::debug!("{bech32:#?}");
+    }
 
     #[test]
     fn test_uninstall_component() {
