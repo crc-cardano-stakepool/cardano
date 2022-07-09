@@ -1,8 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{
-    check_latest_component, setup_component, uninstall_component, Component,
-};
+use lib::{CardanoComponent, Component};
 
 #[derive(Debug, Args)]
 pub struct WalletArgs {
@@ -28,10 +26,17 @@ impl WalletCommand {
     pub fn exec(cmd: WalletArgs) -> Result<()> {
         match cmd.command {
             WalletCommand::Install { confirm } => {
-                check_latest_component(Component::Wallet, confirm)
+                CardanoComponent::check_latest_component(
+                    Component::Wallet,
+                    confirm,
+                )
             }
-            WalletCommand::Uninstall => uninstall_component(Component::Wallet),
-            WalletCommand::Setup => setup_component(Component::Wallet),
+            WalletCommand::Uninstall => {
+                CardanoComponent::uninstall_component(Component::Wallet)
+            }
+            WalletCommand::Setup => {
+                CardanoComponent::setup_component(Component::Wallet)
+            }
         }
     }
 }

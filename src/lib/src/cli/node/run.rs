@@ -1,8 +1,7 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_installed_version,
-    check_latest_version, download_snapshot, install_component,
-    is_component_installed, match_network, network_to_string, path_to_string,
-    proceed, read_setting, Component, CONFIG_BASE_URL, CONFIG_FILES,
+    absolute_ref_path_to_string, async_command, download_snapshot,
+    match_network, network_to_string, path_to_string, proceed, read_setting,
+    CardanoComponent, Component, CONFIG_BASE_URL, CONFIG_FILES,
 };
 use anyhow::{anyhow, Result};
 use cardano_multiplatform_lib::NetworkIdKind;
@@ -215,9 +214,10 @@ pub fn run_node_if_installed(
     db: Option<PathBuf>,
 ) -> Result<()> {
     let network = &network_to_string(network);
-    if is_component_installed(Component::Node)? {
-        let version = check_latest_version(Component::Node)?;
-        let installed = check_installed_version(Component::Node)?;
+    if CardanoComponent::is_component_installed(Component::Node)? {
+        let version = CardanoComponent::check_latest_version(Component::Node)?;
+        let installed =
+            CardanoComponent::check_installed_version(Component::Node)?;
         if version.eq(&installed) {
             if db.as_ref().unwrap().read_dir()?.next().is_none()
                 && proceed(
@@ -233,11 +233,11 @@ pub fn run_node_if_installed(
         }
         log::error!("The installed cardano-node v{installed} is outdated");
         log::error!("Please update to the latest version {version}");
-        install_component(Component::Node)?;
+        CardanoComponent::install_component(Component::Node)?;
         async_command(cmd)?;
         return Ok(());
     }
-    install_component(Component::Node)?;
+    CardanoComponent::install_component(Component::Node)?;
     async_command(cmd)?;
     Ok(())
 }

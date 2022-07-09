@@ -1,7 +1,6 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, check_latest_version,
-    check_work_dir, component_to_string, get_component_path, get_component_url,
-    path_to_string, set_env, Component,
+    absolute_ref_path_to_string, async_command, check_work_dir, path_to_string,
+    set_env, CardanoComponent, Component,
 };
 use anyhow::Result;
 use convert_case::{Case, Casing};
@@ -29,12 +28,12 @@ pub fn check_repo<P: AsRef<Path>>(url: &str, absolute_path: P) -> Result<()> {
 }
 
 pub fn checkout_latest_release(component: Component) -> Result<()> {
-    let version = check_latest_version(component)?;
-    let path = get_component_path(component)?;
+    let version = CardanoComponent::check_latest_version(component)?;
+    let path = CardanoComponent::get_component_path(component)?;
     let path = absolute_ref_path_to_string(&path)?;
     let cmd = format!("cd {path} && git checkout tags/{version}");
     fetch_tags(component)?;
-    let component = component_to_string(component);
+    let component = CardanoComponent::component_to_string(component);
     log::debug!("Checking out the latest release of {component}");
     async_command(&cmd)?;
     Ok(())
@@ -43,7 +42,7 @@ pub fn checkout_latest_release(component: Component) -> Result<()> {
 pub fn set_component_dir(component: Component) -> Result<String> {
     match component {
         Component::Cli => {
-            let component = component_to_string(component);
+            let component = CardanoComponent::component_to_string(component);
             log::debug!("Setting the directory for {component}");
             let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
             work_dir.push("cardano-node");
@@ -54,7 +53,7 @@ pub fn set_component_dir(component: Component) -> Result<String> {
             Ok(component_dir)
         }
         Component::Address => {
-            let component = component_to_string(component);
+            let component = CardanoComponent::component_to_string(component);
             log::debug!("Setting the directory for {component}");
             let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
             work_dir.push("cardano-addresses");
@@ -65,7 +64,7 @@ pub fn set_component_dir(component: Component) -> Result<String> {
             Ok(component_dir)
         }
         _ => {
-            let component = component_to_string(component);
+            let component = CardanoComponent::component_to_string(component);
             log::debug!("Setting the directory for {component}");
             let mut work_dir = check_work_dir()?.as_ref().to_path_buf();
             work_dir.push(&component);
@@ -80,7 +79,7 @@ pub fn set_component_dir(component: Component) -> Result<String> {
 
 pub fn clone_component(component: Component) -> Result<()> {
     let component_dir = set_component_dir(component)?;
-    let url = get_component_url(component);
+    let url = CardanoComponent::get_component_url(component);
     check_repo(&url, &component_dir)?;
     checkout_latest_release(component)
 }
@@ -97,11 +96,11 @@ pub fn clone_repo<P: AsRef<Path>>(
 }
 
 pub fn fetch_tags(component: Component) -> Result<()> {
-    let path = get_component_path(component)?;
+    let path = CardanoComponent::get_component_path(component)?;
     let path = absolute_ref_path_to_string(&path)?;
     let cmd =
         format!("cd {path} && git fetch --all --recurse-submodules --tags");
-    let component = component_to_string(component);
+    let component = CardanoComponent::component_to_string(component);
     log::info!(
         "Fetching the latest tags of the {component} source reposity of"
     );
@@ -117,7 +116,7 @@ mod test {
 
     #[test]
     fn test_check_latest_version() -> Result<()> {
-        let version = check_latest_version(Component::Node)?;
+        let version = CardanoComponent::check_latest_version(Component::Node)?;
         assert_eq!(version, CARDANO_NODE_VERSION);
         Ok(())
     }

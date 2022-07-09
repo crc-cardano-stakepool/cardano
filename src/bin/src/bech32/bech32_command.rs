@@ -1,8 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{
-    check_latest_component, setup_component, uninstall_component, Component,
-};
+use lib::{CardanoComponent, Component};
 
 #[derive(Debug, Args)]
 pub struct Bech32Args {
@@ -28,10 +26,17 @@ impl Bech32Command {
     pub fn exec(cmd: Bech32Args) -> Result<()> {
         match cmd.command {
             Bech32Command::Install { confirm } => {
-                check_latest_component(Component::Bech32, confirm)
+                CardanoComponent::check_latest_component(
+                    Component::Bech32,
+                    confirm,
+                )
             }
-            Bech32Command::Uninstall => uninstall_component(Component::Bech32),
-            Bech32Command::Setup => setup_component(Component::Bech32),
+            Bech32Command::Uninstall => {
+                CardanoComponent::uninstall_component(Component::Bech32)
+            }
+            Bech32Command::Setup => {
+                CardanoComponent::setup_component(Component::Bech32)
+            }
         }
     }
 }

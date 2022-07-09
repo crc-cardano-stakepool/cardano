@@ -1,8 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{
-    check_latest_component, setup_component, uninstall_component, Component,
-};
+use lib::{CardanoComponent, Component};
 
 #[derive(Debug, Args)]
 pub struct AddressArgs {
@@ -28,12 +26,17 @@ impl AddressCommand {
     pub fn exec(cmd: AddressArgs) -> Result<()> {
         match cmd.command {
             AddressCommand::Install { confirm } => {
-                check_latest_component(Component::Address, confirm)
+                CardanoComponent::check_latest_component(
+                    Component::Address,
+                    confirm,
+                )
             }
             AddressCommand::Uninstall => {
-                uninstall_component(Component::Address)
+                CardanoComponent::uninstall_component(Component::Address)
             }
-            AddressCommand::Setup => setup_component(Component::Address),
+            AddressCommand::Setup => {
+                CardanoComponent::setup_component(Component::Address)
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 use crate::{
-    async_command, check_env, component_to_string, get_component_path,
-    match_component, read_setting, set_component_dir, set_env, Component,
-    DIRECTORIES,
+    async_command, check_env, read_setting, set_component_dir, set_env,
+    CardanoComponent, Component, DIRECTORIES,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -42,10 +41,10 @@ pub fn check_work_dir() -> Result<impl AsRef<Path>> {
 }
 
 pub fn copy_binary(component: Component) -> Result<()> {
-    let component = component_to_string(component);
+    let component = CardanoComponent::component_to_string(component);
     log::debug!("Copying the built binaries of {component}");
     let install_dir = check_env("INSTALL_DIR")?;
-    let component_enum = match_component(&component);
+    let component_enum = CardanoComponent::match_component(&component);
     match component_enum {
         Component::Node => copy_node_binaries(&install_dir),
         Component::Cli => copy_node_binaries(&install_dir),
@@ -86,7 +85,7 @@ pub fn copy_address_binary<P: AsRef<Path>>(install_dir: P) -> Result<()> {
 
 pub fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
     let install_dir = absolute_ref_path_to_string(install_dir.as_ref())?;
-    let mut path = get_component_path(Component::Node)?;
+    let mut path = CardanoComponent::get_component_path(Component::Node)?;
     let parsed_path = absolute_ref_path_to_string(&path)?;
     let bin_path = format!("{parsed_path}/scripts/bin-path.sh");
     path.push("scripts");
@@ -202,9 +201,11 @@ pub fn update_project_file<P: AsRef<Path>>(path: P) -> Result<()> {
 }
 
 pub fn get_project_file(component: Component) -> Result<PathBuf> {
-    let component = component_to_string(component);
+    let component = CardanoComponent::component_to_string(component);
     log::debug!("Getting the project file of the {component} source reposity");
-    let mut path = get_component_path(match_component(&component))?;
+    let mut path = CardanoComponent::get_component_path(
+        CardanoComponent::match_component(&component),
+    )?;
     path.push("cabal.project.local");
     Ok(path)
 }
@@ -245,7 +246,7 @@ mod test {
     fn test_get_project_file() {
         let component = Component::Node;
         set_component_dir(component).unwrap();
-        let mut path = get_component_path(component).unwrap();
+        let mut path = CardanoComponent::get_component_path(component).unwrap();
         path.push("cabal.project.local");
         let project_file = get_project_file(component).unwrap();
         assert_eq!(path, project_file)
