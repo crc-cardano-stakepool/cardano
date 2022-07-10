@@ -137,7 +137,7 @@ impl PlatformInfo {
     pub fn setup_packages(&self) -> Result<()> {
         self.update()?;
         self.check_packages()?;
-        Ok(())
+        drop_privileges()
     }
     fn update(&self) -> Result<()> {
         let package_manager = self.get_package_manager();
@@ -151,7 +151,7 @@ impl PlatformInfo {
         for package in self.packages.iter() {
             self.check_package(&self.package_manager, package)?;
         }
-        drop_privileges()
+        Ok(())
     }
     fn check_package(
         &self,

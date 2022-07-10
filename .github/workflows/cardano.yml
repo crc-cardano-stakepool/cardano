@@ -37,7 +37,15 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.target }}-node-1.35.0
           restore-keys: ${{ matrix.os }}-${{ matrix.target }}-node-1.35.0
       - name: Cache Rust
-        uses: Swatinem/rust-cache@v1
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
         with:
