@@ -34,16 +34,10 @@ pub struct CardanoComponent {
 impl CardanoComponent {
     fn new(component: Component) -> Self {
         let binary_name = Self::component_to_string(component);
-        let installed_version = match Self::check_installed_version(component) {
-            Ok(version) => Some(version),
-            Err(_) => None,
-        };
+        let installed_version = Self::check_installed_version(component).ok();
         let latest_version = Self::check_latest_version(component).unwrap();
         let source_path = Self::get_component_path(component).unwrap();
-        let bin_path = match get_bin_path(&binary_name) {
-            Ok(path) => Some(path),
-            Err(_) => None,
-        };
+        let bin_path = get_bin_path(&binary_name).ok();
         let source_url = Self::get_component_url(component);
         let release_url = Self::get_component_release_url(component);
         Self {
