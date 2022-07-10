@@ -57,11 +57,10 @@ pub enum CardanoCommand {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-    let log_file = Settings::read_setting("log_file")?;
+    let log_file = Settings::read("log_file")?;
     setup_logger(cli.verbose.log_level_filter(), true, log_file)?;
     human_panic::setup_panic!();
-    ctrlc::set_handler(|| log::info!("Initialize Ctrl-C handler"))
-        .expect("Error setting Ctrl-C handler");
+    ctrlc::set_handler(|| log::info!("Initialize Ctrl-C handler")).unwrap();
     FileSystem::setup_work_dir()?;
     Environment::setup_env()?;
     let mut cmd = Cli::command();

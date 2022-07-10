@@ -4,90 +4,94 @@ use std::process::{Command, Stdio};
 pub struct Executer;
 
 impl Executer {
-    pub fn async_command(command: &str) -> Result<String> {
+    pub fn exec(command: &str) -> Result<String> {
         log::debug!("Executing command: {command}");
-        let child = Command::new("sh")
+        Command::new("sh")
             .arg("-c")
             .arg(command)
             .stdout(Stdio::inherit())
             .spawn()?
-            .wait_with_output();
-        match child {
-            Ok(output) => Ok(String::from_utf8(output.stdout).unwrap()),
-            Err(e) => Err(anyhow!("{e}")),
-        }
+            .wait_with_output()
+            .map(|output| String::from_utf8(output.stdout).unwrap())
+            .map_err(|err| anyhow!("Failed to execute command: {err}"))
     }
 
-    pub fn async_command_pipe(command: &str) -> Result<String> {
+    pub fn capture(command: &str) -> Result<String> {
         log::debug!("Executing command: {command}");
-        let process = Command::new("sh")
+        Command::new("sh")
             .arg("-c")
             .arg(command)
             .stdout(Stdio::piped())
-            .output();
-        match process {
-            Ok(output) => {
-                Ok(String::from(String::from_utf8_lossy(&output.stdout))
+            .output()
+            .map(|output| {
+                String::from(String::from_utf8_lossy(&output.stdout))
                     .trim()
-                    .to_string())
-            }
-            Err(e) => {
-                log::error!("Command failed");
-                Err(anyhow!("{e}"))
-            }
-        }
+                    .to_string()
+            })
+            .map_err(|err| anyhow!("Failed to execute command: {err}"))
     }
 
     pub fn is_program_installed(program: &str) -> Result<bool> {
         let cmd = format!("type {program}");
-        Self::process_success(&cmd)
+        Self::success(&cmd)
     }
 
     pub fn pipe(command: &str, pipe_command: &str) -> Result<String> {
         log::debug!("Executing command: {command} | {pipe_command}");
-        let mut child = Command::new("sh")
+        Command::new("sh")
             .arg("-c")
             .arg(command)
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
-            .spawn()?;
-        if let Some(output) = child.stdout.take() {
-            let process = Command::new("sh")
-                .arg("-c")
-                .arg(pipe_command)
-                .stdin(output)
-                .stdout(Stdio::piped())
-                .spawn()?
-                .wait_with_output();
-            match process {
-                Ok(output) => {
-                    Ok(String::from(String::from_utf8_lossy(&output.stdout)))
-                }
-                Err(e) => Err(anyhow!("{e}")),
-            }
-        } else {
-            Err(anyhow!("Failed executing piped command"))
-        }
+            .spawn()
+            .map_err(|err| anyhow!("Failed to spawn stdout: {err}"))
+            .unwrap()
+            .stdout
+            .take()
+            .ok_or("Failed to take child stdout")
+            .map(|output| {
+                return Command::new("sh")
+                    .arg("-c")
+                    .arg(pipe_command)
+                    .stdin(output)
+                    .stdout(Stdio::piped())
+                    .spawn()
+                    .map_err(|err| anyhow!("Failed to spawn stdout: {err}"))
+                    .unwrap()
+                    .wait_with_output()
+                    .map(|output| {
+                        return String::from(String::from_utf8_lossy(
+                            &output.stdout,
+                        ));
+                    })
+                    .map_err(|err| anyhow!("Failed to execute command: {err}"))
+                    .unwrap();
+            })
+            .map_err(|err| anyhow!("Failed executing piped command: {err}"))
     }
 
-    pub fn process_success_inherit(cmd: &str) -> Result<bool> {
+    pub fn capture_success(cmd: &str) -> Result<bool> {
         log::debug!("Executing command: {cmd}");
-        let child = Command::new("sh")
+        Command::new("sh")
             .arg("-c")
             .arg(cmd)
             .stdout(Stdio::inherit())
-            .spawn()?
-            .wait_with_output();
-        match child {
-            Ok(output) => Ok(output.status.success()),
-            Err(e) => Err(anyhow!("{e}")),
-        }
+            .spawn()
+            .map_err(|err| anyhow!("Failed to spawn stdout: {err}"))
+            .unwrap()
+            .wait_with_output()
+            .map(|output| output.status.success())
+            .map_err(|err| anyhow!("Failed to execute command: {err}"))
     }
 
-    pub fn process_success(cmd: &str) -> Result<bool> {
+    pub fn success(cmd: &str) -> Result<bool> {
         log::debug!("Checking for success of command: {cmd}");
-        let output = Command::new("sh").arg("-c").arg(&cmd).output()?;
-        Ok(output.status.success())
+        Command::new("sh")
+            .arg("-c")
+            .arg(&cmd)
+            .output()
+            .map(|output| output.status.success())
+            .map_err(|err| anyhow!("Failed to execute command: {err}"))
     }
 }
 #[cfg(test)]
@@ -96,7 +100,7 @@ mod test {
 
     #[test]
     fn test_async_command() -> Result<()> {
-        let output = Executer::async_command(
+        let output = Executer::exec(
             "echo 'expected to be printed on console' >/dev/null",
         )?;
         assert_eq!(output, "");
@@ -107,7 +111,7 @@ mod test {
     pub fn test_async_command_pipe() -> Result<()> {
         let expected = "not expected to be printed on console";
         let cmd = format!("echo {expected}");
-        let output = Executer::async_command_pipe(&cmd)?;
+        let output = Executer::capture(&cmd)?;
         assert_eq!(output, expected);
         Ok(())
     }
@@ -124,9 +128,9 @@ mod test {
 
     #[test]
     fn test_process_success() -> Result<()> {
-        let result = Executer::process_success("true")?;
+        let result = Executer::success("true")?;
         assert!(result);
-        let result = Executer::process_success("false")?;
+        let result = Executer::success("false")?;
         assert!(!result);
         Ok(())
     }
@@ -135,10 +139,10 @@ mod test {
     fn test_process_success_inherit() -> Result<()> {
         let expected = "expected";
         let cmd = format!("echo {expected} >/dev/null");
-        let result = Executer::process_success_inherit(&cmd)?;
+        let result = Executer::capture_success(&cmd)?;
         assert!(result);
         let cmd = format!("echo {expected} >/dev/null && false");
-        let result = Executer::process_success_inherit(&cmd)?;
+        let result = Executer::capture_success(&cmd)?;
         assert!(!result);
         Ok(())
     }

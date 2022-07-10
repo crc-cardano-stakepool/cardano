@@ -5,18 +5,18 @@ use std::{
 };
 
 pub struct Environment;
+
 impl Environment {
     pub fn check_env(key: &str) -> Result<String> {
         log::debug!("Checking environment variable: {key}");
-        match var(key) {
-            Ok(val) => {
+        var(key)
+            .map(|val| {
                 log::trace!("{key}={val}");
-                Ok(val)
-            }
-            Err(e) => {
-                Err(anyhow!("Failed to check environment variable {key}: {e}"))
-            }
-        }
+                return val.trim().to_string();
+            })
+            .map_err(|err| {
+                anyhow!("Failed to check environment variable {key}: {err}")
+            })
     }
 
     pub fn set_env(key: &str, value: &str) {
@@ -47,15 +47,17 @@ impl Environment {
 
     pub fn check_user() -> Result<String> {
         log::debug!("Checking user");
-        let user = Self::check_env("USER")?;
-        let user = if user != "root" {
-            user
-        } else {
-            Self::check_env("SUDO_USER")?
-        };
+        let user = Self::check_env("USER")
+            .map(|user| {
+                if user != "root" {
+                    return user;
+                }
+                Self::check_env("SUDO_USER").unwrap()
+            })
+            .map_err(|err| anyhow!("Failed to check the actual user: {err}"))
+            .unwrap();
         log::debug!("user: {user}");
-        let user = user.trim().to_string();
-        Ok(user.trim().to_string())
+        Ok(user)
     }
 
     pub fn set_confirm(confirm: bool) {
@@ -65,12 +67,11 @@ impl Environment {
         Self::set_env("CONFIRM", "false")
     }
 
-    pub fn check_confirm() -> Result<bool> {
-        let confirm = Self::check_env("CONFIRM")?;
-        if confirm.eq("true") {
-            return Ok(true);
-        }
-        Ok(false)
+    pub fn check_confirm() -> bool {
+        Self::check_env("CONFIRM")
+            .map(|confirm| confirm == "true")
+            .map_err(|_| false)
+            .unwrap()
     }
 }
 

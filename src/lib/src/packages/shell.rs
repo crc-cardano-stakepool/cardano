@@ -70,17 +70,20 @@ impl ShellConfig {
             Shell::Zsh => {
                 let mut config = dirs::home_dir().expect("Read $HOME");
                 config.push(".zshrc");
-                if !config.exists() {
-                    if let Ok(path) = Environment::check_env("ZDOTDIR") {
+                if config.exists() {
+                    return config;
+                }
+                Environment::check_env("ZDOTDIR")
+                    .map(|path| {
                         let mut path = PathBuf::from(&path);
                         path.push(".zshrc");
                         if !path.exists() {
                             panic!("Could not find .zshrc")
                         }
-                        return path;
-                    }
-                }
-                config
+                        path
+                    })
+                    .map_err(|err| anyhow!("Failed to read ZDOTDIR: {err}"))
+                    .unwrap()
             }
         }
     }
@@ -121,7 +124,7 @@ impl ShellConfig {
         let config_file =
             FileSystem::absolute_ref_path_to_string(&self.config_file).unwrap();
         let cmd = format!("grep -q {pattern} {config_file}");
-        Executer::process_success(&cmd)
+        Executer::success(&cmd)
     }
 
     pub fn write_shell_config(&self, value: &str) {
@@ -142,7 +145,7 @@ impl ShellConfig {
     }
 
     pub fn write_node_socket_path(&self) -> Result<()> {
-        let node_socket_path = Settings::read_setting("node_socket_path")?;
+        let node_socket_path = Settings::read("node_socket_path")?;
         let value =
             format!("export CARDANO_NODE_SOCKET_PATH={node_socket_path}");
         if !self.check_shell_config_env("CARDANO_NODE_SOCKET_PATH")? {
@@ -155,7 +158,7 @@ impl ShellConfig {
         log::debug!("Sourcing shell");
         let config_file = Environment::check_env("SHELL_CONFIG_FILE")?;
         let cmd = format!("source {}", config_file);
-        Executer::async_command_pipe(&cmd)?;
+        Executer::capture(&cmd)?;
         Ok(())
     }
 }

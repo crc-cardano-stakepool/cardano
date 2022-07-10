@@ -12,17 +12,15 @@ pub const CARDANO_NODE_VERSION: &str = "1.35.0";
 pub const LD_LIBRARY_PATH: &str = "/usr/local/lib:$LD_LIBRARY_PATH";
 pub const PKG_CONFIG_PATH: &str = "/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH";
 pub const CARDANO_CONFIG_FILE_NAME: &str = "cardano.toml";
+pub const GHCUP_URL: &str = "https://get-ghcup.haskell.org";
+pub const CSNAPSHOT_BASE_URL: &str = "https://csnapshots.io";
+pub const CSNAPSHOT_DOWNLOAD_URL: &str = "https://download.csnapshots.io";
+pub const CSNAPSHOT_DATA_URL: &str = "https://data.csnapshots.io";
+pub const SECP256K1_URL: &str = "https://github.com/bitcoin-core/secp256k1.git";
 pub const LIBSODIUM_URL: &str =
     "https://github.com/input-output-hk/libsodium.git";
-pub const SECP256K1_URL: &str = "https://github.com/bitcoin-core/secp256k1.git";
 pub const CARDANO_URL: &str =
     "https://github.com/crc-cardano-stakepool/cardano.git";
-pub const GHCUP_URL: &str = "https://get-ghcup.haskell.org";
-pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_BASE_URL: &str = "https://csnapshots.io";
-pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_DOWNLOAD_URL: &str =
-    "https://download.csnapshots.io";
-pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_DATA_URL: &str =
-    "https://data.csnapshots.io";
 pub const VERSIONS_URL: &str =
     "https://developers.cardano.org/docs/get-started/installing-cardano-node";
 pub const CONFIG_BASE_URL: &str = "https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1";

@@ -15,7 +15,7 @@ impl FileSystem {
         log::debug!("Setting up working directory");
         for key in DIRECTORIES {
             let key = format!("{key}_dir");
-            let directory = Settings::read_setting(&key)?;
+            let directory = Settings::read(&key)?;
             Self::check_dir(&directory)?;
             let key = key.to_case(Case::UpperSnake);
             Environment::set_env(&key, &directory);
@@ -36,7 +36,7 @@ impl FileSystem {
 
     pub fn check_work_dir() -> Result<impl AsRef<Path>> {
         log::debug!("Checking the working directory");
-        let path = Settings::read_setting("work_dir")?;
+        let path = Settings::read("work_dir")?;
         Environment::set_env("WORK_DIR", &path);
         Ok(PathBuf::from(&path))
     }
@@ -57,12 +57,12 @@ impl FileSystem {
                 let path = Git::set_component_dir(component_enum)?;
                 let cmd = format!(
                     "cd {path} && \
-            cabal install {component} \
-            --install-method=copy \
-            --overwrite-policy=always \
-            --installdir={install_dir}"
+                    cabal install {component} \
+                    --install-method=copy \
+                    --overwrite-policy=always \
+                    --installdir={install_dir}"
                 );
-                Executer::async_command(&cmd)?;
+                Executer::exec(&cmd)?;
                 Ok(())
             }
             Component::Address => Self::copy_address_binary(&install_dir),
@@ -82,7 +82,7 @@ impl FileSystem {
             --overwrite-policy=always \
             --installdir={install_dir}"
         );
-        Executer::async_command(&cmd)?;
+        Executer::exec(&cmd)?;
         Ok(())
     }
 
@@ -96,9 +96,7 @@ impl FileSystem {
         path.push("bin-path.sh");
         let components = ["cardano-node", "cardano-cli"];
         for component in components {
-            let cmd = format!(
-            "cd {parsed_path} && cp -p \"$({bin_path} {component})\" {install_dir}"
-        );
+            let cmd = format!("cd {parsed_path} && cp -p \"$({bin_path} {component})\" {install_dir}");
             let path = format!("{install_dir}/{component}");
             if component.eq("cardano-node") {
                 Environment::set_env("CARDANO_NODE_BIN", &path);
@@ -106,7 +104,7 @@ impl FileSystem {
                 Environment::set_env("CARDANO_CLI_BIN", &path);
             }
             log::info!("Copying built {component} binary to {path}");
-            Executer::async_command(&cmd)?;
+            Executer::exec(&cmd)?;
         }
         Ok(())
     }
@@ -172,7 +170,7 @@ impl FileSystem {
         if file_name.eq("cabal.project.local") {
             log::warn!("Project file already exists, removing it");
             let cmd = format!("rm {path}");
-            Executer::async_command(&cmd)?;
+            Executer::exec(&cmd)?;
             return Ok(());
         }
         Ok(())
@@ -228,7 +226,7 @@ mod test {
         FileSystem::setup_work_dir()?;
         for key in DIRECTORIES {
             let key = format!("{key}_dir");
-            let setting = Settings::read_setting(&key)?;
+            let setting = Settings::read(&key)?;
             let key = key.to_case(Case::UpperSnake);
             let value = Environment::check_env(&key)?;
             assert_eq!(value, setting);

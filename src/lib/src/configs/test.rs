@@ -6,7 +6,7 @@ fn test_setup() {
     log::debug!("Setting up tests");
     FileSystem::setup_work_dir().unwrap();
     Environment::setup_env().unwrap();
-    Settings::show_settings();
+    Settings::show();
     log::info!("Setting up tests succeeded")
 }
 

@@ -22,8 +22,8 @@ impl Ghcup {
     pub fn install_ghcup() -> Result<()> {
         log::info!("Installing GHCup");
         let user = Environment::check_user()?;
-        let ghc_version = Ghc::get_ghc_version()?;
-        let cabal_version = Cabal::get_cabal_version()?;
+        let ghc_version = Ghc::get_version()?;
+        let cabal_version = Cabal::get_version()?;
         let non_interactive = "export BOOTSTRAP_HASKELL_NONINTERACTIVE=1";
         let ghc = format!("export BOOTSTRAP_HASKELL_GHC_VERSION={ghc_version}");
         let cabal =
@@ -32,7 +32,7 @@ impl Ghcup {
             format!("$(curl --proto '=https' --tlsv1.2 -sSf {GHCUP_URL})");
         let cmd = format!("\n{non_interactive}\n{ghc}\n{cabal}\n{call}");
         let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
-        Executer::async_command(&cmd)?;
+        Executer::exec(&cmd)?;
         Ok(())
     }
 }

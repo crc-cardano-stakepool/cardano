@@ -111,13 +111,15 @@ impl PlatformInfo {
             packages,
         }
     }
+
     pub fn setup_packages(&self) -> Result<()> {
         self.update()?;
         self.check_packages()
     }
+
     fn check_platform() -> Platform {
         log::debug!("Checking current platform");
-        let platform = Executer::async_command_pipe("uname").unwrap();
+        let platform = Executer::capture("uname").unwrap();
         let platform = platform.trim();
         match platform {
             "linux" | "Linux" => Platform::Linux,
@@ -126,19 +128,22 @@ impl PlatformInfo {
             },
         }
     }
+
     fn get_package_manager(&self) -> String {
         match self.package_manager {
             PackageManager::Apt => "apt".to_string(),
             PackageManager::Yum => "yum".to_string(),
         }
     }
+
     fn update(&self) -> Result<()> {
         let package_manager = self.get_package_manager();
         log::info!("Updating system with {package_manager}");
         let cmd = format!("sudo {package_manager} update -y");
-        Executer::async_command(&cmd)?;
+        Executer::exec(&cmd)?;
         Ok(())
     }
+
     fn check_packages(&self) -> Result<()> {
         log::debug!("Checking packages");
         for package in self.packages.iter() {
@@ -146,6 +151,7 @@ impl PlatformInfo {
         }
         Ok(())
     }
+
     fn check_package(&self, package: &str) -> Result<()> {
         log::debug!("Checking if {package} is installed");
         match self.package_manager {
@@ -153,6 +159,7 @@ impl PlatformInfo {
             PackageManager::Yum => self.yum_install(package),
         }
     }
+
     fn apt_install(&self, package: &str) -> Result<()> {
         let cmd = format!("dpkg -s {}", package.trim());
         let piped_cmd = "grep installed";
@@ -165,22 +172,22 @@ impl PlatformInfo {
         }
         Err(anyhow!("Failed installing {package}"))
     }
+
     fn yum_install(&self, package: &str) -> Result<()> {
         let cmd = format!("rpm -q {package}");
-        if Executer::process_success(&cmd)? {
+        if Executer::success(&cmd)? {
             log::debug!("{package} is installed");
             return Ok(());
         }
         self.install_package(package)
     }
+
     fn install_package(&self, package: &str) -> Result<()> {
         let package_manager = self.get_package_manager();
         log::info!("Installing {package} with {package_manager}");
         let cmd = format!("sudo {package_manager} install {package} -y");
-        if let Err(err) = Executer::async_command(&cmd) {
-            return Err(anyhow!(
-                "Failed installing {package} with error: {err}"
-            ));
+        if let Err(err) = Executer::exec(&cmd) {
+            return Err(anyhow!("Failed installing {package}: {err}"));
         }
         Ok(())
     }

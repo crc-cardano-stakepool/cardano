@@ -6,8 +6,14 @@ pub fn update_cli() -> Result<()> {
     FileSystem::setup_work_dir()?;
     let cardano_path = Environment::check_env("CARDANO_DIR")?;
     Git::check_repo(CARDANO_URL, &cardano_path)?;
-    let cmd = format!("cd {cardano_path} && git checkout main && git pull && cargo install --path src/bin");
-    Executer::async_command(&cmd)?;
+    let cmd = format!(
+        "
+        cd {cardano_path} && 
+        git checkout main && 
+        git pull && 
+        cargo install --path src/bin"
+    );
+    Executer::exec(&cmd)?;
     Ok(())
 }
 

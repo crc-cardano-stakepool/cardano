@@ -71,7 +71,7 @@ impl Default for Settings {
 }
 
 impl Settings {
-    pub fn read_settings() -> HashMap<String, String> {
+    fn read_settings() -> HashMap<String, String> {
         SETTINGS
             .read()
             .map_err(|err| anyhow!("Failed to read from settings: {err}"))
@@ -82,12 +82,12 @@ impl Settings {
             .unwrap()
     }
 
-    pub fn show_settings() {
+    pub fn show() {
         let settings = Self::read_settings();
         log::debug!("{settings:#?}");
     }
 
-    pub fn read_setting(key: &str) -> Result<String> {
+    pub fn read(key: &str) -> Result<String> {
         log::debug!("Reading setting {key}");
         let settings = Self::read_settings();
         let setting = settings
@@ -153,13 +153,13 @@ mod test {
 
     #[test]
     fn test_show_settings() {
-        Settings::show_settings()
+        Settings::show()
     }
 
     #[test]
     fn test_read_setting() -> Result<()> {
         let key = "work_dir";
-        let value = Settings::read_setting(key)?;
+        let value = Settings::read(key)?;
         let work_dir = FileSystem::check_work_dir()?;
         let work_dir = work_dir.as_ref().to_str().unwrap();
         assert_eq!(value, work_dir);
@@ -171,6 +171,6 @@ mod test {
     fn test_read_setting_fails() {
         std::panic::set_hook(Box::new(|_| {}));
         let key = "invalid_setting";
-        Settings::read_setting(key).unwrap();
+        Settings::read(key).unwrap();
     }
 }

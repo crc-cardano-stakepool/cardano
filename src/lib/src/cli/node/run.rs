@@ -10,7 +10,7 @@ impl Node {
     pub fn get_db(network: NetworkIdKind) -> Result<Option<PathBuf>> {
         let network = &network_to_string(network);
         let key = format!("{network}_db_dir");
-        let path = Settings::read_setting(&key)?;
+        let path = Settings::read(&key)?;
         let db = PathBuf::from(&path);
         if !db.exists() {
             log::error!("Invalid db");
@@ -26,7 +26,7 @@ impl Node {
     pub fn get_topology(network: NetworkIdKind) -> Result<Option<PathBuf>> {
         let network = &network_to_string(network);
         let key = format!("{network}_config_dir");
-        let path = Settings::read_setting(&key)?;
+        let path = Settings::read(&key)?;
         let mut topology = PathBuf::from(&path);
         let key = format!("{network}-topology.json");
         topology.push(key);
@@ -45,7 +45,7 @@ impl Node {
     pub fn get_config(network: NetworkIdKind) -> Result<Option<PathBuf>> {
         let network = &network_to_string(network);
         let key = format!("{network}_config_dir");
-        let path = Settings::read_setting(&key)?;
+        let path = Settings::read(&key)?;
         let mut config = PathBuf::from(&path);
         let file_name = format!("{network}-config.json");
         config.push(file_name);
@@ -65,7 +65,7 @@ impl Node {
         let network = &network_to_string(network);
         log::debug!("Checking configuration files");
         let key = format!("{network}_config_dir");
-        let path = Settings::read_setting(&key)?;
+        let path = Settings::read(&key)?;
         let db = PathBuf::from(&path);
         if !db.exists() {
             return Err(anyhow!("Configuration directory does not exist"));
@@ -98,7 +98,7 @@ impl Node {
             log::warn!("Config file {file} not found, downloading it");
             let cmd =
                 format!("wget {CONFIG_BASE_URL}/{name} -P {download_path}");
-            Executer::async_command(&cmd)?;
+            Executer::exec(&cmd)?;
             log::info!("Downloaded config file {file} successfully");
         }
         log::debug!("Config file found");
@@ -158,7 +158,7 @@ impl Node {
 
     pub fn handle_socket(socket: Option<PathBuf>) -> Result<Option<PathBuf>> {
         if socket.is_none() {
-            let path = Settings::read_setting("ipc_dir")?;
+            let path = Settings::read("ipc_dir")?;
             let mut socket = PathBuf::from(&path);
             if !socket.exists() {
                 log::error!("Invalid socket");
@@ -216,7 +216,7 @@ impl Node {
         Ok(config)
     }
 
-    pub fn run_node_if_installed(
+    pub fn run(
         cmd: &str,
         network: NetworkIdKind,
         db: Option<PathBuf>,
@@ -237,21 +237,21 @@ impl Node {
                     Self::download_snapshot(match_network(network))?;
                 }
                 log::info!("Proceeding to run node in {network}");
-                Executer::async_command(cmd)?;
+                Executer::exec(cmd)?;
                 return Ok(());
             }
             log::error!("The installed cardano-node v{installed} is outdated");
             log::error!("Please update to the latest version {version}");
             CardanoComponent::install_component(Component::Node)?;
-            Executer::async_command(cmd)?;
+            Executer::exec(cmd)?;
             return Ok(());
         }
         CardanoComponent::install_component(Component::Node)?;
-        Executer::async_command(cmd)?;
+        Executer::exec(cmd)?;
         Ok(())
     }
 
-    pub fn parse_config_to_command(
+    pub fn parse_config(
         port: u16,
         host: IpAddr,
         config: Option<PathBuf>,

@@ -28,9 +28,9 @@ pub fn install_libsodium() -> Result<()> {
     let libsodium_path = Environment::check_env("LIBSODIUM_DIR")?;
     Git::check_repo(LIBSODIUM_URL, &libsodium_path)?;
     let cmd = format!("cd {libsodium_path} && git checkout 66f017f1 && ./autogen.sh && ./configure && make");
-    Executer::async_command(&cmd)?;
+    Executer::exec(&cmd)?;
     let cmd = format!("cd {libsodium_path} && sudo make install");
-    Executer::async_command(&cmd)?;
+    Executer::exec(&cmd)?;
     ShellConfig::source_shell()?;
     Ok(())
 }

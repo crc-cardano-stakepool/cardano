@@ -67,9 +67,7 @@ impl RunCommand {
         let db = Node::handle_db(config.db, network)?;
         let topology = Node::handle_topology(config.topology, network)?;
         let config = Node::handle_config(config.config, network)?;
-        let cmd = Node::parse_config_to_command(
-            port, host, config, &db, socket, topology,
-        );
-        Node::run_node_if_installed(&cmd, network, db)
+        let cmd = Node::parse_config(port, host, config, &db, socket, topology);
+        Node::run(&cmd, network, db)
     }
 }

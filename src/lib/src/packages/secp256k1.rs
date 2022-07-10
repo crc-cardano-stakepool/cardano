@@ -31,10 +31,10 @@ pub fn install_secp256k1() -> Result<()> {
     let configure =
         "./configure --enable-module-schnorrsig --enable-experimental";
     let cmd = format!("cd {secp256k1_path} && {checkout} && ./autogen.sh && {configure} && make");
-    Executer::async_command(&cmd)?;
+    Executer::exec(&cmd)?;
     let cmd = format!("cd {secp256k1_path} && sudo make install");
-    Executer::async_command(&cmd)?;
-    Executer::async_command("sudo ldconfig")?;
+    Executer::exec(&cmd)?;
+    Executer::exec("sudo ldconfig")?;
     ShellConfig::source_shell()?;
     Ok(())
 }

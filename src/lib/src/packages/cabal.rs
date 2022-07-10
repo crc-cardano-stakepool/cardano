@@ -13,15 +13,10 @@ pub struct Cabal {
 impl Default for Cabal {
     fn default() -> Self {
         let binary_name = "cabal".to_string();
-        let installed_version = match Self::check_installed_cabal() {
-            Ok(version) => Some(version),
-            Err(_) => None,
-        };
-        let latest_version = Self::get_cabal_version().unwrap();
-        let bin_path = match Environment::check_env("CABAL_BIN") {
-            Ok(path) => Some(PathBuf::from(path)),
-            Err(_) => None,
-        };
+        let installed_version = Self::check_installed_version().ok();
+        let latest_version = Self::get_version().unwrap();
+        let bin_path =
+            Environment::check_env("CABAL_BIN").map(PathBuf::from).ok();
         Self {
             binary_name,
             latest_version,
@@ -47,69 +42,76 @@ impl Cabal {
 }
 
 impl Cabal {
-    pub fn check_cabal() -> Result<()> {
+    pub fn check() -> Result<()> {
         log::debug!("Checking Cabal");
-        let version = Self::check_installed_cabal();
-        match version {
-            Ok(version) => {
-                if Self::compare_cabal(&version)? {
+        Self::check_installed_version()
+            .map(|version| {
+                if Self::compare(&version)? {
                     log::info!("Installed Cabal v{version} is correct");
                     return Ok(());
                 }
                 log::warn!("Cabal versions do not match");
-                Self::install_cabal()
-            }
-            Err(_) => Self::install_cabal(),
-        }
+                Self::install()
+            })
+            .map_err(|_| Self::install())
+            .unwrap()
     }
 
-    pub fn check_installed_cabal() -> Result<String> {
+    pub fn check_installed_version() -> Result<String> {
         log::debug!("Checking if Cabal is installed");
         let cabal = Environment::check_env("CABAL_BIN")?;
         let cabal_path = Path::new(&cabal);
-        if cabal_path.is_file() {
-            let cmd = format!("{cabal} -V | head -n1 | awk '{{print $3}}'");
-            let installed_cabal = Executer::async_command_pipe(&cmd)?;
-            let installed_cabal = installed_cabal.trim().to_string();
-            log::debug!("Cabal v{installed_cabal} is installed");
-            return Ok(installed_cabal);
+        if !cabal_path.is_file() {
+            return Err(anyhow!("Cabal is not installed"));
         }
-        Err(anyhow!("Cabal is not installed"))
+        let cmd = format!("{cabal} -V | head -n1 | awk '{{print $3}}'");
+        let installed_cabal = Executer::capture(&cmd)?;
+        let installed_cabal = installed_cabal.trim().to_string();
+        log::debug!("Cabal v{installed_cabal} is installed");
+        Ok(installed_cabal)
     }
 
-    pub fn compare_cabal(installed_cabal: &str) -> Result<bool> {
+    pub fn compare(installed_cabal: &str) -> Result<bool> {
         log::debug!("Comparing installed Cabal v{installed_cabal} with required Cabal version to build a cardano node");
-        let required = Self::get_cabal_version()?;
+        let required = Self::get_version()?;
         let installed = installed_cabal.trim().to_string();
         Ok(installed.eq(&required))
     }
 
-    pub fn install_cabal() -> Result<()> {
+    pub fn install() -> Result<()> {
         log::info!("Installing Cabal");
-        let version = Self::get_cabal_version()?;
+        let version = Self::get_version()?;
         let ghcup = Environment::check_env("GHCUP_BIN")?;
         let cmd = format!("{ghcup} install cabal {version}");
-        Executer::async_command(&cmd)?;
+        Executer::exec(&cmd)?;
         let cmd = format!("{ghcup} set cabal {version}");
-        Executer::async_command(&cmd)?;
+        Executer::exec(&cmd)?;
         Ok(())
     }
 
-    pub fn get_cabal_version() -> Result<String> {
+    pub fn get_version() -> Result<String> {
         log::debug!("Getting required Cabal version to build a cardano node");
-        let cmd = format!("curl -s {VERSIONS_URL} | tidy -i | grep '<code>cabal ' | awk '{{print $4}}' | awk -F '<' '{{print $1}}' | tail -n1");
-        let cabal_version = Executer::async_command_pipe(&cmd)?;
+        let cmd = format!(
+            "
+            curl -s {VERSIONS_URL} | \
+            tidy -i | \
+            grep '<code>cabal ' | \
+            awk '{{print $4}}' | \
+            awk -F '<' '{{print $1}}' | \
+            tail -n1"
+        );
+        let cabal_version = Executer::capture(&cmd)?;
         let cabal_version = cabal_version.trim();
         log::debug!("Required Cabal version: {cabal_version}");
         Ok(String::from(cabal_version))
     }
 
-    pub fn update_cabal<P: AsRef<Path>>(path: P, cabal_path: P) -> Result<()> {
+    pub fn update<P: AsRef<Path>>(path: P, cabal_path: P) -> Result<()> {
         log::info!("Updating Cabal");
         let path = FileSystem::absolute_ref_path_to_string(&path)?;
         let cabal_path = FileSystem::absolute_ref_path_to_string(&cabal_path)?;
         let cmd = format!("cd {path} && {cabal_path} update");
-        Executer::async_command(&cmd)?;
+        Executer::exec(&cmd)?;
         Ok(())
     }
 }
@@ -129,27 +131,27 @@ mod test {
     #[test]
     #[ignore]
     fn test_check_cabal() -> Result<()> {
-        Cabal::check_cabal()?;
+        Cabal::check()?;
         Ok(())
     }
 
     #[test]
     #[ignore]
     fn test_check_installed_cabal() -> Result<()> {
-        Cabal::check_installed_cabal()?;
+        Cabal::check_installed_version()?;
         Ok(())
     }
 
     #[test]
     fn test_compare_cabal() -> Result<()> {
-        assert_eq!(Cabal::compare_cabal(CABAL_VERSION)?, true);
-        assert_eq!(Cabal::compare_cabal("3.6.0.0")?, false);
+        assert_eq!(Cabal::compare(CABAL_VERSION)?, true);
+        assert_eq!(Cabal::compare("3.6.0.0")?, false);
         Ok(())
     }
 
     #[test]
     fn test_get_cabal_version() -> Result<()> {
-        let version = Cabal::get_cabal_version()?;
+        let version = Cabal::get_version()?;
         assert_eq!(version, CABAL_VERSION);
         Ok(())
     }
