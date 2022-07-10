@@ -64,11 +64,16 @@ jobs:
         with:
           command: clippy
           args: --release --target ${{ matrix.target }} -- -D warnings
-      - name: Run tests
+      - name: Run UnitTests 
         uses: actions-rs/cargo@v1.0.1
         with: 
           command: test
-          args: --workspace --release --target ${{ matrix.target }}
+          args: --lib --release --target ${{ matrix.target }}
+      - name: Run IntegrationTests 
+        uses: actions-rs/cargo@v1.0.1
+        with: 
+          command: test
+          args: --test "*" --release --target ${{ matrix.target }}
       - name: Build Cardano CLI 
         uses: actions-rs/cargo@v1.0.1
         with:
