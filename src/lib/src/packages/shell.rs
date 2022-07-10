@@ -1,7 +1,4 @@
-use crate::{
-    absolute_ref_path_to_string, async_command_pipe, check_env,
-    process_success, set_env, setup_env, Settings,
-};
+use crate::{Environment, Executer, FileSystem, Settings};
 use anyhow::{anyhow, Result};
 use std::{io::Write, path::PathBuf};
 
@@ -22,15 +19,15 @@ impl Default for ShellConfig {
         let shell = Self::match_shell(&shell);
         let config_file = Self::match_config_file(shell);
         let parsed_config_file =
-            absolute_ref_path_to_string(&config_file).unwrap();
-        set_env("SHELL_CONFIG_FILE", &parsed_config_file);
+            FileSystem::absolute_ref_path_to_string(&config_file).unwrap();
+        Environment::set_env("SHELL_CONFIG_FILE", &parsed_config_file);
         Self { shell, config_file }
     }
 }
 
 impl ShellConfig {
     pub fn check_shell() -> String {
-        match check_env("SHELL") {
+        match Environment::check_env("SHELL") {
             Ok(shell) => shell,
             Err(_) => "/usr/bin/bash".to_string(),
         }
@@ -43,7 +40,7 @@ impl ShellConfig {
             return Shell::Zsh;
         }
         if shell.contains("/sh") {
-            if !check_env("BASH")
+            if !Environment::check_env("BASH")
                 .map_err(|err| {
                     anyhow!("Failed to read $BASH environment variable: {err}")
                 })
@@ -52,7 +49,7 @@ impl ShellConfig {
             {
                 return Shell::Bash;
             }
-            if !check_env("ZSH_VERSION")
+            if !Environment::check_env("ZSH_VERSION")
                 .map_err(|err| anyhow!("Failed to read $ZSH_VERSION environment variable: {err}"))
                 .unwrap()
                 .is_empty()
@@ -74,7 +71,7 @@ impl ShellConfig {
                 let mut config = dirs::home_dir().expect("Read $HOME");
                 config.push(".zshrc");
                 if !config.exists() {
-                    if let Ok(path) = check_env("ZDOTDIR") {
+                    if let Ok(path) = Environment::check_env("ZDOTDIR") {
                         let mut path = PathBuf::from(&path);
                         path.push(".zshrc");
                         if !path.exists() {
@@ -92,7 +89,7 @@ impl ShellConfig {
         log::info!("Setting up shell");
         let shell = ShellConfig::default();
         shell.change_shell_config()?;
-        setup_env()
+        Environment::setup_env()
     }
 
     pub fn change_shell_config(&self) -> Result<()> {
@@ -122,14 +119,14 @@ impl ShellConfig {
     pub fn check_shell_config_env(&self, pattern: &str) -> Result<bool> {
         log::debug!("Checking shell configuration");
         let config_file =
-            absolute_ref_path_to_string(&self.config_file).unwrap();
+            FileSystem::absolute_ref_path_to_string(&self.config_file).unwrap();
         let cmd = format!("grep -q {pattern} {config_file}");
-        process_success(&cmd)
+        Executer::process_success(&cmd)
     }
 
     pub fn write_shell_config(&self, value: &str) {
         let config_file =
-            absolute_ref_path_to_string(&self.config_file).unwrap();
+            FileSystem::absolute_ref_path_to_string(&self.config_file).unwrap();
         log::info!("Writing {value} to {config_file}");
         let mut f = std::fs::File::options()
             .write(true)
@@ -156,9 +153,9 @@ impl ShellConfig {
 
     pub fn source_shell() -> Result<()> {
         log::debug!("Sourcing shell");
-        let config_file = check_env("SHELL_CONFIG_FILE")?;
+        let config_file = Environment::check_env("SHELL_CONFIG_FILE")?;
         let cmd = format!("source {}", config_file);
-        async_command_pipe(&cmd)?;
+        Executer::async_command_pipe(&cmd)?;
         Ok(())
     }
 }

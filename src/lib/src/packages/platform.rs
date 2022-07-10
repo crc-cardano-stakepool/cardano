@@ -1,7 +1,4 @@
-use crate::{
-    async_command, async_command_pipe, drop_privileges, pipe, process_success,
-    SystemInfo,
-};
+use crate::{Executer, SystemInfo};
 use anyhow::{anyhow, Result};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -103,9 +100,7 @@ impl PlatformInfo {
             ),
             Distro::Unsupported { distro } => {
                 log::error!("Unsupported distro: {distro}");
-                log::error!(
-                    "Consider fetching the latest precompiled binary directly"
-                );
+                log::error!("Consider fetching the latest binary directly");
                 panic!("Unsupported distro: {distro}")
             }
         };
@@ -116,9 +111,13 @@ impl PlatformInfo {
             packages,
         }
     }
+    pub fn setup_packages(&self) -> Result<()> {
+        self.update()?;
+        self.check_packages()
+    }
     fn check_platform() -> Platform {
         log::debug!("Checking current platform");
-        let platform = async_command_pipe("uname").unwrap();
+        let platform = Executer::async_command_pipe("uname").unwrap();
         let platform = platform.trim();
         match platform {
             "linux" | "Linux" => Platform::Linux,
@@ -128,38 +127,28 @@ impl PlatformInfo {
         }
     }
     fn get_package_manager(&self) -> String {
-        let pm = match self.package_manager {
-            PackageManager::Apt => "apt",
-            PackageManager::Yum => "yum",
-        };
-        String::from(pm)
-    }
-    pub fn setup_packages(&self) -> Result<()> {
-        self.update()?;
-        self.check_packages()?;
-        drop_privileges()
+        match self.package_manager {
+            PackageManager::Apt => "apt".to_string(),
+            PackageManager::Yum => "yum".to_string(),
+        }
     }
     fn update(&self) -> Result<()> {
         let package_manager = self.get_package_manager();
         log::info!("Updating system with {package_manager}");
         let cmd = format!("sudo {package_manager} update -y");
-        async_command(&cmd)?;
+        Executer::async_command(&cmd)?;
         Ok(())
     }
     fn check_packages(&self) -> Result<()> {
         log::debug!("Checking packages");
         for package in self.packages.iter() {
-            self.check_package(&self.package_manager, package)?;
+            self.check_package(package)?;
         }
         Ok(())
     }
-    fn check_package(
-        &self,
-        package_manager: &PackageManager,
-        package: &str,
-    ) -> Result<()> {
+    fn check_package(&self, package: &str) -> Result<()> {
         log::debug!("Checking if {package} is installed");
-        match package_manager {
+        match self.package_manager {
             PackageManager::Apt => self.apt_install(package),
             PackageManager::Yum => self.yum_install(package),
         }
@@ -167,7 +156,7 @@ impl PlatformInfo {
     fn apt_install(&self, package: &str) -> Result<()> {
         let cmd = format!("dpkg -s {}", package.trim());
         let piped_cmd = "grep installed";
-        if let Ok(result) = pipe(&cmd, piped_cmd) {
+        if let Ok(result) = Executer::pipe(&cmd, piped_cmd) {
             if result.trim().is_empty() {
                 return self.install_package(package);
             }
@@ -178,17 +167,17 @@ impl PlatformInfo {
     }
     fn yum_install(&self, package: &str) -> Result<()> {
         let cmd = format!("rpm -q {package}");
-        if !process_success(&cmd)? {
-            return self.install_package(package);
+        if Executer::process_success(&cmd)? {
+            log::debug!("{package} is installed");
+            return Ok(());
         }
-        log::debug!("{package} is installed");
-        Ok(())
+        self.install_package(package)
     }
     fn install_package(&self, package: &str) -> Result<()> {
         let package_manager = self.get_package_manager();
         log::info!("Installing {package} with {package_manager}");
         let cmd = format!("sudo {package_manager} install {package} -y");
-        if let Err(err) = async_command(&cmd) {
+        if let Err(err) = Executer::async_command(&cmd) {
             return Err(anyhow!(
                 "Failed installing {package} with error: {err}"
             ));

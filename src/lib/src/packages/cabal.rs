@@ -1,7 +1,4 @@
-use crate::{
-    absolute_ref_path_to_string, async_command, async_command_pipe, check_env,
-    VERSIONS_URL,
-};
+use crate::{Environment, Executer, FileSystem, VERSIONS_URL};
 use anyhow::{anyhow, Result};
 use std::path::{Path, PathBuf};
 
@@ -21,7 +18,7 @@ impl Default for Cabal {
             Err(_) => None,
         };
         let latest_version = Self::get_cabal_version().unwrap();
-        let bin_path = match check_env("CABAL_BIN") {
+        let bin_path = match Environment::check_env("CABAL_BIN") {
             Ok(path) => Some(PathBuf::from(path)),
             Err(_) => None,
         };
@@ -68,11 +65,11 @@ impl Cabal {
 
     pub fn check_installed_cabal() -> Result<String> {
         log::debug!("Checking if Cabal is installed");
-        let cabal = check_env("CABAL_BIN")?;
+        let cabal = Environment::check_env("CABAL_BIN")?;
         let cabal_path = Path::new(&cabal);
         if cabal_path.is_file() {
             let cmd = format!("{cabal} -V | head -n1 | awk '{{print $3}}'");
-            let installed_cabal = async_command_pipe(&cmd)?;
+            let installed_cabal = Executer::async_command_pipe(&cmd)?;
             let installed_cabal = installed_cabal.trim().to_string();
             log::debug!("Cabal v{installed_cabal} is installed");
             return Ok(installed_cabal);
@@ -90,18 +87,18 @@ impl Cabal {
     pub fn install_cabal() -> Result<()> {
         log::info!("Installing Cabal");
         let version = Self::get_cabal_version()?;
-        let ghcup = check_env("GHCUP_BIN")?;
+        let ghcup = Environment::check_env("GHCUP_BIN")?;
         let cmd = format!("{ghcup} install cabal {version}");
-        async_command(&cmd)?;
+        Executer::async_command(&cmd)?;
         let cmd = format!("{ghcup} set cabal {version}");
-        async_command(&cmd)?;
+        Executer::async_command(&cmd)?;
         Ok(())
     }
 
     pub fn get_cabal_version() -> Result<String> {
         log::debug!("Getting required Cabal version to build a cardano node");
         let cmd = format!("curl -s {VERSIONS_URL} | tidy -i | grep '<code>cabal ' | awk '{{print $4}}' | awk -F '<' '{{print $1}}' | tail -n1");
-        let cabal_version = async_command_pipe(&cmd)?;
+        let cabal_version = Executer::async_command_pipe(&cmd)?;
         let cabal_version = cabal_version.trim();
         log::debug!("Required Cabal version: {cabal_version}");
         Ok(String::from(cabal_version))
@@ -109,10 +106,10 @@ impl Cabal {
 
     pub fn update_cabal<P: AsRef<Path>>(path: P, cabal_path: P) -> Result<()> {
         log::info!("Updating Cabal");
-        let path = absolute_ref_path_to_string(&path)?;
-        let cabal_path = absolute_ref_path_to_string(&cabal_path)?;
+        let path = FileSystem::absolute_ref_path_to_string(&path)?;
+        let cabal_path = FileSystem::absolute_ref_path_to_string(&cabal_path)?;
         let cmd = format!("cd {path} && {cabal_path} update");
-        async_command(&cmd)?;
+        Executer::async_command(&cmd)?;
         Ok(())
     }
 }

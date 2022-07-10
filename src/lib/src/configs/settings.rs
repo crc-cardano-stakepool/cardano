@@ -122,7 +122,7 @@ lazy_static::lazy_static! {
             let mut f = File::create(&config_file)
                 .map_err(|err| anyhow!("Failed to create config file in {path}: {err}"))
                 .unwrap();
-            writeln!(f, "{toml}")
+            write!(f, "{toml}")
                 .map_err(|err| anyhow!("Failed write config file in {path}: {err}"))
                 .unwrap();
         }
@@ -138,7 +138,7 @@ lazy_static::lazy_static! {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::check_work_dir;
+    use crate::FileSystem;
 
     #[test]
     fn test_settings() {
@@ -160,7 +160,7 @@ mod test {
     fn test_read_setting() -> Result<()> {
         let key = "work_dir";
         let value = Settings::read_setting(key)?;
-        let work_dir = check_work_dir()?;
+        let work_dir = FileSystem::check_work_dir()?;
         let work_dir = work_dir.as_ref().to_str().unwrap();
         assert_eq!(value, work_dir);
         Ok(())

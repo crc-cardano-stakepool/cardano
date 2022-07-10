@@ -26,13 +26,6 @@ pub const CARDANO_BLOCKCHAIN_CSNAPSHOT_DATA_URL: &str =
 pub const VERSIONS_URL: &str =
     "https://developers.cardano.org/docs/get-started/installing-cardano-node";
 pub const CONFIG_BASE_URL: &str = "https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1";
-pub const CONFIG_FILES: [&str; 5] = [
-    "config",
-    "byron-genesis",
-    "shelley-genesis",
-    "alonzo-genesis",
-    "topology",
-];
 pub const DIRECTORIES: [&str; 11] = [
     "work",
     "ipc",

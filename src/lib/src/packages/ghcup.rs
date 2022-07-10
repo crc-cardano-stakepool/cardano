@@ -1,7 +1,4 @@
-use crate::{
-    async_command, check_env, check_user, drop_privileges, Cabal, Ghc,
-    GHCUP_URL,
-};
+use crate::{Cabal, Environment, Executer, Ghc, GHCUP_URL};
 use anyhow::{anyhow, Result};
 use std::path::Path;
 
@@ -10,8 +7,8 @@ pub struct Ghcup;
 impl Ghcup {
     pub fn check_ghcup() -> Result<()> {
         log::debug!("Checking GHCup");
-        let ghcup_dir = check_env("GHCUP_DIR")?;
-        let ghcup_bin = check_env("GHCUP_BIN")?;
+        let ghcup_dir = Environment::check_env("GHCUP_DIR")?;
+        let ghcup_bin = Environment::check_env("GHCUP_BIN")?;
         let ghcup_dir = Path::new(&ghcup_dir);
         let ghcup_bin = Path::new(&ghcup_bin);
         if ghcup_dir.is_dir() {
@@ -24,7 +21,7 @@ impl Ghcup {
     }
     pub fn install_ghcup() -> Result<()> {
         log::info!("Installing GHCup");
-        let user = check_user()?;
+        let user = Environment::check_user()?;
         let ghc_version = Ghc::get_ghc_version()?;
         let cabal_version = Cabal::get_cabal_version()?;
         let non_interactive = "export BOOTSTRAP_HASKELL_NONINTERACTIVE=1";
@@ -35,8 +32,7 @@ impl Ghcup {
             format!("$(curl --proto '=https' --tlsv1.2 -sSf {GHCUP_URL})");
         let cmd = format!("\n{non_interactive}\n{ghc}\n{cabal}\n{call}");
         let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
-        async_command(&cmd)?;
-        drop_privileges()?;
+        Executer::async_command(&cmd)?;
         Ok(())
     }
 }

@@ -1,7 +1,4 @@
-use crate::{
-    async_command, check_env, check_repo, drop_privileges, ShellConfig,
-    LIBSODIUM_URL,
-};
+use crate::{Environment, Executer, Git, ShellConfig, LIBSODIUM_URL};
 use anyhow::Result;
 use std::path::Path;
 
@@ -28,13 +25,12 @@ pub fn check_libsodium() -> Result<()> {
 
 pub fn install_libsodium() -> Result<()> {
     log::info!("Installing libsodium");
-    let libsodium_path = check_env("LIBSODIUM_DIR")?;
-    check_repo(LIBSODIUM_URL, &libsodium_path)?;
+    let libsodium_path = Environment::check_env("LIBSODIUM_DIR")?;
+    Git::check_repo(LIBSODIUM_URL, &libsodium_path)?;
     let cmd = format!("cd {libsodium_path} && git checkout 66f017f1 && ./autogen.sh && ./configure && make");
-    async_command(&cmd)?;
+    Executer::async_command(&cmd)?;
     let cmd = format!("cd {libsodium_path} && sudo make install");
-    async_command(&cmd)?;
-    drop_privileges()?;
+    Executer::async_command(&cmd)?;
     ShellConfig::source_shell()?;
     Ok(())
 }

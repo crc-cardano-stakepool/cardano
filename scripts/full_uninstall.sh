@@ -1,11 +1,9 @@
 #!/bin/sh
 
-BIN="/usr/local/bin/cardano"
 NODE="$HOME/.local/bin/cardano-node"
 CLI="$HOME/.local/bin/cardano-cli"
 GHCUP="$HOME/.ghcup"
 CABAL="$HOME/.cabal"
-CARDANO="$HOME/.config/.cardano"
 LIBSODIUM_A="/usr/local/lib/libsodium.a"
 LIBSODIUM_SA="/usr/local/lib/libsodium.la"
 LIBSODIUM_23_3_0="/usr/local/lib/libsodium.so.23.3.0"
@@ -21,12 +19,10 @@ LIBSECP256K1_PC="/usr/local/lib/pkgconfig/libsecp256k1.pc"
 
 cargo uninstall cardano
 
-sudo rm "$BIN"
 rm "$NODE"
 rm "$CLI"
 rm -rf "$GHCUP"
 rm -rf "$CABAL"
-sudo rm -rf "$CARDANO"
 sudo rm $LIBSODIUM_A
 sudo rm $LIBSODIUM_SA
 sudo rm $LIBSODIUM_23_3_0

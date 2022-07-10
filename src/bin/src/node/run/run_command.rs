@@ -1,10 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{
-    check_config_files, handle_config, handle_db, handle_socket,
-    handle_topology, match_network, parse_config_to_command, proceed,
-    run_node_if_installed, SystemRequirements,
-};
+use lib::{match_network, proceed, Node, SystemRequirements};
 use std::{
     net::{IpAddr, Ipv4Addr},
     path::PathBuf,
@@ -64,15 +60,16 @@ impl RunCommand {
             return Ok(());
         }
         let network = match_network(network);
-        check_config_files(network)?;
+        Node::check_config_files(network)?;
         let port = config.port;
         let host = config.host;
-        let socket = handle_socket(config.socket)?;
-        let db = handle_db(config.db, network)?;
-        let topology = handle_topology(config.topology, network)?;
-        let config = handle_config(config.config, network)?;
-        let cmd =
-            parse_config_to_command(port, host, config, &db, socket, topology);
-        run_node_if_installed(&cmd, network, db)
+        let socket = Node::handle_socket(config.socket)?;
+        let db = Node::handle_db(config.db, network)?;
+        let topology = Node::handle_topology(config.topology, network)?;
+        let config = Node::handle_config(config.config, network)?;
+        let cmd = Node::parse_config_to_command(
+            port, host, config, &db, socket, topology,
+        );
+        Node::run_node_if_installed(&cmd, network, db)
     }
 }

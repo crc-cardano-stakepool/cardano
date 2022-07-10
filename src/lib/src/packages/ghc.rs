@@ -1,4 +1,4 @@
-use crate::{async_command, async_command_pipe, check_env, VERSIONS_URL};
+use crate::{Environment, Executer, VERSIONS_URL};
 use anyhow::{anyhow, Result};
 use std::path::{Path, PathBuf};
 
@@ -18,7 +18,7 @@ impl Default for Ghc {
             Err(_) => None,
         };
         let latest_version = Self::get_ghc_version().unwrap();
-        let bin_path = match check_env("GHC_BIN") {
+        let bin_path = match Environment::check_env("GHC_BIN") {
             Ok(path) => Some(PathBuf::from(path)),
             Err(_) => None,
         };
@@ -49,12 +49,12 @@ impl Ghc {
 impl Ghc {
     pub fn check_installed_ghc() -> Result<String> {
         log::debug!("Checking GHC");
-        let ghc = check_env("GHC_BIN")?;
+        let ghc = Environment::check_env("GHC_BIN")?;
         let ghc_path = Path::new(&ghc);
         if ghc_path.is_file() {
             log::debug!("GHC is installed");
             let cmd = format!("{ghc} -V | awk {}", "'{print $8}'");
-            let installed_ghc = async_command_pipe(&cmd)?;
+            let installed_ghc = Executer::async_command_pipe(&cmd)?;
             let installed_ghc = installed_ghc.trim().to_string();
             log::debug!("GHC v{installed_ghc} is installed");
             Ok(installed_ghc)
@@ -89,7 +89,7 @@ impl Ghc {
     pub fn get_ghc_version() -> Result<String> {
         log::debug!("Getting the correct GHC version to build a cardano node");
         let cmd = format!("curl -s {VERSIONS_URL} | tidy -i | grep '<code>ghc ' | awk '{{print $4}}' | awk -F '<' '{{print $1}}' | tail -n1");
-        let ghc_version = async_command_pipe(&cmd)?;
+        let ghc_version = Executer::async_command_pipe(&cmd)?;
         let ghc_version = ghc_version.trim().to_string();
         Ok(ghc_version)
     }
@@ -97,11 +97,11 @@ impl Ghc {
     pub fn install_ghc() -> Result<()> {
         log::info!("Installing GHC");
         let version = Self::get_ghc_version()?;
-        let ghcup = check_env("GHCUP_BIN")?;
+        let ghcup = Environment::check_env("GHCUP_BIN")?;
         let cmd = format!("{ghcup} install ghc {version}");
-        async_command(&cmd)?;
+        Executer::async_command(&cmd)?;
         let cmd = format!("{ghcup} set ghc {version}");
-        async_command(&cmd)?;
+        Executer::async_command(&cmd)?;
         Ok(())
     }
 }
@@ -109,7 +109,7 @@ impl Ghc {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{set_env, GHC_VERSION};
+    use crate::GHC_VERSION;
 
     #[test]
     fn test_ghc() {
@@ -137,7 +137,7 @@ mod test {
         let home_dir = dirs::home_dir().unwrap();
         let home_dir = home_dir.to_str().unwrap();
         let ghc_bin = format!("{home_dir}/.ghcup/bin/ghc");
-        set_env("GHC_BIN", &ghc_bin);
+        Environment::set_env("GHC_BIN", &ghc_bin);
         let version = Ghc::check_installed_ghc();
         match version {
             Ok(version) => println!("{version}"),

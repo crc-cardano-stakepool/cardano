@@ -10,11 +10,11 @@ description = "CLI for managing cardano components"
 lib = { path = "../lib" }
 clap = { version = "3.2.8", features = ["derive"] }
 clap_complete = "3.2.3"
+clap-verbosity-flag = "1.0.1"
 human-panic = "1.0.3"
 ctrlc = "3.2.2"
 anyhow = "1.0.58"
 log = "0.4.17"
-clap-verbosity-flag = "1.0.1"
 
 [dev-dependencies]
 assert_cmd = "2.0.4"

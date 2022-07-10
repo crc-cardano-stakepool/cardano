@@ -1,11 +1,11 @@
 #[cfg(test)]
 #[ctor::ctor]
 fn test_setup() {
-    use crate::{setup_env, setup_logger, setup_work_dir, Settings};
+    use crate::{setup_logger, Environment, FileSystem, Settings};
     let _ = setup_logger(log::LevelFilter::Trace, false, "../../output.log");
     log::debug!("Setting up tests");
-    setup_work_dir().unwrap();
-    setup_env().unwrap();
+    FileSystem::setup_work_dir().unwrap();
+    Environment::setup_env().unwrap();
     Settings::show_settings();
     log::info!("Setting up tests succeeded")
 }

@@ -1,10 +1,6 @@
 use crate::{
-    absolute_ref_path_to_string, async_command, async_command_pipe, check_env,
-    check_libsodium, check_project_file, check_repo, check_secp256k1,
-    clone_component, copy_binary, get_bin_path, get_project_file, proceed,
-    process_success_inherit, set_component_dir, set_confirm,
-    update_project_file, Cabal, Ghc, Ghcup, PlatformInfo, Settings,
-    ShellConfig,
+    check_libsodium, check_secp256k1, proceed, Cabal, Environment, Executer,
+    FileSystem, Ghc, Ghcup, Git, PlatformInfo, Settings, ShellConfig,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -39,7 +35,7 @@ impl CardanoComponent {
         let release_url = Self::get_component_release_url(component);
         let latest_version = Self::check_latest_version(component).unwrap();
         let installed_version = Self::check_installed_version(component).ok();
-        let bin_path = get_bin_path(&binary_name).ok();
+        let bin_path = FileSystem::get_bin_path(&binary_name).ok();
         Self {
             component,
             binary_name,
@@ -83,7 +79,7 @@ impl CardanoComponent {
         component: Component,
         confirm: bool,
     ) -> Result<()> {
-        set_confirm(confirm);
+        Environment::set_confirm(confirm);
         Self::setup_component(component)?;
         let component_str = Self::component_to_string(component);
         let msg = format!(
@@ -145,12 +141,12 @@ impl CardanoComponent {
     }
 
     pub fn get_component_path(component: Component) -> Result<PathBuf> {
-        set_component_dir(component).unwrap();
+        Git::set_component_dir(component).unwrap();
         let component = Self::component_to_string(component);
         log::debug!("Checking where the binary of {component} is");
         let env = format!("{component}_dir");
         let converted = env.to_case(Case::UpperSnake);
-        let path = check_env(&converted)?;
+        let path = Environment::check_env(&converted)?;
         let path = PathBuf::from(&path);
         Ok(path)
     }
@@ -213,8 +209,8 @@ impl CardanoComponent {
     pub fn check_installed_version(component: Component) -> Result<String> {
         let component_str = Self::component_to_string(component);
         log::debug!("Checking installed version of {component_str}");
-        let component_bin_path = get_bin_path(&component_str)?;
-        let path = absolute_ref_path_to_string(component_bin_path)?;
+        let component_bin_path = FileSystem::get_bin_path(&component_str)?;
+        let path = FileSystem::absolute_ref_path_to_string(component_bin_path)?;
         let cmd = match component {
             Component::Wallet | Component::Address => {
                 format!("{path} version | awk '{{print $1}}'")
@@ -224,7 +220,7 @@ impl CardanoComponent {
             }
             Component::Bech32 => format!("{path} --version"),
         };
-        let version = async_command_pipe(&cmd)?;
+        let version = Executer::async_command_pipe(&cmd)?;
         let version = String::from(version.trim());
         Ok(version)
     }
@@ -235,9 +231,9 @@ impl CardanoComponent {
         let cmd = match component {
             Component::Wallet => {
                 let url = Self::get_component_url(component);
-                let dir = set_component_dir(component)?;
+                let dir = Git::set_component_dir(component)?;
                 let path = Self::get_component_path(component)?;
-                check_repo(&url, path)?;
+                Git::check_repo(&url, path)?;
                 format!("cd {dir} && git describe --tags --abbrev=0")
             }
             _ => {
@@ -245,7 +241,7 @@ impl CardanoComponent {
                 format!("curl -s {url} | jq -r .tag_name")
             }
         };
-        let response = async_command_pipe(&cmd)?;
+        let response = Executer::async_command_pipe(&cmd)?;
         let response = String::from(response.trim());
         log::debug!("The latest version of {component_str} is {response}");
         Ok(response)
@@ -261,7 +257,7 @@ impl CardanoComponent {
 
     pub fn install_component(component: Component) -> Result<()> {
         Self::build_component(component)?;
-        copy_binary(component)?;
+        FileSystem::copy_binary(component)?;
         Self::check_install_success(component)?;
         ShellConfig::source_shell()
     }
@@ -280,18 +276,18 @@ impl CardanoComponent {
     pub fn build_component(component: Component) -> Result<()> {
         let component_str = Self::component_to_string(component);
         log::info!("Building {component_str}");
-        clone_component(component)?;
+        Git::clone_component(component)?;
         let ghc_version = Ghc::get_ghc_version()?;
-        let cabal = check_env("CABAL_BIN")?;
+        let cabal = Environment::check_env("CABAL_BIN")?;
         let cabal = PathBuf::from(&cabal);
-        let project_file = get_project_file(component)?;
+        let project_file = FileSystem::get_project_file(component)?;
         let path = Self::get_component_path(component)?;
         Cabal::update_cabal(&path, &cabal)?;
-        check_project_file(&project_file)?;
+        FileSystem::check_project_file(&project_file)?;
         Self::configure_build(&ghc_version, &path, &cabal)?;
         match component {
             Component::Node => {
-                update_project_file(&project_file)?;
+                FileSystem::update_project_file(&project_file)?;
                 Self::build(component, &path, &cabal)
             }
             _ => Self::build(component, &path, &cabal),
@@ -304,13 +300,13 @@ impl CardanoComponent {
         cabal: P,
     ) -> Result<()> {
         log::info!("Configuring build");
-        let ghc = check_env("GHC_BIN")?;
-        let path = absolute_ref_path_to_string(&path)?;
-        let cabal = absolute_ref_path_to_string(&cabal)?;
+        let ghc = Environment::check_env("GHC_BIN")?;
+        let path = FileSystem::absolute_ref_path_to_string(&path)?;
+        let cabal = FileSystem::absolute_ref_path_to_string(&cabal)?;
         let cmd = format!(
         "cd {path} && {cabal} configure --with-compiler={ghc}-{ghc_version}"
     );
-        async_command(&cmd)?;
+        Executer::async_command(&cmd)?;
         Ok(())
     }
 
@@ -321,10 +317,10 @@ impl CardanoComponent {
     ) -> Result<()> {
         let component = Self::component_to_string(component);
         log::info!("Building {component}");
-        let path = absolute_ref_path_to_string(&path)?;
-        let cabal = absolute_ref_path_to_string(&cabal)?;
+        let path = FileSystem::absolute_ref_path_to_string(&path)?;
+        let cabal = FileSystem::absolute_ref_path_to_string(&cabal)?;
         let cmd = format!("cd {path} && {cabal} build all");
-        if process_success_inherit(&cmd)? {
+        if Executer::process_success_inherit(&cmd)? {
             log::debug!("Successfully built {component}");
             return Ok(());
         }

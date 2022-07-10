@@ -1,7 +1,4 @@
-use crate::{
-    async_command, check_env, check_repo, drop_privileges, ShellConfig,
-    SECP256K1_URL,
-};
+use crate::{Environment, Executer, Git, ShellConfig, SECP256K1_URL};
 use anyhow::Result;
 use std::path::Path;
 
@@ -28,17 +25,16 @@ pub fn check_secp256k1() -> Result<()> {
 
 pub fn install_secp256k1() -> Result<()> {
     log::info!("Installing secp256k1");
-    let secp256k1_path = check_env("SECP_256_K_1_DIR")?;
-    check_repo(SECP256K1_URL, &secp256k1_path)?;
+    let secp256k1_path = Environment::check_env("SECP_256_K_1_DIR")?;
+    Git::check_repo(SECP256K1_URL, &secp256k1_path)?;
     let checkout = "git checkout ac83be33";
     let configure =
         "./configure --enable-module-schnorrsig --enable-experimental";
     let cmd = format!("cd {secp256k1_path} && {checkout} && ./autogen.sh && {configure} && make");
-    async_command(&cmd)?;
+    Executer::async_command(&cmd)?;
     let cmd = format!("cd {secp256k1_path} && sudo make install");
-    async_command(&cmd)?;
-    async_command("sudo ldconfig")?;
-    drop_privileges()?;
+    Executer::async_command(&cmd)?;
+    Executer::async_command("sudo ldconfig")?;
     ShellConfig::source_shell()?;
     Ok(())
 }
