@@ -4,86 +4,88 @@ use std::{
     env::{set_var, var},
 };
 
-pub fn check_env(key: &str) -> Result<String> {
-    log::debug!("Checking environment variable: {key}");
-    match var(key) {
-        Ok(val) => {
-            log::trace!("{key}={val}");
-            Ok(val)
+pub struct Environment;
+
+impl Environment {
+    pub fn check_env(key: &str) -> Result<String> {
+        log::debug!("Checking environment variable: {key}");
+        var(key)
+            .map(|val| {
+                log::trace!("{key}={val}");
+                return val.trim().to_string();
+            })
+            .map_err(|err| {
+                anyhow!("Failed to check environment variable {key}: {err}")
+            })
+    }
+
+    pub fn set_env(key: &str, value: &str) {
+        log::debug!("Setting environment variable {key}={value}");
+        set_var(key, value);
+    }
+
+    pub fn setup_env() -> Result<()> {
+        log::debug!("Setting up environment variables");
+        let home_dir = dirs::home_dir().expect("Failed to read $HOME");
+        let home_dir =
+            home_dir.to_str().expect("Failed to parse $HOME to string");
+        let ghcup_dir = format!("{home_dir}/.ghcup");
+        let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
+        let ghc_bin = format!("{ghcup_dir}/bin/ghc");
+        let cabal_bin = format!("{ghcup_dir}/bin/cabal");
+        let map: HashMap<&str, &String> = HashMap::from([
+            ("GHCUP_DIR", &ghcup_dir),
+            ("GHCUP_BIN", &ghcup_bin),
+            ("GHC_BIN", &ghc_bin),
+            ("CABAL_BIN", &cabal_bin),
+        ]);
+        for (key, value) in map {
+            Self::set_env(key, value);
         }
-        Err(e) => Err(anyhow!("Failed to check environment variable {key}: {e}")),
+        Ok(())
     }
-}
 
-pub fn set_env(key: &str, value: &str) {
-    log::debug!("Setting environment variable {key}={value}");
-    set_var(key, value);
-}
-
-pub fn setup_env() -> Result<()> {
-    log::debug!("Setting up environment variables");
-    let home_dir = dirs::home_dir().expect("Failed to read $HOME");
-    let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
-    let ghcup_dir = format!("{home_dir}/.ghcup");
-    let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
-    let ghc_bin = format!("{ghcup_dir}/bin/ghc");
-    let cabal_bin = format!("{ghcup_dir}/bin/cabal");
-    let map: HashMap<&str, &String> = HashMap::from([
-        ("GHCUP_DIR", &ghcup_dir),
-        ("GHCUP_BIN", &ghcup_bin),
-        ("GHC_BIN", &ghc_bin),
-        ("CABAL_BIN", &cabal_bin),
-    ]);
-    for (key, value) in map {
-        set_env(key, value);
+    pub fn check_user() -> Result<String> {
+        log::debug!("Checking user");
+        Self::check_env("USER")
+            .map(|user| {
+                if user != "root" {
+                    log::debug!("user: {user}");
+                    return user;
+                }
+                Self::check_env("SUDO_USER")
+                    .map(|user| {
+                        log::debug!("user: {user}");
+                        user
+                    })
+                    .unwrap()
+            })
+            .map_err(|err| anyhow!("Failed to check the actual user: {err}"))
     }
-    Ok(())
-}
 
-pub fn check_user() -> Result<String> {
-    log::debug!("Checking user");
-    let user = check_env("USER")?;
-    let user = if user != "root" { user } else { check_env("SUDO_USER")? };
-    log::debug!("user: {user}");
-    let user = user.trim().to_string();
-    Ok(user.trim().to_string())
-}
-
-pub fn drop_privileges() -> Result<()> {
-    if check_env("USER")? != "root" {
-        return Ok(());
+    pub fn set_confirm(confirm: bool) {
+        if confirm {
+            return Self::set_env("CONFIRM", "true");
+        }
+        Self::set_env("CONFIRM", "false")
     }
-    log::debug!("Dropping root privileges");
-    let user = check_user()?;
-    drop_root::set_user(&user)?;
-    let user = check_env("USER")?;
-    log::debug!("Now running as user: {user}");
-    Ok(())
-}
 
-pub fn set_confirm(confirm: bool) {
-    if confirm {
-        return set_env("CONFIRM", "true");
+    pub fn check_confirm() -> bool {
+        Self::check_env("CONFIRM")
+            .map(|confirm| confirm == "true")
+            .map_err(|_| false)
+            .unwrap()
     }
-    set_env("CONFIRM", "false")
-}
-
-pub fn check_confirm() -> Result<bool> {
-    let confirm = check_env("CONFIRM")?;
-    if confirm.eq("true") {
-        return Ok(true);
-    }
-    Ok(false)
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
 
-    #[tokio::test]
-    async fn test_check_env() -> Result<()> {
-        let user = crate::check_user()?;
-        let checked_env_user = check_env("USER")?;
+    #[test]
+    fn test_check_env() -> Result<()> {
+        let user = Environment::check_user()?;
+        let checked_env_user = Environment::check_env("USER")?;
         assert_eq!(user, checked_env_user);
         Ok(())
     }
@@ -92,45 +94,40 @@ mod test {
     fn test_set_env() -> Result<()> {
         let key = "TEST";
         let value = "VALUE";
-        set_env(key, value);
-        let result = check_env(key)?;
+        Environment::set_env(key, value);
+        let result = Environment::check_env(key)?;
         assert_eq!(result, value);
         Ok(())
     }
 
     #[test]
     fn test_setup_env() -> Result<()> {
-        setup_env()?;
+        Environment::setup_env()?;
         let home_dir = dirs::home_dir().expect("Failed to read $HOME");
-        let home_dir = home_dir.to_str().expect("Failed to parse $HOME to string");
+        let home_dir =
+            home_dir.to_str().expect("Failed to parse $HOME to string");
         let ghcup_dir = format!("{home_dir}/.ghcup");
         let ghcup_bin = format!("{ghcup_dir}/bin/ghcup");
         let ghc_bin = format!("{ghcup_dir}/bin/ghc");
         let cabal_bin = format!("{ghcup_dir}/bin/cabal");
-        let result = check_env("GHCUP_DIR")?;
+        let result = Environment::check_env("GHCUP_DIR")?;
         assert_eq!(result, ghcup_dir);
-        let result = check_env("GHCUP_BIN")?;
+        let result = Environment::check_env("GHCUP_BIN")?;
         assert_eq!(result, ghcup_bin);
-        let result = check_env("GHC_BIN")?;
+        let result = Environment::check_env("GHC_BIN")?;
         assert_eq!(result, ghc_bin);
-        let result = check_env("CABAL_BIN")?;
+        let result = Environment::check_env("CABAL_BIN")?;
         assert_eq!(result, cabal_bin);
         Ok(())
     }
 
     #[test]
     fn test_check_user() -> Result<()> {
-        let user = check_user()?;
+        let user = Environment::check_user()?;
         log::debug!("user: {user}");
-        let user_env = check_env("USER")?;
+        let user_env = Environment::check_env("USER")?;
         log::debug!("user_env: {user_env}");
         assert_eq!(user, user_env);
-        Ok(())
-    }
-
-    #[test]
-    fn test_drop_privileges() -> Result<()> {
-        drop_privileges()?;
         Ok(())
     }
 }

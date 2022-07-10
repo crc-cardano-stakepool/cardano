@@ -3,13 +3,13 @@ use clap::{Args, Subcommand};
 use lib::{CardanoComponent, Component};
 
 #[derive(Debug, Args)]
-pub struct WalletArgs {
+pub struct Bech32Args {
     #[clap(subcommand)]
-    command: WalletCommand,
+    command: Bech32Command,
 }
 
 #[derive(Debug, Subcommand)]
-pub enum WalletCommand {
+pub enum Bech32Command {
     /// Setup the system with cardano-wallet build dependencies
     Setup,
     /// Installs cardano-wallet
@@ -22,20 +22,20 @@ pub enum WalletCommand {
     Uninstall,
 }
 
-impl WalletCommand {
-    pub fn exec(cmd: WalletArgs) -> Result<()> {
+impl Bech32Command {
+    pub fn exec(cmd: Bech32Args) -> Result<()> {
         match cmd.command {
-            WalletCommand::Install { confirm } => {
+            Bech32Command::Install { confirm } => {
                 CardanoComponent::check_latest_component(
-                    Component::Wallet,
+                    Component::Bech32,
                     confirm,
                 )
             }
-            WalletCommand::Uninstall => {
-                CardanoComponent::uninstall_component(Component::Wallet)
+            Bech32Command::Uninstall => {
+                CardanoComponent::uninstall_component(Component::Bech32)
             }
-            WalletCommand::Setup => {
-                CardanoComponent::setup_component(Component::Wallet)
+            Bech32Command::Setup => {
+                CardanoComponent::setup_component(Component::Bech32)
             }
         }
     }

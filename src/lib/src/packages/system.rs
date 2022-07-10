@@ -1,6 +1,8 @@
 use crate::{
-    MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB, MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB, MIN_CORES,
-    MIN_CPU_FREQUENCY_IN_MHZ, RECOMMENDED_CPU_FREQUENCY_IN_MHZ, TESTNET_MIN_FREE_DISK_SPACE_IN_GB, TESTNET_MIN_FREE_RAM_IN_GB,
+    Distro, MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB,
+    MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB, MIN_CORES,
+    MIN_CPU_FREQUENCY_IN_MHZ, RECOMMENDED_CPU_FREQUENCY_IN_MHZ,
+    TESTNET_MIN_FREE_DISK_SPACE_IN_GB, TESTNET_MIN_FREE_RAM_IN_GB,
 };
 use anyhow::anyhow;
 use sysinfo::{CpuExt, DiskExt, System, SystemExt};
@@ -22,14 +24,18 @@ impl Default for SystemRequirements {
     fn default() -> Self {
         Self {
             min_cores: MIN_CORES,
-            mainnet_min_free_disk_space_in_gb: MAINNET_MIN_FREE_DISK_SPACE_IN_GB,
-            mainnet_recommended_free_disk_space_in_gb: MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB,
-            testnet_min_free_disk_space_in_gb: TESTNET_MIN_FREE_DISK_SPACE_IN_GB,
+            mainnet_min_free_disk_space_in_gb:
+                MAINNET_MIN_FREE_DISK_SPACE_IN_GB,
+            mainnet_recommended_free_disk_space_in_gb:
+                MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB,
+            testnet_min_free_disk_space_in_gb:
+                TESTNET_MIN_FREE_DISK_SPACE_IN_GB,
             mainnet_min_free_ram_in_gb: MAINNET_MIN_FREE_RAM_IN_GB,
             testnet_min_free_ram_in_gb: TESTNET_MIN_FREE_RAM_IN_GB,
             processor: SupportedCpu::default(),
             min_processor_frequency_in_mhz: MIN_CPU_FREQUENCY_IN_MHZ,
-            recommended_processor_frequency_in_mhz: RECOMMENDED_CPU_FREQUENCY_IN_MHZ,
+            recommended_processor_frequency_in_mhz:
+                RECOMMENDED_CPU_FREQUENCY_IN_MHZ,
         }
     }
 }
@@ -39,50 +45,57 @@ impl SystemRequirements {
         log::debug!("Checking system requirements");
         let system = SystemRequirements::default();
         let current = SystemInfo::default();
-        let os_ok = SystemRequirements::check_os(&system, current.name);
+        let os_ok = SystemRequirements::check_os(&system, current.distro);
         let cpu_ok = SystemRequirements::check_cpu(&system, current.cpu);
         let disk_ok = SystemRequirements::check_disk(&system, current.disk);
-        let memory_ok = SystemRequirements::check_memory(&system, current.memory);
+        let memory_ok =
+            SystemRequirements::check_memory(&system, current.memory);
         if os_ok && cpu_ok && disk_ok && memory_ok {
-            log::info!("System meets all the requirements to run a cardano-node!");
+            log::info!(
+                "System meets all the requirements to run a cardano-node!"
+            );
             return true;
         }
-        log::error!("System doesn't meet all the requirements to run a cardano-node");
+        log::error!(
+            "System doesn't meet all the requirements to run a cardano-node"
+        );
         false
     }
-    pub fn check_os(&self, name: String) -> bool {
+
+    pub fn check_os(&self, distro: Distro) -> bool {
         log::debug!("Checking OS");
-        match name.as_str() {
-            "Ubuntu" => {
-                log::debug!("{name} is supported!");
+        match distro {
+            Distro::Ubuntu => {
+                log::debug!("Ubuntu is supported!");
                 true
             }
-            "Debian" => {
-                log::debug!("{name} is supported!");
+            Distro::Debian => {
+                log::debug!("Debian is supported!");
                 true
             }
-            "Linux Mint" => {
-                log::debug!("{name} is supported!");
+            Distro::Mint => {
+                log::debug!("Linux Mint is supported!");
                 true
             }
-            "Red Hat" => {
-                log::debug!("{name} is supported!");
+            Distro::RedHat => {
+                log::debug!("RedHat is supported!");
                 true
             }
-            "Fedora" => {
-                log::debug!("{name} is supported!");
+            Distro::Fedora => {
+                log::debug!("Fedora is supported!");
                 true
             }
-            "CentOs" => {
-                log::debug!("{name} is supported!");
+            Distro::CentOs => {
+                log::debug!("CentOs is supported!");
                 true
             }
-            _ => {
-                log::error!("{name} is not supported");
+            Distro::Unsupported { distro } => {
+                log::debug!("{distro} is not supported!");
                 false
             }
         }
     }
+
     pub fn check_cpu(&self, cpu: CpuInfo) -> bool {
         log::debug!("Checking CPU");
         let cores_ok = self.check_cpu_cores(cpu.cores);
@@ -95,6 +108,7 @@ impl SystemRequirements {
         log::error!("CPU doesn't meet the requirements to run a cardano node");
         false
     }
+
     pub fn check_cpu_cores(&self, cores: u8) -> bool {
         log::debug!("Checking CPU cores");
         if cores >= self.min_cores {
@@ -105,10 +119,13 @@ impl SystemRequirements {
         log::error!("At least {} cores are required", self.min_cores);
         false
     }
+
     pub fn check_cpu_vendor(&self, vendor: String) -> bool {
         log::debug!("Checking CPU vendor");
         let supported_vendor = SupportedCpu::default();
-        if vendor.eq(&supported_vendor.intel) || vendor.eq(&supported_vendor.amd) {
+        if vendor.eq(&supported_vendor.intel)
+            || vendor.eq(&supported_vendor.amd)
+        {
             log::debug!("CPU vendor is supported");
             return true;
         }
@@ -116,6 +133,7 @@ impl SystemRequirements {
         log::error!("Only Intel or AMD processors are supported");
         false
     }
+
     pub fn check_cpu_frequency(&self, frequency: u16) -> bool {
         log::debug!("Checking CPU frequency");
         if frequency >= self.recommended_processor_frequency_in_mhz {
@@ -130,22 +148,35 @@ impl SystemRequirements {
         log::error!("At least 1.6GHz is required");
         false
     }
+
     pub fn check_disk(&self, disk: DiskInfo) -> bool {
         log::debug!("Checking disk");
         const GB_TO_B_CONVERSION_RATIO: u64 = 1073741824;
-        let test_net_min_free_disk_space_in_b = self.testnet_min_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
-        let mainnet_min_free_disk_space_in_b = self.mainnet_min_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
-        let mainnet_recommended_min_free_disk_space_in_b = self.mainnet_recommended_free_disk_space_in_gb as u64 * GB_TO_B_CONVERSION_RATIO;
-        if disk.available_space_in_b >= mainnet_recommended_min_free_disk_space_in_b {
+        let test_net_min_free_disk_space_in_b =
+            self.testnet_min_free_disk_space_in_gb as u64
+                * GB_TO_B_CONVERSION_RATIO;
+        let mainnet_min_free_disk_space_in_b =
+            self.mainnet_min_free_disk_space_in_gb as u64
+                * GB_TO_B_CONVERSION_RATIO;
+        let mainnet_recommended_min_free_disk_space_in_b =
+            self.mainnet_recommended_free_disk_space_in_gb as u64
+                * GB_TO_B_CONVERSION_RATIO;
+        if disk.available_space_in_b
+            >= mainnet_recommended_min_free_disk_space_in_b
+        {
             log::debug!("Disk has enough space to run a cardano node in mainnet for future growth");
             return true;
         }
         if disk.available_space_in_b >= mainnet_min_free_disk_space_in_b {
-            log::debug!("Disk has enough space to run a cardano node in mainnet");
+            log::debug!(
+                "Disk has enough space to run a cardano node in mainnet"
+            );
             return true;
         }
         if disk.available_space_in_b >= test_net_min_free_disk_space_in_b {
-            log::debug!("Disk has enough space to run a cardano node in testnet");
+            log::debug!(
+                "Disk has enough space to run a cardano node in testnet"
+            );
             return true;
         }
         log::error!("Disk does not have enough space to run a cardano node");
@@ -154,17 +185,24 @@ impl SystemRequirements {
         log::error!("At least {MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB} GB are required to run a future proof node in mainnet");
         false
     }
+
     pub fn check_memory(&self, memory: MemoryInfo) -> bool {
         log::debug!("Checking RAM");
         const GB_TO_KB_CONVERSION_RATIO: u64 = 1048576;
-        let testnet_free_ram_in_kb = self.testnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
-        let mainnet_free_ram_in_kb = self.mainnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
+        let testnet_free_ram_in_kb =
+            self.testnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
+        let mainnet_free_ram_in_kb =
+            self.mainnet_min_free_ram_in_gb as u64 * GB_TO_KB_CONVERSION_RATIO;
         if memory.available_memory_in_kb >= mainnet_free_ram_in_kb {
-            log::debug!("System has enough RAM to run a cardano node in mainnet");
+            log::debug!(
+                "System has enough RAM to run a cardano node in mainnet"
+            );
             return true;
         }
         if memory.available_memory_in_kb >= testnet_free_ram_in_kb {
-            log::debug!("System has enough RAM to run a cardano node in testnet");
+            log::debug!(
+                "System has enough RAM to run a cardano node in testnet"
+            );
             return true;
         }
         log::error!("System does not have enough RAM to run a cardano node");
@@ -191,7 +229,7 @@ impl Default for SupportedCpu {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SystemInfo {
-    pub name: String,
+    pub distro: Distro,
     pub disk: DiskInfo,
     pub memory: MemoryInfo,
     pub cpu: CpuInfo,
@@ -200,7 +238,7 @@ pub struct SystemInfo {
 impl Default for SystemInfo {
     fn default() -> Self {
         let system_info = Self {
-            name: SystemInfo::get_sysinfo(),
+            distro: SystemInfo::get_sysinfo(),
             disk: DiskInfo::default(),
             memory: MemoryInfo::default(),
             cpu: CpuInfo::default(),
@@ -211,7 +249,7 @@ impl Default for SystemInfo {
 }
 
 impl SystemInfo {
-    pub fn get_sysinfo() -> String {
+    pub fn get_sysinfo() -> Distro {
         log::info!("Getting system info");
         if !System::IS_SUPPORTED {
             log::error!("This OS isn't supported (yet?).");
@@ -225,7 +263,15 @@ impl SystemInfo {
             .ok_or_else(|| anyhow!("Could not find determine OS distribution"))
             .unwrap();
         log::debug!("OS: {name}");
-        name
+        match name.trim() {
+            "Ubuntu" => Distro::Ubuntu,
+            "Debian" => Distro::Debian,
+            "Linux Mint" => Distro::Mint,
+            "RedHat" => Distro::RedHat,
+            "Fedora" => Distro::Fedora,
+            "CentOs" => Distro::CentOs,
+            _ => Distro::Unsupported { distro: name },
+        }
     }
 }
 
@@ -251,7 +297,9 @@ impl DiskInfo {
             log::debug!("Disk type: {:?}", disk_type);
             let file_system = disk.file_system().to_vec();
             let file_system = String::from_utf8(file_system)
-                .map_err(|err| anyhow!("Failed to convert byte slice to string: {err}"))
+                .map_err(|err| {
+                    anyhow!("Failed to convert byte slice to string: {err}")
+                })
                 .unwrap();
             log::debug!("Disk filesystem: {:?}", file_system);
             let mount_point = disk.mount_point();
@@ -267,6 +315,7 @@ impl DiskInfo {
         log::debug!("{disk:#?}");
         disk
     }
+
     pub fn get_available_disk_space() -> u64 {
         log::debug!("Getting disk space");
         let mut sys = System::new_all();
@@ -277,12 +326,19 @@ impl DiskInfo {
             .filter(|disk| {
                 let fs = disk.file_system().to_vec();
                 let fs = String::from_utf8(fs)
-                    .map_err(|err| anyhow!("Failed to convert byte slice to string: {err}"))
+                    .map_err(|err| {
+                        anyhow!("Failed to convert byte slice to string: {err}")
+                    })
                     .unwrap();
                 fs.eq("ext4") || fs.eq("btrfs")
             })
-            .fold(0, |available_space, disk| available_space + disk.available_space());
-        log::debug!("Total available useful disk space: {:?} B", available_space);
+            .fold(0, |available_space, disk| {
+                available_space + disk.available_space()
+            });
+        log::debug!(
+            "Total available useful disk space: {:?} B",
+            available_space
+        );
         available_space
     }
 }
@@ -307,6 +363,7 @@ impl MemoryInfo {
         log::debug!("{memory:#?}");
         memory
     }
+
     pub fn get_available_memory_in_kb() -> u64 {
         log::debug!("Getting available memory");
         let mut sys = System::new_all();
@@ -341,19 +398,25 @@ impl CpuInfo {
         log::debug!("{cpu:#?}");
         cpu
     }
+
     pub fn get_cpu_frequency() -> u16 {
         log::debug!("Getting CPU frequency");
         let mut sys = System::new_all();
         sys.refresh_all();
         let brand = sys.global_cpu_info().brand();
         log::debug!("CPU brand: {:?}", brand);
-        let ghz_str: Vec<&str> = brand.split_whitespace().filter(|substr| substr.contains("GHz")).collect();
+        let ghz_str: Vec<&str> = brand
+            .split_whitespace()
+            .filter(|substr| substr.contains("GHz"))
+            .collect();
         if ghz_str.len() == 1 {
             let ghz_parse = ghz_str[0]
                 .replace("GHz", "")
                 .replace('.', "")
                 .parse::<u16>()
-                .map_err(|err| anyhow!("Failed parsing {} to u16: {err}", ghz_str[0]))
+                .map_err(|err| {
+                    anyhow!("Failed parsing {} to u16: {err}", ghz_str[0])
+                })
                 .unwrap();
             log::debug!("Parsed to u16: {ghz_parse}");
             let cpu_frequency_in_mhz = ghz_parse * 10;
@@ -364,6 +427,7 @@ impl CpuInfo {
             0
         }
     }
+
     pub fn get_cpu_vendor() -> String {
         log::debug!("Getting CPU vendor");
         let mut sys = System::new_all();
@@ -372,6 +436,7 @@ impl CpuInfo {
         log::debug!("CPU vendor: {:?}", vendor);
         vendor
     }
+
     pub fn get_cpu_cores() -> u8 {
         log::debug!("Getting CPU cores");
         let mut sys = System::new_all();
@@ -397,9 +462,14 @@ mod test {
     #[test]
     fn test_check_os() {
         let system = SystemRequirements::default();
-        assert_eq!(system.check_os("Ubuntu".to_string()), true);
-        assert_eq!(system.check_os("Debian".to_string()), true);
-        assert_eq!(system.check_os("Arch Linux".to_string()), false);
+        assert_eq!(system.check_os(Distro::Debian), true);
+        assert_eq!(system.check_os(Distro::Ubuntu), true);
+        assert_eq!(
+            system.check_os(Distro::Unsupported {
+                distro: "Arch Linux".to_string()
+            }),
+            false
+        );
     }
 
     #[test]

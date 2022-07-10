@@ -1,7 +1,7 @@
 use crate::{Run, RunCommand};
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{check_latest_node, setup_node, uninstall_node};
+use lib::{CardanoComponent, Component};
 
 #[derive(Debug, Args)]
 pub struct NodeArgs {
@@ -26,12 +26,21 @@ pub enum NodeCommand {
 }
 
 impl NodeCommand {
-    pub async fn exec(cmd: NodeArgs) -> Result<()> {
+    pub fn exec(cmd: NodeArgs) -> Result<()> {
         match cmd.command {
-            NodeCommand::Run(cmd) => RunCommand::exec(cmd).await,
-            NodeCommand::Install { confirm } => check_latest_node(confirm).await,
-            NodeCommand::Uninstall => uninstall_node().await,
-            NodeCommand::Setup => setup_node().await,
+            NodeCommand::Run(cmd) => RunCommand::exec(cmd),
+            NodeCommand::Install { confirm } => {
+                CardanoComponent::check_latest_component(
+                    Component::Node,
+                    confirm,
+                )
+            }
+            NodeCommand::Uninstall => {
+                CardanoComponent::uninstall_component(Component::Node)
+            }
+            NodeCommand::Setup => {
+                CardanoComponent::setup_component(Component::Node)
+            }
         }
     }
 }
