@@ -13,8 +13,7 @@ pub fn update_cli() -> Result<()> {
         git pull && 
         cargo install --path src/bin"
     );
-    Executer::exec(&cmd)?;
-    Ok(())
+    Executer::exec(&cmd)
 }
 
 #[cfg(test)]

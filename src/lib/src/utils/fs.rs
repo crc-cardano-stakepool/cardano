@@ -36,9 +36,7 @@ impl FileSystem {
 
     pub fn check_work_dir() -> Result<impl AsRef<Path>> {
         log::debug!("Checking the working directory");
-        let path = Settings::read("work_dir")?;
-        Environment::set_env("WORK_DIR", &path);
-        Ok(PathBuf::from(&path))
+        Settings::read("work_dir").map(PathBuf::from)
     }
 
     pub fn copy_binary(component: Component) -> Result<()> {
@@ -82,8 +80,7 @@ impl FileSystem {
             --overwrite-policy=always \
             --installdir={install_dir}"
         );
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 
     pub fn copy_node_binaries<P: AsRef<Path>>(install_dir: P) -> Result<()> {
@@ -110,9 +107,9 @@ impl FileSystem {
     }
     pub fn create_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
         create_dir_all(&absolute_path)?;
-        let path = Self::absolute_ref_path_to_string(&absolute_path)?;
-        log::info!("Created directory: {path}");
-        Ok(())
+        Self::absolute_ref_path_to_string(&absolute_path).map(|path| {
+            log::info!("Created directory: {path}");
+        })
     }
 
     pub fn path_to_string(path: &Path) -> Result<String> {
@@ -136,7 +133,6 @@ impl FileSystem {
         if path.is_absolute() {
             return Self::path_to_string(path);
         }
-        log::error!("The path {parsed} is not absolute");
         Err(anyhow!("The path {parsed} is not absolute"))
     }
 
@@ -150,7 +146,7 @@ impl FileSystem {
             let parsed = Self::absolute_ref_path_to_string(&path)?;
             log::debug!("The path to the {bin} binary: {parsed}");
             return Ok(path);
-        }
+        };
         Err(anyhow!(
             "XDG_BIN_HOME is not set, failed to check if {bin} is installed"
         ))
@@ -170,8 +166,7 @@ impl FileSystem {
         if file_name.eq("cabal.project.local") {
             log::warn!("Project file already exists, removing it");
             let cmd = format!("rm {path}");
-            Executer::exec(&cmd)?;
-            return Ok(());
+            return Executer::exec(&cmd);
         }
         Ok(())
     }
@@ -209,11 +204,13 @@ impl FileSystem {
         log::debug!(
             "Getting the project file of the {component} source reposity"
         );
-        let mut path = CardanoComponent::get_component_path(
-            CardanoComponent::match_component(&component),
-        )?;
-        path.push("cabal.project.local");
-        Ok(path)
+        CardanoComponent::get_component_path(CardanoComponent::match_component(
+            &component,
+        ))
+        .map(|mut path| {
+            path.push("cabal.project.local");
+            path
+        })
     }
 }
 #[cfg(test)]

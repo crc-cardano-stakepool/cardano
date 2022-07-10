@@ -35,8 +35,7 @@ pub fn install_secp256k1() -> Result<()> {
     let cmd = format!("cd {secp256k1_path} && sudo make install");
     Executer::exec(&cmd)?;
     Executer::exec("sudo ldconfig")?;
-    ShellConfig::source_shell()?;
-    Ok(())
+    ShellConfig::source_shell()
 }
 
 #[cfg(test)]

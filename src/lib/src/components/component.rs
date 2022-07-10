@@ -79,8 +79,7 @@ impl CardanoComponent {
         if !Self::is_component_installed(component)? {
             return Self::install_component(component);
         }
-        Self::install_if_not_up_to_date(component)?;
-        Ok(())
+        Self::install_if_not_up_to_date(component)
     }
 
     pub fn install_component(component: Component) -> Result<()> {
@@ -122,8 +121,7 @@ impl CardanoComponent {
         let platform = PlatformInfo::new();
         platform.setup_packages()?;
         ShellConfig::setup_shell()?;
-        Self::check_component_dependencies(component)?;
-        Ok(())
+        Self::check_component_dependencies(component)
     }
 
     pub fn check_component_dependencies(component: Component) -> Result<()> {
@@ -158,9 +156,7 @@ impl CardanoComponent {
             }
             Component::Bech32 => format!("{path} --version"),
         };
-        let version = Executer::capture(&cmd)?;
-        let version = String::from(version.trim());
-        Ok(version)
+        Executer::capture(&cmd)
     }
 
     pub fn check_latest_version(component: Component) -> Result<String> {
@@ -179,10 +175,10 @@ impl CardanoComponent {
                 format!("curl -s {url} | jq -r .tag_name")
             }
         };
-        let response = Executer::capture(&cmd)?;
-        let response = String::from(response.trim());
-        log::debug!("The latest version of {component_str} is {response}");
-        Ok(response)
+        Executer::capture(&cmd).map(|response| {
+            log::debug!("The latest version of {component_str} is {response}");
+            response
+        })
     }
 
     pub fn get_component_release_url(component: Component) -> String {
@@ -240,18 +236,20 @@ impl CardanoComponent {
         log::debug!("Checking where the binary of {component} is");
         let env = format!("{component}_dir");
         let converted = env.to_case(Case::UpperSnake);
-        let path = Environment::check_env(&converted)?;
-        let path = PathBuf::from(&path);
-        Ok(path)
+        Environment::check_env(&converted)
+            .map(PathBuf::from)
+            .map(Ok)?
     }
 
     pub fn is_component_installed(component: Component) -> Result<bool> {
         let bin = Self::component_to_string(component);
         log::debug!("Checking if {bin} is already installed");
-        let install_dir = Settings::read("install_dir")?;
-        let mut path = PathBuf::from(install_dir);
-        path.push(&bin);
-        Ok(path.exists())
+        Settings::read("install_dir")
+            .map(PathBuf::from)
+            .map(|mut path| {
+                path.push(&bin);
+                Ok(path.exists())
+            })?
     }
 
     pub fn component_to_string(component: Component) -> String {
@@ -283,8 +281,7 @@ impl CardanoComponent {
         log::info!("Building {component_str}");
         Git::clone_component(component)?;
         let ghc_version = Ghc::get_version()?;
-        let cabal = Environment::check_env("CABAL_BIN")?;
-        let cabal = PathBuf::from(&cabal);
+        let cabal = Environment::check_env("CABAL_BIN").map(PathBuf::from)?;
         let project_file = FileSystem::get_project_file(component)?;
         let path = Self::get_component_path(component)?;
         Cabal::update(&path, &cabal)?;
@@ -333,22 +330,18 @@ impl CardanoComponent {
     }
 
     pub fn check_install_success(component: Component) -> Result<()> {
+        let version = Self::check_installed_version(component)?;
+        let component_str = Self::component_to_string(component);
         match component {
             Component::Node | Component::Cli => {
-                let version = Self::check_installed_version(component)?;
-                let component = Self::component_to_string(component);
-                log::info!("Successfully installed {component} v{version}");
+                log::info!("Successfully installed {component_str} v{version}");
                 Self::check_installed_version(Component::Cli)?;
             }
             Component::Address | Component::Bech32 => {
-                let version = Self::check_installed_version(component)?;
-                let component = Self::component_to_string(component);
-                log::info!("Successfully installed {component} v{version}");
+                log::info!("Successfully installed {component_str} v{version}");
             }
             Component::Wallet => {
-                let version = Self::check_installed_version(component)?;
-                let component = Self::component_to_string(component);
-                log::info!("Successfully installed {component} {version}");
+                log::info!("Successfully installed {component_str} {version}");
             }
         }
         Ok(())

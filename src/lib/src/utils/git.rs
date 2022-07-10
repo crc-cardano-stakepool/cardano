@@ -38,8 +38,7 @@ impl Git {
         Self::fetch_tags(component)?;
         let component = CardanoComponent::component_to_string(component);
         log::debug!("Checking out the latest release of {component}");
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 
     pub fn set_component_dir(component: Component) -> Result<String> {
@@ -100,8 +99,7 @@ impl Git {
         let path = FileSystem::path_to_string(destination_path.as_ref())?;
         log::info!("Cloning repo to {path}");
         let cmd = format!("git clone {url} {path}");
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 
     pub fn fetch_tags(component: Component) -> Result<()> {
@@ -113,8 +111,7 @@ impl Git {
         log::info!(
             "Fetching the latest tags of the {component} source reposity of"
         );
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 }
 

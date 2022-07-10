@@ -140,8 +140,7 @@ impl PlatformInfo {
         let package_manager = self.get_package_manager();
         log::info!("Updating system with {package_manager}");
         let cmd = format!("sudo {package_manager} update -y");
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 
     fn check_packages(&self) -> Result<()> {

@@ -65,17 +65,20 @@ impl Cabal {
             return Err(anyhow!("Cabal is not installed"));
         }
         let cmd = format!("{cabal} -V | head -n1 | awk '{{print $3}}'");
-        let installed_cabal = Executer::capture(&cmd)?;
-        let installed_cabal = installed_cabal.trim().to_string();
-        log::debug!("Cabal v{installed_cabal} is installed");
-        Ok(installed_cabal)
+        Executer::capture(&cmd).map(|version| {
+            log::debug!("Cabal v{version} is installed");
+            version
+        })
     }
 
     pub fn compare(installed_cabal: &str) -> Result<bool> {
-        log::debug!("Comparing installed Cabal v{installed_cabal} with required Cabal version to build a cardano node");
-        let required = Self::get_version()?;
+        let msg = format!(
+            "Comparing installed Cabal v{installed_cabal} \
+            with required Cabal version to build a cardano node"
+        );
+        log::debug!("{msg}");
         let installed = installed_cabal.trim().to_string();
-        Ok(installed.eq(&required))
+        Self::get_version().map(|required| installed.eq(&required))
     }
 
     pub fn install() -> Result<()> {
@@ -85,8 +88,7 @@ impl Cabal {
         let cmd = format!("{ghcup} install cabal {version}");
         Executer::exec(&cmd)?;
         let cmd = format!("{ghcup} set cabal {version}");
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 
     pub fn get_version() -> Result<String> {
@@ -100,10 +102,10 @@ impl Cabal {
             awk -F '<' '{{print $1}}' | \
             tail -n1"
         );
-        let cabal_version = Executer::capture(&cmd)?;
-        let cabal_version = cabal_version.trim();
-        log::debug!("Required Cabal version: {cabal_version}");
-        Ok(String::from(cabal_version))
+        Executer::capture(&cmd).map(|version| {
+            log::debug!("Required Cabal version: {version}");
+            version
+        })
     }
 
     pub fn update<P: AsRef<Path>>(path: P, cabal_path: P) -> Result<()> {
@@ -111,8 +113,7 @@ impl Cabal {
         let path = FileSystem::absolute_ref_path_to_string(&path)?;
         let cabal_path = FileSystem::absolute_ref_path_to_string(&cabal_path)?;
         let cmd = format!("cd {path} && {cabal_path} update");
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 }
 

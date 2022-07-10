@@ -20,7 +20,7 @@ pub fn setup_logger<P: AsRef<Path>>(
     let make_formatter = |use_colors: bool| {
         move |out: FormatCallback, message: &Arguments, record: &Record| {
             if !is_cli {
-                out.finish(format_args!(
+                return out.finish(format_args!(
                     "[{}] {} [{}:{}] -> {}",
                     if use_colors {
                         colors.color(record.level()).to_string()
@@ -31,18 +31,17 @@ pub fn setup_logger<P: AsRef<Path>>(
                     record.file().unwrap_or("?"),
                     record.line().unwrap_or_default(),
                     message
-                ))
-            } else {
-                out.finish(format_args!(
-                    "[{}] -> {}",
-                    if use_colors {
-                        colors.color(record.level()).to_string()
-                    } else {
-                        record.level().to_string()
-                    },
-                    message
-                ))
+                ));
             }
+            out.finish(format_args!(
+                "[{}] -> {}",
+                if use_colors {
+                    colors.color(record.level()).to_string()
+                } else {
+                    record.level().to_string()
+                },
+                message
+            ))
         }
     };
 

@@ -47,17 +47,20 @@ impl Environment {
 
     pub fn check_user() -> Result<String> {
         log::debug!("Checking user");
-        let user = Self::check_env("USER")
+        Self::check_env("USER")
             .map(|user| {
                 if user != "root" {
+                    log::debug!("user: {user}");
                     return user;
                 }
-                Self::check_env("SUDO_USER").unwrap()
+                Self::check_env("SUDO_USER")
+                    .map(|user| {
+                        log::debug!("user: {user}");
+                        user
+                    })
+                    .unwrap()
             })
             .map_err(|err| anyhow!("Failed to check the actual user: {err}"))
-            .unwrap();
-        log::debug!("user: {user}");
-        Ok(user)
     }
 
     pub fn set_confirm(confirm: bool) {

@@ -4,7 +4,7 @@ use std::process::{Command, Stdio};
 pub struct Executer;
 
 impl Executer {
-    pub fn exec(command: &str) -> Result<String> {
+    pub fn exec(command: &str) -> Result<()> {
         log::debug!("Executing command: {command}");
         Command::new("sh")
             .arg("-c")
@@ -12,7 +12,7 @@ impl Executer {
             .stdout(Stdio::inherit())
             .spawn()?
             .wait_with_output()
-            .map(|output| String::from_utf8(output.stdout).unwrap())
+            .map(|_| ())
             .map_err(|err| anyhow!("Failed to execute command: {err}"))
     }
 
@@ -103,7 +103,7 @@ mod test {
         let output = Executer::exec(
             "echo 'expected to be printed on console' >/dev/null",
         )?;
-        assert_eq!(output, "");
+        assert_eq!(output, ());
         Ok(())
     }
 

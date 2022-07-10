@@ -46,16 +46,15 @@ impl Ghc {
         log::debug!("Checking GHC");
         let ghc = Environment::check_env("GHC_BIN")?;
         let ghc_path = Path::new(&ghc);
-        if ghc_path.is_file() {
-            log::debug!("GHC is installed");
-            let cmd = format!("{ghc} -V | awk {}", "'{print $8}'");
-            let installed_ghc = Executer::capture(&cmd)?;
-            let installed_ghc = installed_ghc.trim().to_string();
-            log::debug!("GHC v{installed_ghc} is installed");
-            Ok(installed_ghc)
-        } else {
-            Err(anyhow!("GHC is not installed"))
+        if !ghc_path.is_file() {
+            return Err(anyhow!("GHC is not installed"));
         }
+        log::debug!("GHC is installed");
+        let cmd = format!("{ghc} -V | awk {}", "'{print $8}'");
+        Executer::capture(&cmd).map(|version| {
+            log::debug!("GHC v{version} is installed");
+            version
+        })
     }
 
     pub fn check() -> Result<()> {
@@ -75,9 +74,8 @@ impl Ghc {
 
     pub fn compare(installed_ghc: &str) -> Result<bool> {
         log::debug!("Comparing installed GHC v{installed_ghc} with the required GHC version to build a cardano node");
-        let required = Self::get_version()?;
         let installed = installed_ghc.trim().to_string();
-        Ok(installed.eq(&required))
+        Self::get_version().map(|required| installed.eq(&required))
     }
 
     pub fn get_version() -> Result<String> {
@@ -91,9 +89,7 @@ impl Ghc {
             awk -F '<' '{{print $1}}' | \
             tail -n1"
         );
-        let ghc_version = Executer::capture(&cmd)?;
-        let ghc_version = ghc_version.trim().to_string();
-        Ok(ghc_version)
+        Executer::capture(&cmd)
     }
 
     pub fn install() -> Result<()> {
@@ -103,8 +99,7 @@ impl Ghc {
         let cmd = format!("{ghcup} install ghc {version}");
         Executer::exec(&cmd)?;
         let cmd = format!("{ghcup} set ghc {version}");
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 }
 

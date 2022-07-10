@@ -247,8 +247,7 @@ impl Node {
             return Ok(());
         }
         CardanoComponent::install_component(Component::Node)?;
-        Executer::exec(cmd)?;
-        Ok(())
+        Executer::exec(cmd)
     }
 
     pub fn parse_config(

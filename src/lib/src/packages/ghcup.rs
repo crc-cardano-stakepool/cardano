@@ -32,8 +32,7 @@ impl Ghcup {
             format!("$(curl --proto '=https' --tlsv1.2 -sSf {GHCUP_URL})");
         let cmd = format!("\n{non_interactive}\n{ghc}\n{cabal}\n{call}");
         let cmd = format!("sudo su - {user} -c \"eval {cmd}\"");
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 }
 #[cfg(test)]

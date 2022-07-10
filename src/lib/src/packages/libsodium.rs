@@ -31,8 +31,7 @@ pub fn install_libsodium() -> Result<()> {
     Executer::exec(&cmd)?;
     let cmd = format!("cd {libsodium_path} && sudo make install");
     Executer::exec(&cmd)?;
-    ShellConfig::source_shell()?;
-    Ok(())
+    ShellConfig::source_shell()
 }
 
 #[cfg(test)]

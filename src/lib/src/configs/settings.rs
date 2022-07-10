@@ -26,8 +26,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         log::debug!("Creating default settings");
-        let mut work_dir =
-            dirs::config_dir().expect("Failed to read XDG_CONFIG_HOME");
+        let mut work_dir = dirs::config_dir().expect("Read XDG_CONFIG_HOME");
         work_dir.push(".cardano");
         let mut log_file = PathBuf::from(&work_dir);
         log_file.push("logs");
@@ -97,27 +96,28 @@ impl Settings {
                     "Failed to read setting {key}: invalid or does not exist"
                 )
             })
+            .map(|val| val.trim().to_string())
             .unwrap();
-        Ok(setting.trim().to_string())
+        Ok(setting)
     }
 }
 
 lazy_static::lazy_static! {
     static ref SETTINGS: RwLock<Config> = RwLock::new({
         let settings = Settings::default();
-        log::debug!("Serializing settings to toml");
-        let toml = toml::to_string(&settings)
-            .map_err(|err| anyhow!("Failed to serialize default config to toml: {err}"))
-            .unwrap();
         log::debug!("Checking if the working directory exists");
         if !settings.work_dir.exists() {
             log::debug!("Creating working directory");
             std::fs::create_dir_all(&settings.work_dir).unwrap();
         }
-        let mut config_file = settings.work_dir;
+        let mut config_file = settings.work_dir.clone();
         config_file.push(CARDANO_CONFIG_FILE_NAME);
         log::debug!("Checking if the config file exists");
         if !config_file.exists() {
+            log::debug!("Serializing settings to toml");
+            let toml = toml::to_string(&settings)
+                .map_err(|err| anyhow!("Failed to serialize default config to toml: {err}"))
+                .unwrap();
             let path = config_file.to_str().expect("Failed to parse config file path buf to string");
             let mut f = File::create(&config_file)
                 .map_err(|err| anyhow!("Failed to create config file in {path}: {err}"))

@@ -27,10 +27,9 @@ impl Default for ShellConfig {
 
 impl ShellConfig {
     pub fn check_shell() -> String {
-        match Environment::check_env("SHELL") {
-            Ok(shell) => shell,
-            Err(_) => "/usr/bin/bash".to_string(),
-        }
+        Environment::check_env("SHELL")
+            .map_err(|_| "/usr/bin/bash".to_string())
+            .unwrap()
     }
     pub fn match_shell(shell: &str) -> Shell {
         if shell.contains("/bash") {

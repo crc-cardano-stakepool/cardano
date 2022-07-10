@@ -23,8 +23,7 @@ impl Node {
              lz4 -dvc --no-sparse {download_path} | tar x -C {db_path} \
              "
         );
-        Executer::exec(&cmd)?;
-        Ok(())
+        Executer::exec(&cmd)
     }
 }
 
