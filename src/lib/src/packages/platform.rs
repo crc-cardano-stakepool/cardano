@@ -26,10 +26,10 @@ pub enum PackageManager {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct PlatformInfo {
-    platform: Platform,
-    distro: Distro,
-    package_manager: PackageManager,
-    packages: Vec<String>,
+    pub platform: Platform,
+    pub distro: Distro,
+    pub package_manager: PackageManager,
+    pub packages: Vec<String>,
 }
 
 impl Default for PlatformInfo {

@@ -4,10 +4,10 @@ use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 pub struct Ghc {
-    binary_name: String,
-    latest_version: String,
-    installed_version: Option<String>,
-    bin_path: Option<PathBuf>,
+    pub binary_name: String,
+    pub latest_version: String,
+    pub installed_version: Option<String>,
+    pub bin_path: Option<PathBuf>,
 }
 
 impl Default for Ghc {
