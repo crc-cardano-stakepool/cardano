@@ -17,14 +17,14 @@ pub enum Component {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct CardanoComponent {
-    component: Component,
-    binary_name: String,
-    source_path: PathBuf,
-    source_url: String,
-    release_url: String,
-    latest_version: String,
-    installed_version: Option<String>,
-    bin_path: Option<PathBuf>,
+    pub component: Component,
+    pub binary_name: String,
+    pub source_path: PathBuf,
+    pub source_url: String,
+    pub release_url: String,
+    pub latest_version: String,
+    pub installed_version: Option<String>,
+    pub bin_path: Option<PathBuf>,
 }
 
 impl CardanoComponent {
