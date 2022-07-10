@@ -105,11 +105,11 @@ impl Git {
     pub fn fetch_tags(component: Component) -> Result<()> {
         let path = CardanoComponent::get_component_path(component)?;
         let path = FileSystem::absolute_ref_path_to_string(&path)?;
-        let cmd =
-            format!("cd {path} && git fetch --all --recurse-submodules --tags");
         let component = CardanoComponent::component_to_string(component);
-        log::info!(
-            "Fetching the latest tags of the {component} source reposity of"
+        log::info!("Fetching the latest tags of {component}");
+        let cmd = format!(
+            "cd {path} && \
+            git fetch --all --recurse-submodules --tags"
         );
         Executer::exec(&cmd)
     }

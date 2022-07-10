@@ -237,14 +237,12 @@ impl Node {
                     Self::download_snapshot(match_network(network))?;
                 }
                 log::info!("Proceeding to run node in {network}");
-                Executer::exec(cmd)?;
-                return Ok(());
+                return Executer::exec(cmd);
             }
             log::error!("The installed cardano-node v{installed} is outdated");
             log::error!("Please update to the latest version {version}");
             CardanoComponent::install_component(Component::Node)?;
-            Executer::exec(cmd)?;
-            return Ok(());
+            return Executer::exec(cmd);
         }
         CardanoComponent::install_component(Component::Node)?;
         Executer::exec(cmd)

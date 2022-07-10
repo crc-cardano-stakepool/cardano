@@ -9,7 +9,9 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
 };
+
 pub struct FileSystem;
+
 impl FileSystem {
     pub fn setup_work_dir() -> Result<()> {
         log::debug!("Setting up working directory");

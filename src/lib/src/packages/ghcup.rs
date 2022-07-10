@@ -2,8 +2,8 @@ use crate::{Cabal, Environment, Executer, Ghc, GHCUP_URL};
 use anyhow::{anyhow, Result};
 use std::path::Path;
 
-#[derive(Debug)]
 pub struct Ghcup;
+
 impl Ghcup {
     pub fn check_ghcup() -> Result<()> {
         log::debug!("Checking GHCup");
@@ -19,6 +19,7 @@ impl Ghcup {
         }
         Self::install_ghcup()
     }
+
     pub fn install_ghcup() -> Result<()> {
         log::info!("Installing GHCup");
         let user = Environment::check_user()?;
@@ -35,6 +36,7 @@ impl Ghcup {
         Executer::exec(&cmd)
     }
 }
+
 #[cfg(test)]
 mod test {
     // use super::*;

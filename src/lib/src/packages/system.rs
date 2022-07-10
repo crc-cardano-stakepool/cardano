@@ -61,6 +61,7 @@ impl SystemRequirements {
         );
         false
     }
+
     pub fn check_os(&self, distro: Distro) -> bool {
         log::debug!("Checking OS");
         match distro {
@@ -94,6 +95,7 @@ impl SystemRequirements {
             }
         }
     }
+
     pub fn check_cpu(&self, cpu: CpuInfo) -> bool {
         log::debug!("Checking CPU");
         let cores_ok = self.check_cpu_cores(cpu.cores);
@@ -106,6 +108,7 @@ impl SystemRequirements {
         log::error!("CPU doesn't meet the requirements to run a cardano node");
         false
     }
+
     pub fn check_cpu_cores(&self, cores: u8) -> bool {
         log::debug!("Checking CPU cores");
         if cores >= self.min_cores {
@@ -116,6 +119,7 @@ impl SystemRequirements {
         log::error!("At least {} cores are required", self.min_cores);
         false
     }
+
     pub fn check_cpu_vendor(&self, vendor: String) -> bool {
         log::debug!("Checking CPU vendor");
         let supported_vendor = SupportedCpu::default();
@@ -129,6 +133,7 @@ impl SystemRequirements {
         log::error!("Only Intel or AMD processors are supported");
         false
     }
+
     pub fn check_cpu_frequency(&self, frequency: u16) -> bool {
         log::debug!("Checking CPU frequency");
         if frequency >= self.recommended_processor_frequency_in_mhz {
@@ -143,6 +148,7 @@ impl SystemRequirements {
         log::error!("At least 1.6GHz is required");
         false
     }
+
     pub fn check_disk(&self, disk: DiskInfo) -> bool {
         log::debug!("Checking disk");
         const GB_TO_B_CONVERSION_RATIO: u64 = 1073741824;
@@ -179,6 +185,7 @@ impl SystemRequirements {
         log::error!("At least {MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB} GB are required to run a future proof node in mainnet");
         false
     }
+
     pub fn check_memory(&self, memory: MemoryInfo) -> bool {
         log::debug!("Checking RAM");
         const GB_TO_KB_CONVERSION_RATIO: u64 = 1048576;
@@ -308,6 +315,7 @@ impl DiskInfo {
         log::debug!("{disk:#?}");
         disk
     }
+
     pub fn get_available_disk_space() -> u64 {
         log::debug!("Getting disk space");
         let mut sys = System::new_all();
@@ -355,6 +363,7 @@ impl MemoryInfo {
         log::debug!("{memory:#?}");
         memory
     }
+
     pub fn get_available_memory_in_kb() -> u64 {
         log::debug!("Getting available memory");
         let mut sys = System::new_all();
@@ -389,6 +398,7 @@ impl CpuInfo {
         log::debug!("{cpu:#?}");
         cpu
     }
+
     pub fn get_cpu_frequency() -> u16 {
         log::debug!("Getting CPU frequency");
         let mut sys = System::new_all();
@@ -417,6 +427,7 @@ impl CpuInfo {
             0
         }
     }
+
     pub fn get_cpu_vendor() -> String {
         log::debug!("Getting CPU vendor");
         let mut sys = System::new_all();
@@ -425,6 +436,7 @@ impl CpuInfo {
         log::debug!("CPU vendor: {:?}", vendor);
         vendor
     }
+
     pub fn get_cpu_cores() -> u8 {
         log::debug!("Getting CPU cores");
         let mut sys = System::new_all();

@@ -75,31 +75,6 @@ impl CardanoComponent {
         Self::install_latest_component(component, confirm)
     }
 
-    pub fn check_installed_component(component: Component) -> Result<()> {
-        if !Self::is_component_installed(component)? {
-            return Self::install_component(component);
-        }
-        Self::install_if_not_up_to_date(component)
-    }
-
-    pub fn install_component(component: Component) -> Result<()> {
-        Self::build_component(component)?;
-        FileSystem::copy_binary(component)?;
-        Self::check_install_success(component)?;
-        ShellConfig::source_shell()
-    }
-
-    pub fn install_if_not_up_to_date(component: Component) -> Result<()> {
-        let installed = Self::check_installed_version(component)?;
-        let latest = Self::check_latest_version(component)?;
-        if !installed.eq(&latest) {
-            return Self::install_component(component);
-        }
-        let component = Self::component_to_string(component);
-        log::info!("Latest {component} {installed} is already installed");
-        Ok(())
-    }
-
     pub fn install_latest_component(
         component: Component,
         confirm: bool,
@@ -116,30 +91,15 @@ impl CardanoComponent {
         Self::install_component(component)
     }
 
-    pub fn setup_component(component: Component) -> Result<()> {
-        log::info!("Setting up the system with build dependencies");
-        let platform = PlatformInfo::new();
-        platform.setup_packages()?;
-        ShellConfig::setup_shell()?;
-        Self::check_component_dependencies(component)
-    }
-
-    pub fn check_component_dependencies(component: Component) -> Result<()> {
-        log::info!("Checking build dependencies");
-        match component {
-            Component::Node => {
-                Ghcup::check_ghcup()?;
-                Ghc::check()?;
-                Cabal::check()?;
-                check_libsodium()?;
-                check_secp256k1()
-            }
-            _ => {
-                Ghcup::check_ghcup()?;
-                Ghc::check()?;
-                Cabal::check()
-            }
-        }
+    pub fn is_component_installed(component: Component) -> Result<bool> {
+        let bin = Self::component_to_string(component);
+        log::debug!("Checking if {bin} is already installed");
+        Settings::read("install_dir")
+            .map(PathBuf::from)
+            .map(|mut path| {
+                path.push(&bin);
+                path.exists()
+            })
     }
 
     pub fn check_installed_version(component: Component) -> Result<String> {
@@ -179,6 +139,57 @@ impl CardanoComponent {
             log::debug!("The latest version of {component_str} is {response}");
             response
         })
+    }
+
+    pub fn check_installed_component(component: Component) -> Result<()> {
+        if !Self::is_component_installed(component)? {
+            return Self::install_component(component);
+        }
+        Self::install_if_not_up_to_date(component)
+    }
+
+    pub fn install_if_not_up_to_date(component: Component) -> Result<()> {
+        let installed = Self::check_installed_version(component)?;
+        let latest = Self::check_latest_version(component)?;
+        if !installed.eq(&latest) {
+            return Self::install_component(component);
+        }
+        let component = Self::component_to_string(component);
+        log::info!("Latest {component} {installed} is already installed");
+        Ok(())
+    }
+
+    pub fn install_component(component: Component) -> Result<()> {
+        Self::build_component(component)?;
+        FileSystem::copy_binary(component)?;
+        Self::check_install_success(component)?;
+        ShellConfig::source_shell()
+    }
+
+    pub fn setup_component(component: Component) -> Result<()> {
+        log::info!("Setting up the system with build dependencies");
+        let platform = PlatformInfo::new();
+        platform.setup_packages()?;
+        ShellConfig::setup_shell()?;
+        Self::check_component_dependencies(component)
+    }
+
+    pub fn check_component_dependencies(component: Component) -> Result<()> {
+        log::info!("Checking build dependencies");
+        match component {
+            Component::Node => {
+                Ghcup::check_ghcup()?;
+                Ghc::check()?;
+                Cabal::check()?;
+                check_libsodium()?;
+                check_secp256k1()
+            }
+            _ => {
+                Ghcup::check_ghcup()?;
+                Ghc::check()?;
+                Cabal::check()
+            }
+        }
     }
 
     pub fn get_component_release_url(component: Component) -> String {
@@ -239,17 +250,6 @@ impl CardanoComponent {
         Environment::check_env(&converted)
             .map(PathBuf::from)
             .map(Ok)?
-    }
-
-    pub fn is_component_installed(component: Component) -> Result<bool> {
-        let bin = Self::component_to_string(component);
-        log::debug!("Checking if {bin} is already installed");
-        Settings::read("install_dir")
-            .map(PathBuf::from)
-            .map(|mut path| {
-                path.push(&bin);
-                Ok(path.exists())
-            })?
     }
 
     pub fn component_to_string(component: Component) -> String {

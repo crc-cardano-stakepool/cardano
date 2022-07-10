@@ -30,6 +30,7 @@ impl ShellConfig {
         Environment::check_env("SHELL")
             .map_or_else(|_| "/usr/bin/bash".to_string(), |value| value)
     }
+
     pub fn match_shell(shell: &str) -> Shell {
         if shell.contains("/bash") {
             return Shell::Bash;
