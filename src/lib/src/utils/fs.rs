@@ -107,6 +107,7 @@ impl FileSystem {
         }
         Ok(())
     }
+
     pub fn create_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
         create_dir_all(&absolute_path)?;
         Self::absolute_ref_path_to_string(&absolute_path).map(|path| {
@@ -133,7 +134,7 @@ impl FileSystem {
             return Err(anyhow!("The path {parsed} does not exist"));
         }
         if path.is_absolute() {
-            return Self::path_to_string(path);
+            return Ok(parsed);
         }
         Err(anyhow!("The path {parsed} is not absolute"))
     }
