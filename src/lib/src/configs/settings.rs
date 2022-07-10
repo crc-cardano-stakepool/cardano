@@ -6,7 +6,7 @@ use std::{
     collections::HashMap, fs::File, io::Write, path::PathBuf, sync::RwLock,
 };
 
-#[derive(Hash, Serialize, Debug, Eq, PartialEq)]
+#[derive(Serialize, Debug, Eq, PartialEq)]
 pub struct Settings {
     pub work_dir: PathBuf,
     pub log_file: PathBuf,
@@ -70,6 +70,38 @@ impl Default for Settings {
     }
 }
 
+impl Settings {
+    pub fn read_settings() -> HashMap<String, String> {
+        SETTINGS
+            .read()
+            .map_err(|err| anyhow!("Failed to read from settings: {err}"))
+            .unwrap()
+            .clone()
+            .try_deserialize::<HashMap<String, String>>()
+            .map_err(|err| anyhow!("Failed to serialize settings: {err}"))
+            .unwrap()
+    }
+
+    pub fn show_settings() {
+        let settings = Self::read_settings();
+        log::debug!("{settings:#?}");
+    }
+
+    pub fn read_setting(key: &str) -> Result<String> {
+        log::debug!("Reading setting {key}");
+        let settings = Self::read_settings();
+        let setting = settings
+            .get(key)
+            .ok_or_else(|| {
+                anyhow!(
+                    "Failed to read setting {key}: invalid or does not exist"
+                )
+            })
+            .unwrap();
+        Ok(setting.trim().to_string())
+    }
+}
+
 lazy_static::lazy_static! {
     static ref SETTINGS: RwLock<Config> = RwLock::new({
         let settings = Settings::default();
@@ -103,34 +135,6 @@ lazy_static::lazy_static! {
     });
 }
 
-pub fn read_settings() -> HashMap<String, String> {
-    SETTINGS
-        .read()
-        .map_err(|err| anyhow!("Failed to read from settings: {err}"))
-        .unwrap()
-        .clone()
-        .try_deserialize::<HashMap<String, String>>()
-        .map_err(|err| anyhow!("Failed to serialize settings: {err}"))
-        .unwrap()
-}
-
-pub fn show_settings() {
-    let settings = read_settings();
-    log::debug!("{settings:#?}");
-}
-
-pub fn read_setting(key: &str) -> Result<String> {
-    log::debug!("Reading setting {key}");
-    let settings = read_settings();
-    let setting = settings
-        .get(key)
-        .ok_or_else(|| {
-            anyhow!("Failed to read setting {key}: invalid or does not exist")
-        })
-        .unwrap();
-    Ok(setting.trim().to_string())
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -144,18 +148,18 @@ mod test {
 
     #[test]
     fn test_read_settings() {
-        read_settings();
+        Settings::read_settings();
     }
 
     #[test]
     fn test_show_settings() {
-        show_settings()
+        Settings::show_settings()
     }
 
     #[test]
     fn test_read_setting() -> Result<()> {
         let key = "work_dir";
-        let value = read_setting(key)?;
+        let value = Settings::read_setting(key)?;
         let work_dir = check_work_dir()?;
         let work_dir = work_dir.as_ref().to_str().unwrap();
         assert_eq!(value, work_dir);
@@ -167,6 +171,6 @@ mod test {
     fn test_read_setting_fails() {
         std::panic::set_hook(Box::new(|_| {}));
         let key = "invalid_setting";
-        read_setting(key).unwrap();
+        Settings::read_setting(key).unwrap();
     }
 }

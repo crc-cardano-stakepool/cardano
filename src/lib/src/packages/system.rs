@@ -1,5 +1,5 @@
 use crate::{
-    MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB,
+    Distro, MAINNET_MIN_FREE_DISK_SPACE_IN_GB, MAINNET_MIN_FREE_RAM_IN_GB,
     MAINNET_RECOMMENDED_FREE_DISK_SPACE_IN_GB, MIN_CORES,
     MIN_CPU_FREQUENCY_IN_MHZ, RECOMMENDED_CPU_FREQUENCY_IN_MHZ,
     TESTNET_MIN_FREE_DISK_SPACE_IN_GB, TESTNET_MIN_FREE_RAM_IN_GB,
@@ -45,7 +45,7 @@ impl SystemRequirements {
         log::debug!("Checking system requirements");
         let system = SystemRequirements::default();
         let current = SystemInfo::default();
-        let os_ok = SystemRequirements::check_os(&system, current.name);
+        let os_ok = SystemRequirements::check_os(&system, current.distro);
         let cpu_ok = SystemRequirements::check_cpu(&system, current.cpu);
         let disk_ok = SystemRequirements::check_disk(&system, current.disk);
         let memory_ok =
@@ -61,35 +61,35 @@ impl SystemRequirements {
         );
         false
     }
-    pub fn check_os(&self, name: String) -> bool {
+    pub fn check_os(&self, distro: Distro) -> bool {
         log::debug!("Checking OS");
-        match name.as_str() {
-            "Ubuntu" => {
-                log::debug!("{name} is supported!");
+        match distro {
+            Distro::Ubuntu => {
+                log::debug!("Ubuntu is supported!");
                 true
             }
-            "Debian" => {
-                log::debug!("{name} is supported!");
+            Distro::Debian => {
+                log::debug!("Debian is supported!");
                 true
             }
-            "Linux Mint" => {
-                log::debug!("{name} is supported!");
+            Distro::Mint => {
+                log::debug!("Linux Mint is supported!");
                 true
             }
-            "Red Hat" => {
-                log::debug!("{name} is supported!");
+            Distro::RedHat => {
+                log::debug!("RedHat is supported!");
                 true
             }
-            "Fedora" => {
-                log::debug!("{name} is supported!");
+            Distro::Fedora => {
+                log::debug!("Fedora is supported!");
                 true
             }
-            "CentOs" => {
-                log::debug!("{name} is supported!");
+            Distro::CentOs => {
+                log::debug!("CentOs is supported!");
                 true
             }
-            _ => {
-                log::error!("{name} is not supported");
+            Distro::Unsupported { distro } => {
+                log::debug!("{distro} is not supported!");
                 false
             }
         }
@@ -222,7 +222,7 @@ impl Default for SupportedCpu {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SystemInfo {
-    pub name: String,
+    pub distro: Distro,
     pub disk: DiskInfo,
     pub memory: MemoryInfo,
     pub cpu: CpuInfo,
@@ -231,7 +231,7 @@ pub struct SystemInfo {
 impl Default for SystemInfo {
     fn default() -> Self {
         let system_info = Self {
-            name: SystemInfo::get_sysinfo(),
+            distro: SystemInfo::get_sysinfo(),
             disk: DiskInfo::default(),
             memory: MemoryInfo::default(),
             cpu: CpuInfo::default(),
@@ -242,7 +242,7 @@ impl Default for SystemInfo {
 }
 
 impl SystemInfo {
-    pub fn get_sysinfo() -> String {
+    pub fn get_sysinfo() -> Distro {
         log::info!("Getting system info");
         if !System::IS_SUPPORTED {
             log::error!("This OS isn't supported (yet?).");
@@ -256,7 +256,15 @@ impl SystemInfo {
             .ok_or_else(|| anyhow!("Could not find determine OS distribution"))
             .unwrap();
         log::debug!("OS: {name}");
-        name
+        match name.trim() {
+            "Ubuntu" => Distro::Ubuntu,
+            "Debian" => Distro::Debian,
+            "Linux Mint" => Distro::Mint,
+            "RedHat" => Distro::RedHat,
+            "Fedora" => Distro::Fedora,
+            "CentOs" => Distro::CentOs,
+            _ => Distro::Unsupported { distro: name },
+        }
     }
 }
 
@@ -442,9 +450,14 @@ mod test {
     #[test]
     fn test_check_os() {
         let system = SystemRequirements::default();
-        assert_eq!(system.check_os("Ubuntu".to_string()), true);
-        assert_eq!(system.check_os("Debian".to_string()), true);
-        assert_eq!(system.check_os("Arch Linux".to_string()), false);
+        assert_eq!(system.check_os(Distro::Debian), true);
+        assert_eq!(system.check_os(Distro::Ubuntu), true);
+        assert_eq!(
+            system.check_os(Distro::Unsupported {
+                distro: "Arch Linux".to_string()
+            }),
+            false
+        );
     }
 
     #[test]

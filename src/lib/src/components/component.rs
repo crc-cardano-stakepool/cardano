@@ -1,10 +1,10 @@
 use crate::{
     absolute_ref_path_to_string, async_command, async_command_pipe, check_env,
-    check_libsodium, check_project_file, check_repo,
-    check_secp256k1, clone_component, copy_binary, get_bin_path,
-    get_project_file, proceed, process_success_inherit, read_setting,
-    set_component_dir, set_confirm, setup_packages, update_project_file, Cabal,
-    Ghcup, Ghc, ShellConfig,
+    check_libsodium, check_project_file, check_repo, check_secp256k1,
+    clone_component, copy_binary, get_bin_path, get_project_file, proceed,
+    process_success_inherit, set_component_dir, set_confirm,
+    update_project_file, Cabal, Ghc, Ghcup, PlatformInfo, Settings,
+    ShellConfig,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -186,7 +186,7 @@ impl CardanoComponent {
     pub fn is_component_installed(component: Component) -> Result<bool> {
         let bin = Self::component_to_string(component);
         log::debug!("Checking if {bin} is already installed");
-        let install_dir = read_setting("install_dir")?;
+        let install_dir = Settings::read_setting("install_dir")?;
         let mut path = PathBuf::from(install_dir);
         path.push(&bin);
         Ok(path.exists())
@@ -339,7 +339,8 @@ impl CardanoComponent {
 
     pub fn setup_component(component: Component) -> Result<()> {
         log::info!("Setting up the system with build dependencies");
-        setup_packages()?;
+        let platform = PlatformInfo::new();
+        platform.setup_packages()?;
         ShellConfig::setup_shell()?;
         Self::check_component_dependencies(component)?;
         Ok(())

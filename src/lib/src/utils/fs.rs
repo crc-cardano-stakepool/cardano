@@ -1,6 +1,6 @@
 use crate::{
-    async_command, check_env, read_setting, set_component_dir, set_env,
-    CardanoComponent, Component, DIRECTORIES,
+    async_command, check_env, set_component_dir, set_env, CardanoComponent,
+    Component, Settings, DIRECTORIES,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -14,7 +14,7 @@ pub fn setup_work_dir() -> Result<()> {
     log::debug!("Setting up working directory");
     for key in DIRECTORIES {
         let key = format!("{key}_dir");
-        let directory = read_setting(&key)?;
+        let directory = Settings::read_setting(&key)?;
         check_dir(&directory)?;
         let key = key.to_case(Case::UpperSnake);
         set_env(&key, &directory);
@@ -35,7 +35,7 @@ pub fn check_dir<P: AsRef<Path>>(absolute_path: P) -> Result<()> {
 
 pub fn check_work_dir() -> Result<impl AsRef<Path>> {
     log::debug!("Checking the working directory");
-    let path = read_setting("work_dir")?;
+    let path = Settings::read_setting("work_dir")?;
     set_env("WORK_DIR", &path);
     Ok(PathBuf::from(&path))
 }
@@ -221,7 +221,7 @@ mod test {
         setup_work_dir()?;
         for key in DIRECTORIES {
             let key = format!("{key}_dir");
-            let setting = read_setting(&key)?;
+            let setting = Settings::read_setting(&key)?;
             let key = key.to_case(Case::UpperSnake);
             let value = check_env(&key)?;
             assert_eq!(value, setting);

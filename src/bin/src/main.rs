@@ -1,5 +1,5 @@
 extern crate lib;
-use lib::{read_setting, setup_env, setup_logger, setup_work_dir, update_cli};
+use lib::{setup_env, setup_logger, setup_work_dir, update_cli, Settings};
 
 use crate::{NodeArgs, NodeCommand, WalletArgs, WalletCommand};
 
@@ -57,7 +57,7 @@ pub enum CardanoCommand {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-    let log_file = read_setting("log_file")?;
+    let log_file = Settings::read_setting("log_file")?;
     setup_logger(cli.verbose.log_level_filter(), true, log_file)?;
     human_panic::setup_panic!();
     ctrlc::set_handler(|| log::info!("Initialize Ctrl-C handler"))

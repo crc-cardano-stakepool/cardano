@@ -1,6 +1,6 @@
 use crate::{
     absolute_ref_path_to_string, async_command_pipe, check_env,
-    process_success, read_setting, set_env, setup_env,
+    process_success, set_env, setup_env, Settings,
 };
 use anyhow::{anyhow, Result};
 use std::{io::Write, path::PathBuf};
@@ -145,7 +145,7 @@ impl ShellConfig {
     }
 
     pub fn write_node_socket_path(&self) -> Result<()> {
-        let node_socket_path = read_setting("node_socket_path")?;
+        let node_socket_path = Settings::read_setting("node_socket_path")?;
         let value =
             format!("export CARDANO_NODE_SOCKET_PATH={node_socket_path}");
         if !self.check_shell_config_env("CARDANO_NODE_SOCKET_PATH")? {

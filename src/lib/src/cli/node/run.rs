@@ -1,7 +1,7 @@
 use crate::{
     absolute_ref_path_to_string, async_command, download_snapshot,
-    match_network, network_to_string, path_to_string, proceed, read_setting,
-    CardanoComponent, Component, CONFIG_BASE_URL, CONFIG_FILES,
+    match_network, network_to_string, path_to_string, proceed,
+    CardanoComponent, Component, Settings, CONFIG_BASE_URL, CONFIG_FILES,
 };
 use anyhow::{anyhow, Result};
 use cardano_multiplatform_lib::NetworkIdKind;
@@ -10,7 +10,7 @@ use std::{net::IpAddr, path::PathBuf};
 pub fn get_db(network: NetworkIdKind) -> Result<Option<PathBuf>> {
     let network = &network_to_string(network);
     let key = format!("{network}_db_dir");
-    let path = read_setting(&key)?;
+    let path = Settings::read_setting(&key)?;
     let db = PathBuf::from(&path);
     if !db.exists() {
         log::error!("Invalid db");
@@ -26,7 +26,7 @@ pub fn get_db(network: NetworkIdKind) -> Result<Option<PathBuf>> {
 pub fn get_topology(network: NetworkIdKind) -> Result<Option<PathBuf>> {
     let network = &network_to_string(network);
     let key = format!("{network}_config_dir");
-    let path = read_setting(&key)?;
+    let path = Settings::read_setting(&key)?;
     let mut topology = PathBuf::from(&path);
     let key = format!("{network}-topology.json");
     topology.push(key);
@@ -45,7 +45,7 @@ pub fn get_topology(network: NetworkIdKind) -> Result<Option<PathBuf>> {
 pub fn get_config(network: NetworkIdKind) -> Result<Option<PathBuf>> {
     let network = &network_to_string(network);
     let key = format!("{network}_config_dir");
-    let path = read_setting(&key)?;
+    let path = Settings::read_setting(&key)?;
     let mut config = PathBuf::from(&path);
     let file_name = format!("{network}-config.json");
     config.push(file_name);
@@ -65,7 +65,7 @@ pub fn check_config_files(network: NetworkIdKind) -> Result<()> {
     let network = &network_to_string(network);
     log::debug!("Checking configuration files");
     let key = format!("{network}_config_dir");
-    let path = read_setting(&key)?;
+    let path = Settings::read_setting(&key)?;
     let db = PathBuf::from(&path);
     if !db.exists() {
         return Err(anyhow!("Configuration directory does not exist"));
@@ -150,7 +150,7 @@ pub fn handle_topology(
 
 pub fn handle_socket(socket: Option<PathBuf>) -> Result<Option<PathBuf>> {
     if socket.is_none() {
-        let path = read_setting("ipc_dir")?;
+        let path = Settings::read_setting("ipc_dir")?;
         let mut socket = PathBuf::from(&path);
         if !socket.exists() {
             log::error!("Invalid socket");
