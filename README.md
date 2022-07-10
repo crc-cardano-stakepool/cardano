@@ -69,7 +69,7 @@ cargo install --branch main --path src/bin
 ## Usage
 
 ```unix
-cardano 0.0.2
+cardano 0.0.5
 Manage cardano components
 
 USAGE:
@@ -84,10 +84,12 @@ OPTIONS:
     -V, --version                 Print version information
 
 SUBCOMMANDS:
-    help      Print this message or the help of the given subcommand(s)
-    node      Manage cardano nodes
-    update    Updates the CLI
-    wallet    Manage cardano wallets
+    address    Manage cardano addresses
+    bech32     Installs the bech32 CLI
+    help       Print this message or the help of the given subcommand(s)
+    node       Manage cardano nodes
+    update     Updates the CLI
+    wallet     Manage cardano wallets
 ```
 
 ## Install latest cardano-node release
