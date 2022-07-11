@@ -1,5 +1,5 @@
 use crate::{
-    match_network, network_to_string, proceed, CardanoComponent, Component,
+    match_network, network_to_string, CardanoComponent, Component, Dialog,
     Executer, FileSystem, Node, Settings, CONFIG_BASE_URL,
 };
 use anyhow::{anyhow, Result};
@@ -229,7 +229,7 @@ impl Node {
                 CardanoComponent::check_installed_version(Component::Node)?;
             if version.eq(&installed) {
                 if db.as_ref().unwrap().read_dir()?.next().is_none()
-                    && proceed(
+                    && Dialog::proceed(
                         "Do you want to download a daily snapshot of \
                         the ledger to speed up sync time significantly?",
                     )?

@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Subcommand};
-use lib::{match_network, proceed, Node, SystemRequirements};
+use lib::{match_network, Dialog, Node, SystemRequirements};
 use std::{
     net::{IpAddr, Ipv4Addr},
     path::PathBuf,
@@ -55,7 +55,7 @@ impl RunCommand {
     }
     pub fn run_node(config: RunArgs, network: &str) -> Result<()> {
         if !SystemRequirements::check_requirements()
-            && !proceed("Do you still want to run the node anyway?")?
+            && !Dialog::proceed("Do you still want to run the node anyway?")?
         {
             return Ok(());
         }
