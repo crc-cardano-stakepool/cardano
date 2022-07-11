@@ -5,7 +5,7 @@ use std::path::Path;
 pub struct Ghcup;
 
 impl Ghcup {
-    pub fn check_ghcup() -> Result<()> {
+    pub fn check() -> Result<()> {
         log::debug!("Checking GHCup");
         let ghcup_dir = Environment::check_env("GHCUP_DIR")?;
         let ghcup_bin = Environment::check_env("GHCUP_BIN")?;
@@ -17,10 +17,10 @@ impl Ghcup {
             }
             return Err(anyhow!("Failed installing GHCup"));
         }
-        Self::install_ghcup()
+        Self::install()
     }
 
-    pub fn install_ghcup() -> Result<()> {
+    pub fn install() -> Result<()> {
         log::info!("Installing GHCup");
         let user = Environment::check_user()?;
         let ghc_version = Ghc::get_version()?;

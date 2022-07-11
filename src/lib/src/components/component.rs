@@ -1,6 +1,6 @@
 use crate::{
-    check_libsodium, check_secp256k1, proceed, Cabal, Environment, Executer,
-    FileSystem, Ghc, Ghcup, Git, PlatformInfo, Settings, ShellConfig,
+    Cabal, Dialog, Environment, Executer, FileSystem, Ghc, Ghcup, Git,
+    Libsodium, PlatformInfo, Secp256k1, Settings, ShellConfig,
 };
 use anyhow::{anyhow, Result};
 use convert_case::{Case, Casing};
@@ -85,7 +85,7 @@ impl CardanoComponent {
         let msg = format!(
             "Do you want to install the latest {component_str} binary?"
         );
-        if !confirm && proceed(&msg)? {
+        if !confirm && Dialog::proceed(&msg)? {
             return Self::install_component(component);
         }
         Self::install_component(component)
@@ -178,14 +178,14 @@ impl CardanoComponent {
         log::info!("Checking build dependencies");
         match component {
             Component::Node => {
-                Ghcup::check_ghcup()?;
+                Ghcup::check()?;
                 Ghc::check()?;
                 Cabal::check()?;
-                check_libsodium()?;
-                check_secp256k1()
+                Libsodium::check()?;
+                Secp256k1::check()
             }
             _ => {
-                Ghcup::check_ghcup()?;
+                Ghcup::check()?;
                 Ghc::check()?;
                 Cabal::check()
             }
