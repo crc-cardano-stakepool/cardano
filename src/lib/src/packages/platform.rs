@@ -15,6 +15,8 @@ pub enum Distro {
     CentOs,
     RedHat,
     Fedora,
+    Arch,
+    Artix,
     Unsupported { distro: String },
 }
 
@@ -22,6 +24,7 @@ pub enum Distro {
 pub enum PackageManager {
     Apt,
     Yum,
+    Pacman,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -98,10 +101,40 @@ impl PlatformInfo {
                 .map(|package| package.to_string())
                 .collect(),
             ),
+            Distro::Arch | Distro::Artix => (
+                PackageManager::Pacman,
+                vec![
+                    "git",
+                    "pkg-config",
+                    "wget",
+                    "jq",
+                    "tidy",
+                    "curl",
+                    "make",
+                    "automake",
+                    "gcc",
+                    "zlib",
+                    "gmp",
+                    "ncurses",
+                    "ncurses5-compat-libs",
+                    "tar",
+                    "xz",
+                    "libtool",
+                    "autoconf",
+                    "tmux",
+                    "openssl",
+                    "which",
+                    "lmdb",
+                    "libffi",
+                ]
+                .iter_mut()
+                .map(|package| package.to_string())
+                .collect(),
+            ),
             Distro::Unsupported { distro } => {
                 log::error!("Unsupported distro: {distro}");
                 log::error!("Consider fetching the latest binary directly");
-                panic!("Unsupported distro: {distro}")
+                std::process::exit(1);
             }
         };
         Self {
@@ -133,13 +166,19 @@ impl PlatformInfo {
         match self.package_manager {
             PackageManager::Apt => "apt".to_string(),
             PackageManager::Yum => "yum".to_string(),
+            PackageManager::Pacman => "pacman".to_string(),
         }
     }
 
     fn update(&self) -> Result<()> {
         let package_manager = self.get_package_manager();
         log::info!("Updating system with {package_manager}");
-        let cmd = format!("sudo {package_manager} update -y");
+        let cmd = match self.package_manager {
+            PackageManager::Pacman => {
+                format!("sudo {package_manager} --sync --refresh --sysupgrade --noconfirm")
+            }
+            _ => format!("sudo {package_manager} update -y"),
+        };
         Executer::exec(&cmd)
     }
 
@@ -156,6 +195,7 @@ impl PlatformInfo {
         match self.package_manager {
             PackageManager::Apt => self.apt_install(package),
             PackageManager::Yum => self.yum_install(package),
+            PackageManager::Pacman => self.pacman_install(package),
         }
     }
 
@@ -181,14 +221,26 @@ impl PlatformInfo {
         self.install_package(package)
     }
 
+    fn pacman_install(&self, package: &str) -> Result<()> {
+        let cmd = format!("pacman -Qi {package}");
+        if Executer::success(&cmd)? {
+            log::debug!("{package} is installed");
+            return Ok(());
+        }
+        self.install_package(package)
+    }
+
     fn install_package(&self, package: &str) -> Result<()> {
         let package_manager = self.get_package_manager();
         log::info!("Installing {package} with {package_manager}");
-        let cmd = format!("sudo {package_manager} install {package} -y");
-        if let Err(err) = Executer::exec(&cmd) {
-            return Err(anyhow!("Failed installing {package}: {err}"));
-        }
-        Ok(())
+        let cmd = match self.package_manager {
+            PackageManager::Pacman => {
+                format!("sudo {package_manager} -Syu {package} --noconfirm")
+            }
+            _ => format!("sudo {package_manager} install {package} -y"),
+        };
+        Executer::exec(&cmd)
+            .map_err(|err| anyhow!("Failed installing {package}: {err}"))
     }
 }
 #[cfg(test)]
@@ -199,5 +251,12 @@ mod test {
     fn test_platform_info() {
         let platform = PlatformInfo::default();
         log::debug!("{platform:#?}");
+    }
+
+    #[test]
+    #[ignore]
+    fn test_setup_packages() {
+        let platform = PlatformInfo::default();
+        platform.setup_packages().unwrap()
     }
 }

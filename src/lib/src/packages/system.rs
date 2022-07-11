@@ -89,6 +89,14 @@ impl SystemRequirements {
                 log::debug!("CentOs is supported!");
                 true
             }
+            Distro::Arch => {
+                log::debug!("Arch Linux is supported!");
+                true
+            }
+            Distro::Artix => {
+                log::debug!("Arch Linux is supported!");
+                true
+            }
             Distro::Unsupported { distro } => {
                 log::debug!("{distro} is not supported!");
                 false
@@ -270,6 +278,8 @@ impl SystemInfo {
             "RedHat" => Distro::RedHat,
             "Fedora" => Distro::Fedora,
             "CentOs" => Distro::CentOs,
+            "Arch Linux" => Distro::Arch,
+            "Artix Linux" => Distro::Artix,
             _ => Distro::Unsupported { distro: name },
         }
     }

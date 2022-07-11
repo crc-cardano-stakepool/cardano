@@ -112,6 +112,7 @@ impl ShellConfig {
         self.write_node_socket_path()?;
         for (pattern, path) in patterns.iter().zip(paths.iter()) {
             if !self.check_shell_config_env(pattern)? {
+                Executer::exec(pattern)?;
                 self.write_shell_config(path);
             }
         }
