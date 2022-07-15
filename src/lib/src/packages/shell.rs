@@ -112,10 +112,13 @@ impl ShellConfig {
         self.write_node_socket_path()?;
         for (pattern, path) in patterns.iter().zip(paths.iter()) {
             if !self.check_shell_config_env(pattern)? {
-                Executer::exec(pattern)?;
                 self.write_shell_config(path);
             }
         }
+        Executer::exec(
+            "export LD_LIBRARY_PATH=\"/usr/local/lib:$LD_LIBRARY_PATH\"",
+        )?;
+        Executer::exec("export PKG_CONFIG_PATH=\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\"")?;
         Ok(())
     }
 
@@ -158,6 +161,10 @@ impl ShellConfig {
         log::debug!("Sourcing shell");
         let config_file = Environment::check_env("SHELL_CONFIG_FILE")?;
         let cmd = format!("source {}", config_file);
+        Executer::exec(
+            "export LD_LIBRARY_PATH=\"/usr/local/lib:$LD_LIBRARY_PATH\"",
+        )?;
+        Executer::exec("export PKG_CONFIG_PATH=\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\"")?;
         Executer::capture(&cmd)?;
         Ok(())
     }
