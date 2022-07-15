@@ -17,6 +17,7 @@ pub enum Distro {
     Fedora,
     Arch,
     Artix,
+    Metis,
     Unsupported { distro: String },
 }
 
@@ -101,7 +102,7 @@ impl PlatformInfo {
                 .map(|package| package.to_string())
                 .collect(),
             ),
-            Distro::Arch | Distro::Artix => (
+            Distro::Arch | Distro::Artix | Distro::Metis => (
                 PackageManager::Pacman,
                 vec![
                     "git",

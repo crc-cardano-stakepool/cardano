@@ -97,6 +97,10 @@ impl SystemRequirements {
                 log::debug!("Arch Linux is supported!");
                 true
             }
+            Distro::Metis => {
+                log::debug!("Metis Linux is supported!");
+                true
+            }
             Distro::Unsupported { distro } => {
                 log::debug!("{distro} is not supported!");
                 false
@@ -280,6 +284,7 @@ impl SystemInfo {
             "CentOs" => Distro::CentOs,
             "Arch Linux" => Distro::Arch,
             "Artix Linux" => Distro::Artix,
+            "Metis Linux" => Distro::Metis,
             _ => Distro::Unsupported { distro: name },
         }
     }
