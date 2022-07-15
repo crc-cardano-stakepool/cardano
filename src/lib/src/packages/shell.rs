@@ -115,7 +115,9 @@ impl ShellConfig {
                 self.write_shell_config(path);
             }
         }
-        Executer::exec("export LD_LIBRARY_PATH=\"/usr/local/lib:$LD_LIBRARY_PATH\"")?;
+        Executer::exec(
+            "export LD_LIBRARY_PATH=\"/usr/local/lib:$LD_LIBRARY_PATH\"",
+        )?;
         Executer::exec("export PKG_CONFIG_PATH=\"/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH\"")?;
         Ok(())
     }
