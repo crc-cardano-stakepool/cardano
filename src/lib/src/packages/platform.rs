@@ -117,7 +117,6 @@ impl PlatformInfo {
                     "zlib",
                     "gmp",
                     "ncurses",
-                    "ncurses5-compat-libs",
                     "tar",
                     "xz",
                     "libtool",
