@@ -98,6 +98,24 @@ SUBCOMMANDS:
 cardano node install
 ```
 
+## Install latest cardano-wallet release
+
+```unix
+cardano wallet install
+```
+
+## Install latest cardano-address release
+
+```unix
+cardano address install
+```
+
+## Install latest bech32 release
+
+```unix
+cardano bech32 install
+```
+
 ## Update CLI
 
 ```unix
